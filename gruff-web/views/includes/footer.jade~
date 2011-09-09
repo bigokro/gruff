@@ -9,4 +9,4 @@ a(href="/debate/new") Start your own debate!
             a(href="/debate/"+debate._id.toHexString())!= debate.title
         div.body= debate.body
 
-include includes/footer
+include includes/foot
