@@ -15,39 +15,39 @@ h1 {
   text-shadow: 1px 2px 2px #ddd;
   font-size: 60px;
 }
-#articles {
+#debates {
   text-align: left;
   margin-left: auto;
   margin-right: auto;
   width: 320px;
 }
-#articles .article {
+#debates .debate {
   margin: 20px;
 }
-#articles .article .created_at {
+#debates .debate .created_at {
   display: none;
 }
-#articles .article .title {
+#debates .debate .title {
   font-weight: bold;
   text-decoration: underline;
   background-color: #eee;
 }
-#articles .article .body {
+#debates .debate .body {
   background-color: #ffa;
 }
-.article .created_at {
+.debate .created_at {
   display: none;
 }
-.article input[type =text] {
+.debate input[type =text] {
   width: 490px;
   margin-left: 16px;
 }
-.article input[type =button],
-.article input[type =submit] {
+.debate input[type =button],
+.debate input[type =submit] {
   text-align: left;
   margin-left: 440px;
 }
-.article textarea {
+.debate textarea {
   width: 490px;
   height: 90px;
 }

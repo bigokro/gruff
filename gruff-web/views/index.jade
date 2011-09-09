@@ -1,8 +1,10 @@
 h1= title
-#articles
-    - each article in articles
-      div.article
-        div.created_at= article.created_at
+#debates
+h2 Recent Debates
+a(href="/debate/new") Start your own debate!
+    - each debate in debates
+      div.debate
+        div.created_at= debate.created_at
         div.title 
-            a(href="/blog/"+article._id.toHexString())!= article.title
-        div.body= article.body
+            a(href="/debate/"+debate._id.toHexString())!= debate.title
+        div.body= debate.body

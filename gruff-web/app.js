@@ -3,7 +3,7 @@
  */
 
 var express = require('express');
-var ArticleProvider = require('./articleprovider-mongodb').ArticleProvider;
+var DebateProvider = require('./debateprovider-mongodb').DebateProvider;
 
 
 var app = module.exports = express.createServer();
@@ -28,29 +28,29 @@ app.configure('production', function(){
     app.use(express.errorHandler()); 
 });
 
-var articleProvider = new ArticleProvider('localhost', 27017);
+var debateProvider = new DebateProvider('localhost', 27017);
 // Routes
 
 app.get('/', function(req, res){
-    articleProvider.findAll( function(error,docs){
+    debateProvider.findAll( function(error,docs){
         res.render('index.jade', { 
             locals: {
-                title: 'Blog',
-                articles:docs
+                title: 'Gruff',
+                debates:docs
             }
         });
     })
 });
 
-app.get('/blog/new', function(req, res) {
-    res.render('blog_new.jade', { locals: {
-        title: 'New Post'
+app.get('/debate/new', function(req, res) {
+    res.render('debate_new.jade', { locals: {
+        title: 'New Debate'
     }
 				});
 });
 
-app.post('/blog/new', function(req, res){
-    articleProvider.save({
+app.post('/debate/new', function(req, res){
+    debateProvider.save({
         title: req.param('title'),
         body: req.param('body')
     }, function( error, docs) {
@@ -58,25 +58,25 @@ app.post('/blog/new', function(req, res){
     });
 });
 
-app.get('/blog/:id', function(req, res) {
-    articleProvider.findById(req.params.id, function(error, article) {
-        res.render('blog_show.jade',
+app.get('/debate/:id', function(req, res) {
+    debateProvider.findById(req.params.id, function(error, debate) {
+        res.render('debate_show.jade',
 		   { locals: {
-		       title: article.title,
-		       article:article
+		       title: debate.title,
+		       debate:debate
 		   }
 		   });
     });
 });
 
 
-app.post('/blog/addComment', function(req, res) {
-    articleProvider.addCommentToArticle(req.param('_id'), {
+app.post('/debate/addComment', function(req, res) {
+    debateProvider.addCommentToDebate(req.param('_id'), {
         person: req.param('person'),
         comment: req.param('comment'),
         created_at: new Date()
     } , function( error, docs) {
-        res.redirect('/blog/' + req.param('_id'))
+        res.redirect('/debate/' + req.param('_id'))
     });
 });
 
