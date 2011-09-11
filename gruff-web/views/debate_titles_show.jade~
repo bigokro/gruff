@@ -1,5 +1,5 @@
 h1= title
-a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
+a(href="/debate/title") View proposed titles
 div.debate
     div.created_at= debate.created_at
     div.body= debate.body
@@ -13,12 +13,12 @@ div.debate
       form( method="post", action="/debate/comment/new")
         input( type="hidden", name="_id", value=debate._id.toHexString())
         div
-          span Author:
+          span Author :
           input( type="text", name="person", id="addCommentPerson")
         div
-          span Comment:
+          span Comment :
           textarea( name="comment", rows=5, id="addCommentComment")
-        div#addCommentSubmit
+        div#editDebateSubmit
           input(type="submit", value="Send")
 
 include includes/footer

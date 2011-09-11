@@ -4,7 +4,7 @@ var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 var Debate = require('./models/debate').Debate;
-var ClassHelper = require('./lib/class_helpers').ClassHelper;
+var ClassHelper = require('./lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
 
@@ -26,8 +26,16 @@ DebateProvider.prototype.findAll = function(callback) {
 	if( error ) callback(error)
 	else {
             debate_collection.find().toArray(function(error, results) {
-		if( error ) callback(error)
-		else callback(null, results)
+		if( error ) {
+		    callback(error);
+		} else {
+		    // TODO: I'm ready for some coffee script or jquery here...
+		    var debates = [];
+                    for (var i=0; i < results.length; i++) {
+			debates[debates.length] = classHelper.augment(results[i], Debate);
+		    }
+		    callback(null, debates);
+		}
             });
 	}
     });

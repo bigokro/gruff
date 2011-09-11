@@ -74,7 +74,7 @@ app.get('/debate/:id', function(req, res) {
 });
 
 
-app.post('/debate/addComment', function(req, res) {
+app.post('/debate/comment/new', function(req, res) {
     debateProvider.addCommentToDebate(req.param('_id'), {
         person: req.param('person'),
         comment: req.param('comment'),
@@ -84,13 +84,24 @@ app.post('/debate/addComment', function(req, res) {
     });
 });
 
-app.post('/debate/addTitle', function(req, res) {
+app.get('/debate/:id/title', function(req, res) {
+    debateProvider.findById(req.params.id, function(error, debate) {
+        res.render('debate_titles_show.jade',
+		   { locals: {
+		       title: debate.bestTitle().title,
+		       debate:debate
+		   }
+		   });
+    });
+});
+
+app.post('/debate/title/new', function(req, res) {
     debateProvider.addTitleToDebate(req.param('_id'), {
         person: req.param('person'),
-        title: req.param('comment'),
+        title: req.param('title'),
         created_at: new Date()
     } , function( error, docs) {
-        res.redirect('/debate/' + req.param('_id'))
+        res.redirect('/debate/' + req.param('_id') + '/title')
     });
 });
 

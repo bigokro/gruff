@@ -18,5 +18,14 @@ Debate.prototype.bestTitle = function() {
     return this.titles[this.titles.length-1];
 };
 
+Debate.prototype.bestTitleText = function() {
+    var title = this.bestTitle();
+    if (title.title === undefined) {
+	return title;
+    } else {
+	return title.title;
+    }
+};
+
 
 exports.Debate = Debate;

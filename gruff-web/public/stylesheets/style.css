@@ -44,6 +44,10 @@ h1 {
 .debate .created_at {
   display: none;
 }
+.debate .body {
+  background-color: #ffa;
+  margin-top: 10px;
+}
 .debate input[type =text] {
   width: 490px;
   margin-left: 16px;
@@ -56,4 +60,35 @@ h1 {
 .debate textarea {
   width: 490px;
   height: 90px;
+}
+.comments {
+  margin-top: 20px;
+}
+.comments .comment {
+  margin-top: 10px;
+}
+.comments .comment .person {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: #eee;
+}
+.comments .comment .body {
+  background-color: #ffa;
+}
+.titles {
+  margin-top: 20px;
+}
+.titles .title {
+  margin-top: 10px;
+}
+.titles .title .person {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: #eee;
+}
+.titles .title .body {
+  background-color: #ffa;
+}
+.bottomForm {
+  margin-top: 20px;
 }

@@ -7,7 +7,7 @@ a(href="/debate/new") Start your own debate!
         div.created_at= debate.created_at
         div.type= debate.type
         div.title
-          a(href="/debate/"+debate._id.toHexString())!= debate.title
+          a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()
         div.body= debate.body
 
 include includes/footer
