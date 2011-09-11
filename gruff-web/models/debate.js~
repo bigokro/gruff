@@ -1,0 +1,10 @@
+Debate = function() {
+}
+
+Debate.prototype.DebateTypes = {
+    PROBLEM : "Problem",
+    ACTION : "Action",
+    EVIDENCE : "Evidence"
+}
+
+exports.Debate = Debate;

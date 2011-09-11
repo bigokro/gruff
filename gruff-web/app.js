@@ -4,6 +4,7 @@
 
 var express = require('express');
 var DebateProvider = require('./debateprovider-mongodb').DebateProvider;
+var Debate = require('./models/debate').Debate;
 
 
 var app = module.exports = express.createServer();
@@ -29,6 +30,7 @@ app.configure('production', function(){
 });
 
 var debateProvider = new DebateProvider('localhost', 27017);
+
 // Routes
 
 app.get('/', function(req, res){
@@ -44,7 +46,8 @@ app.get('/', function(req, res){
 
 app.get('/debate/new', function(req, res) {
     res.render('debate_new.jade', { locals: {
-        title: 'New Debate'
+        title: 'New Debate',
+        debate: new Debate()
     }
 				});
 });
@@ -52,7 +55,8 @@ app.get('/debate/new', function(req, res) {
 app.post('/debate/new', function(req, res){
     debateProvider.save({
         title: req.param('title'),
-        body: req.param('body')
+        body: req.param('body'),
+        type: req.param('type')
     }, function( error, docs) {
         res.redirect('/')
     });
@@ -62,7 +66,7 @@ app.get('/debate/:id', function(req, res) {
     debateProvider.findById(req.params.id, function(error, debate) {
         res.render('debate_show.jade',
 		   { locals: {
-		       title: debate.title,
+		       title: debate.bestTitle(),
 		       debate:debate
 		   }
 		   });
@@ -74,6 +78,16 @@ app.post('/debate/addComment', function(req, res) {
     debateProvider.addCommentToDebate(req.param('_id'), {
         person: req.param('person'),
         comment: req.param('comment'),
+        created_at: new Date()
+    } , function( error, docs) {
+        res.redirect('/debate/' + req.param('_id'))
+    });
+});
+
+app.post('/debate/addTitle', function(req, res) {
+    debateProvider.addTitleToDebate(req.param('_id'), {
+        person: req.param('person'),
+        title: req.param('comment'),
         created_at: new Date()
     } , function( error, docs) {
         res.redirect('/debate/' + req.param('_id'))

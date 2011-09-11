@@ -2,11 +2,20 @@ h1= title
 form( method="post")
     div
         div
-            span Title :
+            span Title:
             input(type="text", name="title", id="editDebateTitle")
         div
-            span Body :
+            span Body:
             textarea( name="body", rows=20, id="editDebateBody)
+        div
+            span What kind of debate is this?
+            select(name="type", id="editDebateType")
+                option(value=debate.DebateTypes.PROBLEM)
+                    | A problem to be solved, or a set of options to choose from
+                option(value=debate.DebateTypes.ACTION)
+                    | An action to be taken (or not), or a yes/no decision to be made
+                option(value=debate.DebateTypes.EVIDENCE)
+                    | A discussion on the truth behind a supposed fact
         dev#editDebateSubmit
             input(type="submit", value="Send")
 

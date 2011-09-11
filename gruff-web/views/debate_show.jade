@@ -8,7 +8,7 @@ div.debate
         div.person= comment.person
         div.comment= comment.comment
     div
-      form( method="post", action="/blog/addComment")
+      form( method="post", action="/debate/addComment")
         input( type="hidden", name="_id", value=debate._id.toHexString())
         div
           span Author :

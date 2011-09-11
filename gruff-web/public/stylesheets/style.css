@@ -23,9 +23,15 @@ h1 {
 }
 #debates .debate {
   margin: 20px;
+  border: 1px;
 }
 #debates .debate .created_at {
   display: none;
+}
+#debates .debate .type {
+  border: 1px;
+  font-weight: bold;
+  background-color: #aaa;
 }
 #debates .debate .title {
   font-weight: bold;

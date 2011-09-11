@@ -1,0 +1,6 @@
+DebateHelper = new function() {
+}
+
+
+
+exports.start = start;
