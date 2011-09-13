@@ -1,0 +1,21 @@
+div.answers
+  h2 Proposed Answers
+  - each answer in debate.answers
+    div.answer
+      div.title
+        a(href="/debate/" + debate.linkableId() + "/answer/" + answer.linkableId())= answer.bestTitleText()
+      div.body= answer.body
+  div.bottomForm
+    form(method="post", action="/debate/answer/new")
+      input( type="hidden", name="_id", value=debate.linkableId()
+      div
+        span Author:
+        input( type="text", name="person", id="addAnswerPerson")
+      div
+        span Answer Title:
+        input( type="text", name="title", id="addAnswerTitle")
+      div
+        span Answer Description:
+        textarea( name="body", rows=5, id="addAnswerBody")
+      div#addAnswerSubmit
+        input(type="submit", value="Send")

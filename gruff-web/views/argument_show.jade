@@ -1,0 +1,31 @@
+h1= debate.bestTitleText()
+h2= argument.bestTitleText()
+a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
+#main
+  div.debate
+    div.created_at= debate.created_at
+    div.body= debate.body
+    - if debate.answers !== undefined
+      mixin answers(debate)
+    - if debate.arguments !== undefined
+      mixin arguments(debate)
+    - if debate.type == debate.DebateTypes.FACT
+      mixin facts(debate)
+    div.comments
+      h2 Comments
+      - each comment in debate.comments
+        div.comment
+          div.person= comment.person
+          div.body= comment.comment
+    div.bottomForm
+      form( method="post", action="/debate/comment/new")
+        input( type="hidden", name="_id", value=debate.linkableId()
+        div
+          span Author:
+          input( type="text", name="person", id="addCommentPerson")
+        div
+          span Comment:
+          textarea( name="comment", rows=5, id="addCommentComment")
+        div#addCommentSubmit
+          input(type="submit", value="Send")
+

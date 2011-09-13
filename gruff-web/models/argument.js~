@@ -7,7 +7,6 @@
 
 var Identifible = require('./identifiable').Identifiable;
 var Describable = require('./describable').Describable;
-var Argument = require('./argument').Argument;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
@@ -21,16 +20,12 @@ Debate.prototype.DebateTypes = {
 };
 
 Debate.prototype.argument = function(argid) {
-    for (argument in this.arguments) {
-	if (argument.linkableId() == argid) {
-	    return argument;
+    for (var i=0; i < this.arguments.length; i++) {
+	if (this.arguments[i].linkableId() == argid) {
+	    return this.arguments[i];
 	}
     }
     return null;
-};
-
-Debate.prototype.augment = function(argument) {
-    return classHelper.augment(argument, Argument);
 };
 
 classHelper.augmentClass(Debate, Identifiable);

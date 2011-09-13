@@ -1,0 +1,37 @@
+div.arguments
+  div.for
+    h2 Arguments in Favor
+    - each argument in debate.arguments
+    // TODO: learn how to do collection selects with this language
+      - if argument.for
+        div.argument
+          div.title
+            a(href="/debate/" + debate.linkableId() + "/argument/" + argument.linkableId())= argument.bestTitleText()
+          div.body= argument.body
+  div.against
+    h2 Arguments Against
+    - each argument in debate.arguments
+    // TODO: learn how to do collection selects with this language
+      - if !argument.for
+        div.argument
+          div.title
+            a(href="/debate/" + debate.linkableId() + "/argument/" + argument.linkableId())= argument.bestTitleText()
+          div.body= argument.body
+  div.bottomForm
+    form(method="post", action="/debate/argument/new")
+      input( type="hidden", name="_id", value=debate.linkableId()
+      div
+        span Author:
+        input( type="text", name="person", id="addArgumentPerson")
+      div
+        span This argument is:
+        input( type="radio", name="for", value="true" id="addArgumentFor" selected) in favor of this answer
+        input( type="radio", name="for", value="false" id="addArgumentFor") against this answer
+      div
+        span Argument Title:
+        input( type="text", name="title", id="addArgumentTitle")
+      div
+        span Argument Description:
+        textarea( name="body", rows=5, id="addArgumentBody")
+      div#addArgumentSubmit
+        input(type="submit", value="Send")

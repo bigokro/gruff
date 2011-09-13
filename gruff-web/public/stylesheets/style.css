@@ -15,30 +15,33 @@ h1 {
   text-shadow: 1px 2px 2px #ddd;
   font-size: 60px;
 }
-#debates {
+.error {
+  color: #a33;
+}
+#main {
   text-align: left;
   margin-left: auto;
   margin-right: auto;
-  width: 320px;
+  width: 600px;
 }
-#debates .debate {
+#main .debate {
   margin: 20px;
   border: 1px;
 }
-#debates .debate .created_at {
+#main .debate .created_at {
   display: none;
 }
-#debates .debate .type {
+#main .debate .type {
   border: 1px;
   font-weight: bold;
   background-color: #aaa;
 }
-#debates .debate .title {
+#main .debate .title {
   font-weight: bold;
   text-decoration: underline;
   background-color: #eee;
 }
-#debates .debate .body {
+#main .debate .body {
   background-color: #ffa;
 }
 .debate .created_at {
@@ -87,6 +90,20 @@ h1 {
   background-color: #eee;
 }
 .titles .title .body {
+  background-color: #ffa;
+}
+.answers {
+  margin-top: 20px;
+}
+.answers .answer {
+  margin-top: 10px;
+}
+.answers .answer .answer {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: #eee;
+}
+.answers .answer .body {
   background-color: #ffa;
 }
 .bottomForm {

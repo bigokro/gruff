@@ -66,7 +66,7 @@ app.get('/debate/:id', function(req, res) {
     debateProvider.findById(req.params.id, function(error, debate) {
         res.render('debate_show.jade',
 		   { locals: {
-		       title: debate.bestTitle(),
+		       title: debate.bestTitleText(),
 		       debate:debate
 		   }
 		   });
@@ -88,7 +88,7 @@ app.get('/debate/:id/title', function(req, res) {
     debateProvider.findById(req.params.id, function(error, debate) {
         res.render('debate_titles_show.jade',
 		   { locals: {
-		       title: debate.bestTitle().title,
+		       title: debate.bestTitleText(),
 		       debate:debate
 		   }
 		   });
@@ -104,6 +104,35 @@ app.post('/debate/title/new', function(req, res) {
         res.redirect('/debate/' + req.param('_id') + '/title')
     });
 });
+
+
+app.post('/debate/argument/new', function(req, res) {
+    debateProvider.addArgumentToDebate(req.param('_id'), {
+        person: req.param('person'),
+        for: req.param('for'),
+        titles: [{
+            person: req.param('person'),
+	    title: req.param('title'),
+            created_at: new Date()
+	}],
+        created_at: new Date()
+    } , function( error, docs) {
+        res.redirect('/debate/' + req.param('_id'))
+    });
+});
+
+app.get('/debate/:id/argument/:argid', function(req, res) {
+    debateProvider.findById(req.params.id, function(error, debate) {
+        res.render('argument_show.jade',
+		   { locals: {
+		       debate:debate,
+		       argument:debate.argument(req.params.argid)
+		   }
+		   });
+    });
+});
+
+
 
 app.listen(80);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

@@ -4,6 +4,7 @@ var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 var Debate = require('./models/debate').Debate;
+var Argument = require('./models/argument').Argument;
 var ClassHelper = require('./lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
@@ -29,10 +30,11 @@ DebateProvider.prototype.findAll = function(callback) {
 		if( error ) {
 		    callback(error);
 		} else {
-		    // TODO: I'm ready for some coffee script or jquery here...
 		    var debates = [];
                     for (var i=0; i < results.length; i++) {
-			debates[debates.length] = classHelper.augment(results[i], Debate);
+			// PERF: this is a "deep augmentation". 
+			// Maybe we only need to augment the Debate itself
+			debates[debates.length] = augmentDebate(results[i]);
 		    }
 		    callback(null, debates);
 		}
@@ -48,7 +50,7 @@ DebateProvider.prototype.findById = function(id, callback) {
 	else {
             debate_collection.findOne({_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(id)}, function(error, result) {
 		if( error ) callback(error)
-		else callback(null, classHelper.augment(result, Debate))
+		else callback(null, augmentDebate(result));
 	    });
 	}
     });
@@ -74,6 +76,8 @@ DebateProvider.prototype.save = function(debates, callback) {
 		    };
 		    debate.title = null;
 		}
+		if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answers === undefined ) debate.answers = [];
+		if( debate.type == Debate.prototype.DebateTypes.ANSWER && debate.arguments === undefined ) debate.arguments = [];
 		if( debate.comments === undefined ) debate.comments = [];
 		for(var j =0;j< debate.comments.length; j++) {
 		    debate.comments[j].created_at = new Date();
@@ -116,5 +120,32 @@ DebateProvider.prototype.addTitleToDebate = function(debateId, title, callback) 
 	}
     });
 };
+
+DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, callback) {
+    this.getCollection(function(error, debate_collection) {
+	if( error ) callback( error );
+	else {
+	    debate_collection.update(
+		{_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
+		{"$push": {arguments: argument}},
+		function(error, debate){
+		    if( error ) callback(error);
+		    else callback(null, debate)
+		});
+	}
+    });
+};
+
+
+function augmentDebate(result) {
+    var debate = classHelper.augment(result, Debate);
+    if (debate.arguments) {
+	for (argument in debate.arguments) {
+	    classHelper.augment(argument, Argument);
+	}
+    }
+    return debate;
+}
+
 
 exports.DebateProvider = DebateProvider;

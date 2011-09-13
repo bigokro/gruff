@@ -1,7 +1,7 @@
 h1= title
 h2 Recent Debates
 a(href="/debate/new") Start your own debate!
-#debates
+#main
     - each debate in debates
       div.debate
         div.created_at= debate.created_at
@@ -9,5 +9,3 @@ a(href="/debate/new") Start your own debate!
         div.title
           a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()
         div.body= debate.body
-
-include includes/footer

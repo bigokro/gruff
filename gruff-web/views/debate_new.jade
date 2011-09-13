@@ -10,14 +10,12 @@ form( method="post")
         div
             span What kind of debate is this?
             select(name="type", id="editDebateType")
-                option(value=debate.DebateTypes.PROBLEM)
+                option(value=debate.DebateTypes.DEBATE)
                     | A problem to be solved, or a set of options to choose from
-                option(value=debate.DebateTypes.ACTION)
+                option(value=debate.DebateTypes.ANSWER)
                     | An action to be taken (or not), or a yes/no decision to be made
-                option(value=debate.DebateTypes.EVIDENCE)
+                option(value=debate.DebateTypes.FACT)
                     | A discussion on the truth behind a supposed fact
         dev#editDebateSubmit
             input(type="submit", value="Send")
 
-
-include includes/footer

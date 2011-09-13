@@ -1,5 +1,6 @@
 h1= title
-div.debate
+#main
+  div.debate
     div.created_at= debate.created_at
     div.body= debate.body
     div.titles
@@ -11,14 +12,13 @@ div.debate
           div.body= title.title
     div.bottomForm
       form( method="post", action="/debate/title/new")
-        input( type="hidden", name="_id", value=debate._id.toHexString())
+        input( type="hidden", name="_id", value=debate.linkableId()
         div
           span Author:
           input( type="text", name="person", id="addTitlePerson")
         div
           span Title:
-          textarea( name="title", rows=5, id="addTitleTitle")
+          input( type="text", name="title", id="addTitleTitle")
         div#addTitleSubmit
           input(type="submit", value="Send")
 
-include includes/footer
