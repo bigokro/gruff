@@ -76,9 +76,9 @@ app.get('/debate/:id', function(req, res) {
 
 app.post('/debate/comment/new', function(req, res) {
     debateProvider.addCommentToDebate(req.param('_id'), {
-        person: req.param('person'),
+        user: req.param('user'),
         comment: req.param('comment'),
-        created_at: new Date()
+        date: new Date()
     } , function( error, docs) {
         res.redirect('/debate/' + req.param('_id'))
     });
@@ -97,9 +97,9 @@ app.get('/debate/:id/title', function(req, res) {
 
 app.post('/debate/title/new', function(req, res) {
     debateProvider.addTitleToDebate(req.param('_id'), {
-        person: req.param('person'),
+        user: req.param('user'),
         title: req.param('title'),
-        created_at: new Date()
+        date: new Date()
     } , function( error, docs) {
         res.redirect('/debate/' + req.param('_id') + '/title')
     });
@@ -108,13 +108,13 @@ app.post('/debate/title/new', function(req, res) {
 
 app.post('/debate/answer/new', function(req, res) {
     debateProvider.addAnswerToDebate(req.param('_id'), {
-        person: req.param('person'),
+        user: req.param('user'),
         titles: [{
-            person: req.param('person'),
+            user: req.param('user'),
             title: req.param('title'),
-            created_at: new Date()
+            date: new Date()
         }],
-        created_at: new Date()
+        date: new Date()
     }, function( error, docs) {
         res.redirect('/debate/' + req.param('_id'))
     });
@@ -135,14 +135,14 @@ app.get('/debate/:id/answer/:ansid', function(req, res) {
 
 app.post('/debate/argument/new', function(req, res) {
     debateProvider.addArgumentToDebate(req.param('_id'), {
-        person: req.param('person'),
+        user: req.param('user'),
         for: req.param('for'),
         titles: [{
-            person: req.param('person'),
+            user: req.param('user'),
 	    title: req.param('title'),
-            created_at: new Date()
+            date: new Date()
 	}],
-        created_at: new Date()
+        date: new Date()
     } , function( error, docs) {
         res.redirect('/debate/' + req.param('_id'))
     });

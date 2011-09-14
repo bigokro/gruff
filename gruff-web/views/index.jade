@@ -4,7 +4,7 @@ a(href="/debate/new") Start your own debate!
 #main
     - each debate in debates
       div.debate
-        div.created_at= debate.created_at
+        div.date= debate.date
         div.type= debate.type
         div.title
           a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()

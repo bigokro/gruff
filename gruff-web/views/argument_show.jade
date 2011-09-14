@@ -3,7 +3,7 @@ h2= argument.bestTitleText()
 a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
 #main
   div.debate
-    div.created_at= debate.created_at
+    div.date= debate.date
     div.body= debate.body
     - if debate.answers !== undefined
       mixin answers(debate)
@@ -15,14 +15,14 @@ a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
       h2 Comments
       - each comment in debate.comments
         div.comment
-          div.person= comment.person
+          div.user= comment.user
           div.body= comment.comment
     div.bottomForm
       form( method="post", action="/debate/comment/new")
         input( type="hidden", name="_id", value=debate.linkableId()
         div
           span Author:
-          input( type="text", name="person", id="addCommentPerson")
+          input( type="text", name="user", id="addCommentUser")
         div
           span Comment:
           textarea( name="comment", rows=5, id="addCommentComment")

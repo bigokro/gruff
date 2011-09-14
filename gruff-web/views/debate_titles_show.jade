@@ -1,21 +1,21 @@
 h1= title
 #main
   div.debate
-    div.created_at= debate.created_at
+    div.date= debate.date
     div.body= debate.body
     div.titles
       h2 Titles
       - each title in debate.titles
         div.title
-          div.person= title.person
-          div.date= title.created_at
+          div.user= title.user
+          div.date= title.date
           div.body= title.title
     div.bottomForm
       form( method="post", action="/debate/title/new")
         input( type="hidden", name="_id", value=debate.linkableId()
         div
           span Author:
-          input( type="text", name="person", id="addTitlePerson")
+          input( type="text", name="user", id="addTitleUser")
         div
           span Title:
           input( type="text", name="title", id="addTitleTitle")

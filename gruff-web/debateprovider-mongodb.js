@@ -115,15 +115,15 @@ DebateProvider.prototype.save = function(debates, callback) {
             
             for( var i =0;i< debates.length;i++ ) {
 		        debate = debates[i];
-		        debate.created_at = new Date();
+		        debate.date = new Date();
 		        if (debate.title) {
 		            if (debate.titles === undefined) {
 			            debate.titles = [];
 		            }
 		            debate.titles[debate.titles.length] = { 
-                        person: debate.person,
+                        user: debate.user,
 			            title: debate.title,
-			            created_at: new Date()
+			            date: new Date()
 		            };
 		            debate.title = null;
 		        }
@@ -134,7 +134,7 @@ DebateProvider.prototype.save = function(debates, callback) {
 		        if( debate.type == Debate.prototype.DebateTypes.ANSWER && debate.arguments === undefined ) debate.arguments = [];
 		        if( debate.comments === undefined ) debate.comments = [];
 		        for(var j =0;j< debate.comments.length; j++) {
-		            debate.comments[j].created_at = new Date();
+		            debate.comments[j].date = new Date();
 		        }
             }
             
