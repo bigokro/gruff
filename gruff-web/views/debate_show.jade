@@ -1,5 +1,5 @@
 //include mixins/debate_answers
-//include mixins/debate_arguments
+include mixins/debate_arguments
 //include mixins/debate_fact
 
 h1= debate.type
@@ -35,49 +35,7 @@ a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
         else
           div.none There are currently no proposed answers.
     if debate.type == debate.DebateTypes.ANSWER
-      div.arguments
-        div.for
-          h2 Arguments in Favor
-          if debate.arguments
-            - each argument in debate.arguments
-              // TODO: learn how to do collection selects with this language
-              if argument.for == "true"
-                - debate.augment(argument)
-                div.argument
-                  div.title
-                    a(href="/debate/" + debate.linkableId() + "/argument/" + argument.id + "/" + argument._id + "/" + argument.for)= argument.bestTitleText()
-              div.body= argument.body
-        div.against
-          h2 Arguments Against
-          if debate.arguments
-            - each argument in debate.arguments
-              // TODO: learn how to do collection selects with this language
-              if !(argument.for == "true")
-                - debate.augment(argument)
-                div.argument
-                  div.title
-                    a(href="/debate/" + debate.linkableId() + "/argument/" + argument.id + "/" + argument._id)= argument.bestTitleText()
-                  div.body= argument.body
-        div.bottomForm
-          form(method="post", action="/debate/argument/new")
-            input( type="hidden", name="_id", value=debate.linkableId())
-            div
-              span Author:
-              input( type="text", name="person", id="addArgumentPerson")
-            div
-              span This argument is:
-              input( type="radio", name="for", value="true", id="addArgumentFor", checked)
-              span in favor of this answer
-              input( type="radio", name="for", value="false", id="addArgumentFor")
-              span against this answer
-            div
-              span Argument Title:
-              input( type="text", name="title", id="addArgumentTitle")
-            div
-              span Argument Description:
-              textarea( name="body", rows=5, id="addArgumentBody")
-            div#addArgumentSubmit
-              input(type="submit", value="Send")
+        mixin arguments(debate)
       //if debate.type == debate.DebateTypes.FACT
         //mixin facts(debate)
     div.comments

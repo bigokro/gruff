@@ -106,6 +106,33 @@ app.post('/debate/title/new', function(req, res) {
 });
 
 
+app.post('/debate/answer/new', function(req, res) {
+    debateProvider.addAnswerToDebate(req.param('_id'), {
+        person: req.param('person'),
+        titles: [{
+            person: req.param('person'),
+            title: req.param('title'),
+            created_at: new Date()
+        }],
+        created_at: new Date()
+    }, function( error, docs) {
+        res.redirect('/debate/' + req.param('_id'))
+    });
+});
+
+app.get('/debate/:id/answer/:ansid', function(req, res) {
+    debateProvider.findById(req.params.id, function(error, parent) {
+        debateProvider.findById(req.params.ansid, function(error, debate) {
+            res.render('answer_show.jade',
+                       { locals: {
+                           parent:parent,
+                           debate:debate
+		               }
+		               });
+        });
+    });
+});
+
 app.post('/debate/argument/new', function(req, res) {
     debateProvider.addArgumentToDebate(req.param('_id'), {
         person: req.param('person'),

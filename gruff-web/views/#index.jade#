@@ -9,4 +9,3 @@ a(href="/debate/new") Start your own debate!
         div.title
           a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()
         div.body= debate.body
-
