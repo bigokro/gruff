@@ -1,11 +1,14 @@
 body
-  font-family "Helvetica Neue", "Lucida Grande", "Arial"
+  font-family "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial
+  /*font-family "Helvetica Neue", "Lucida Grande", "Arial"*/
   font-size 13px
   text-align center
   text-stroke 1px rgba(255, 255, 255, 0.1)
   color #555
 h1, h2
   margin 0
+  font-variant small-caps
+  letter-spacing -1px
   font-size 22px
   color #343434
 h1
@@ -18,21 +21,31 @@ h1
   margin-left auto
   margin-right auto
   width 600px
-  .debate
-    margin 20px
-    border 1px
-    .date
-        display none
-    .type
-        border 1px
-        font-weight bold
-        background-color #aaa
-    .title
-        font-weight bold
-        text-decoration underline
-        background-color #eee
-    .body
-        background-color #ffa
+  .debates
+      .debate
+        margin 20px
+        border-style dashed
+        border-bottom-style none
+        border-width 2px
+        border-color #A3181E
+        background-color #DDD
+        .date
+            display none
+        .type
+            display none
+        .title a
+            font-family "Courier New", Courier, monospace
+            background url(http://www.csszengarden.com/145/h3bg.gif) no-repeat 6px 0
+            padding-left 35px
+            color #A3181E
+            font-size 20px
+            letter-spacing -1px
+            font-weight bold
+            /*padding 10px 0px 0px 20px*/
+        .body
+            font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
+            padding 5px
+            background-color #fff
 .debate
   .date
     display none

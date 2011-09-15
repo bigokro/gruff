@@ -139,9 +139,9 @@ app.post('/debate/argument/new', function(req, res) {
         for: req.param('for'),
         titles: [{
             user: req.param('user'),
-	    title: req.param('title'),
+	        title: req.param('title'),
             date: new Date()
-	}],
+	    }],
         date: new Date()
     } , function( error, docs) {
         res.redirect('/debate/' + req.param('_id'))

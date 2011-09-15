@@ -1,5 +1,6 @@
 body {
-  font-family: "Helvetica Neue", "Lucida Grande", "Arial";
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial;
+/*font-family "Helvetica Neue", "Lucida Grande", "Arial"*/
   font-size: 13px;
   text-align: center;
   text-stroke: 1px rgba(255,255,255,0.10);
@@ -8,6 +9,8 @@ body {
 h1,
 h2 {
   margin: 0;
+  font-variant: small-caps;
+  letter-spacing: -1px;
   font-size: 22px;
   color: #343434;
 }
@@ -24,27 +27,36 @@ h1 {
   margin-right: auto;
   width: 600px;
 }
-#main .debate {
+#main .debates .debate {
   margin: 20px;
-  border: 1px;
+  border-style: dashed;
+  border-bottom-style: none;
+  border-width: 2px;
+  border-color: #a3181e;
+  background-color: #ddd;
 }
-#main .debate .created_at {
+#main .debates .debate .date {
   display: none;
 }
-#main .debate .type {
-  border: 1px;
+#main .debates .debate .type {
+  display: none;
+}
+#main .debates .debate .title a {
+  font-family: "Courier New", Courier, monospace;
+  background: url("http://www.csszengarden.com/145/h3bg.gif") no-repeat 6px 0;
+  padding-left: 35px;
+  color: #a3181e;
+  font-size: 20px;
+  letter-spacing: -1px;
   font-weight: bold;
-  background-color: #aaa;
+/*padding 10px 0px 0px 20px*/
 }
-#main .debate .title {
-  font-weight: bold;
-  text-decoration: underline;
-  background-color: #eee;
+#main .debates .debate .body {
+  font-family: "Book Antiqua", Georgia, "MS Sans Serif", Geneva, sans-serif;
+  padding: 5px;
+  background-color: #fff;
 }
-#main .debate .body {
-  background-color: #ffa;
-}
-.debate .created_at {
+.debate .date {
   display: none;
 }
 .debate .body {
@@ -70,7 +82,7 @@ h1 {
 .comments .comment {
   margin-top: 10px;
 }
-.comments .comment .person {
+.comments .comment .user {
   font-weight: bold;
   text-decoration: underline;
   background-color: #eee;
@@ -84,7 +96,7 @@ h1 {
 .titles .title {
   margin-top: 10px;
 }
-.titles .title .person {
+.titles .title .user {
   font-weight: bold;
   text-decoration: underline;
   background-color: #eee;

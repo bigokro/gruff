@@ -2,11 +2,12 @@ h1= title
 h2 Recent Debates
 a(href="/debate/new") Start your own debate!
 #main
-    - each debate in debates
-      div.debate
-        div.date= debate.date
-        div.type= debate.type
-        div.title
-          a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()
-        div.body= debate.body
+    div.debates
+        - each debate in debates
+          div.debate
+            div.date= debate.date
+            div.type= debate.type
+            div.title
+              a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()
+            div.body= debate.body
 
