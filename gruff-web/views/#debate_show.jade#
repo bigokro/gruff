@@ -2,11 +2,8 @@
 include mixins/debate_arguments
 //include mixins/debate_fact
 
-if typeof(parent) == "undefined"
-    h1= debate.bestTitleText()
-else
-    h1= parent.bestTitleText()
-    h2= debate.bestTitleText()
+if 
+h1= debate.bestTitleText()
 a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
 #main
   div.debate

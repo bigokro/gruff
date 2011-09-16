@@ -17,29 +17,39 @@ DebateProvider = function(host, port) {
 
 DebateProvider.prototype.getCollection= function(callback) {
     this.db.collection('debates', function(error, debate_collection) {
-	if( error ) callback(error);
-	else callback(null, debate_collection);
+	      if( error ) callback(error);
+	      else callback(null, debate_collection);
     });
 };
 
 DebateProvider.prototype.findAll = function(callback) {
     this.getCollection(function(error, debate_collection) {
-	if( error ) callback(error)
-	else {
+	      if( error ) callback(error)
+	      else {
             debate_collection.find().toArray(function(error, results) {
-		if( error ) {
-		    callback(error);
-		} else {
-		    var debates = [];
-                    for (var i=0; i < results.length; i++) {
-			// PERF: this is a "deep augmentation". 
-			// Maybe we only need to augment the Debate itself
-			debates[debates.length] = augmentDebate(results[i]);
-		    }
-		    callback(null, debates);
-		}
+		            if( error ) {
+		                callback(error);
+		            } else {
+		                callback(null, augmentDebates(results));
+		            }
             });
-	}
+	      }
+    });
+};
+
+
+DebateProvider.prototype.findRecent = function(limit, skip, callback) {
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback(error)
+	      else {
+            debate_collection.find({parentId: null}).sort({date: -1}).skip(skip).limit(limit).toArray(function(error, results) {
+		            if( error ) {
+		                callback(error);
+		            } else {
+		                callback(null, augmentDebates(results));
+		            }
+            });
+	      }
     });
 };
 
@@ -52,15 +62,15 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
     var provider = this;
     this.getCollection(function(error, debate_collection) {
 	    if( error ) callback(error)
-	    else {
+	      else {
             debate_collection.findOne({_id: objId}, function(error, result) {
-		        if( error ) callback(error)
-		        else {
+		            if( error ) callback(error)
+		            else {
                     if (result.answerIds !== undefined)  {
                         // Pre-load any related answers
                         provider.findAllByObjID(result.answerIds, function(error, answers) {
-		                    if( error ) callback(error)
-		                    else {
+		                        if( error ) callback(error)
+		                        else {
                                 result.answers = answers;
                                 callback(null, augmentDebate(result));
                             }
@@ -69,8 +79,8 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
                         callback(null, augmentDebate(result));
                     }
                 }
-	        });
-	    }
+	          });
+	      }
     });
 };
 
@@ -84,24 +94,18 @@ DebateProvider.prototype.findAllById = function(ids, callback) {
 
 DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
     this.getCollection(function(error, debate_collection) {
-	    if( error ) callback(error)
-	    else {
+	      if( error ) callback(error)
+	      else {
             debate_collection.find(
                 {_id: {$in : objIds} }
             ).toArray(function(error, results) {
-		        if( error ) {
-		            callback(error);
-		        } else {
-		            var debates = [];
-                    for (var i=0; i < results.length; i++) {
-			            // PERF: this is a "deep augmentation". 
-			            // Maybe we only need to augment the Debate itself
-			            debates[debates.length] = augmentDebate(results[i]);
+		            if( error ) {
+		                callback(error);
+		            } else {
+		                callback(null, augmentDebates(results));
 		            }
-		            callback(null, debates);
-		        }
             });
-	    }
+	      }
     });
 };
 
@@ -177,24 +181,24 @@ DebateProvider.prototype.addTitleToDebate = function(debateId, title, callback) 
 
 DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback) {
     var provider = this;
-    this.save(answer, function(error, answers) {
-        var answerId = answers[0]._id;
-        provider.getCollection(function(error, debate_collection) {
-	        if( error ) callback( error );
-	        else {
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback( error );
+	      else {
+            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            answer.parentId = parentId;
+            provider.save(answer, function(error, answers) {
                 // Add the answer as a new debate
-                var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
-                answer.parentId = parentId;
-	            debate_collection.update(
-		            {_id: parentId},
-		            {"$push": {answerIds: answerId}},
-		            function(error, debate){
-		                if( error ) callback(error);
-		                else callback(null, debate)
-		            });
-            }
-        });
-	});
+                var answerId = answers[0]._id;
+	              debate_collection.update(
+		                {_id: parentId},
+		                {"$push": {answerIds: answerId}},
+		                function(error, debate){
+		                    if( error ) callback(error);
+		                    else callback(null, debate)
+		                });
+            });
+        }
+	  });
 };
 
 DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, callback) {
@@ -216,11 +220,21 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, call
 function augmentDebate(result) {
     var debate = classHelper.augment(result, Debate);
     if (debate.arguments) {
-	for (argument in debate.arguments) {
-	    classHelper.augment(argument, Argument);
-	}
+	      for (argument in debate.arguments) {
+	          classHelper.augment(argument, Argument);
+	      }
     }
     return debate;
+}
+
+function augmentDebates(results) {
+    var debates = [];
+    for (var i=0; i < results.length; i++) {
+		    // PERF: this is a "deep augmentation". 
+		    // Maybe we only need to augment the Debate itself
+		    debates[i] = augmentDebate(results[i]);
+	  }
+    return results;
 }
 
 

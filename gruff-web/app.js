@@ -34,7 +34,7 @@ var debateProvider = new DebateProvider('localhost', 27017);
 // Routes
 
 app.get('/', function(req, res){
-    debateProvider.findAll( function(error,docs){
+    debateProvider.findRecent(10, 0, function(error,docs){
         res.render('index.jade', { 
             locals: {
                 title: 'Gruff',
@@ -66,7 +66,7 @@ app.get('/debate/:id', function(req, res) {
     debateProvider.findById(req.params.id, function(error, debate) {
         res.render('debate_show.jade',
 		   { locals: {
-		       title: debate.bestTitleText(),
+               title:debate.bestTitleText(),
 		       debate:debate
 		   }
 		   });
@@ -88,7 +88,7 @@ app.get('/debate/:id/title', function(req, res) {
     debateProvider.findById(req.params.id, function(error, debate) {
         res.render('debate_titles_show.jade',
 		   { locals: {
-		       title: debate.bestTitleText(),
+               title:debate.bestTitleText(),
 		       debate:debate
 		   }
 		   });
@@ -109,6 +109,7 @@ app.post('/debate/title/new', function(req, res) {
 app.post('/debate/answer/new', function(req, res) {
     debateProvider.addAnswerToDebate(req.param('_id'), {
         user: req.param('user'),
+        body: req.param('body'),
         titles: [{
             user: req.param('user'),
             title: req.param('title'),
@@ -123,8 +124,9 @@ app.post('/debate/answer/new', function(req, res) {
 app.get('/debate/:id/answer/:ansid', function(req, res) {
     debateProvider.findById(req.params.id, function(error, parent) {
         debateProvider.findById(req.params.ansid, function(error, debate) {
-            res.render('answer_show.jade',
+            res.render('debate_show.jade',
                        { locals: {
+		                   title:parent.bestTitleText() + " - " + debate.bestTitleText(),
                            parent:parent,
                            debate:debate
 		               }
@@ -152,6 +154,7 @@ app.get('/debate/:id/argument/:argid', function(req, res) {
     debateProvider.findById(req.params.id, function(error, debate) {
         res.render('argument_show.jade',
 		   { locals: {
+		       title:debate.bestTitleText() + " - " + argument.bestTitleText(),
 		       debate:debate,
 		       argument:debate.argument(req.params.argid)
 		   }
