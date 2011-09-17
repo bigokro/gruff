@@ -6,7 +6,7 @@ var express = require('express');
 var DebateProvider = require('./debateprovider-mongodb').DebateProvider;
 var Debate = require('./models/debate').Debate;
 
-
+var port = process.env.NODE_ENV == 'production' ? 80 : 7080;
 var app = module.exports = express.createServer();
 
 // Configuration
@@ -164,5 +164,5 @@ app.get('/debate/:id/argument/:argid', function(req, res) {
 
 
 
-app.listen(80);
+app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
