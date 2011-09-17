@@ -12,7 +12,7 @@ h1= title
           div.body= title.title
     div.bottomForm
       form( method="post", action="/debate/title/new")
-        input( type="hidden", name="_id", value=debate.linkableId()
+        input( type="hidden", name="_id", value=debate.linkableId())
         div
           span Author:
           input( type="text", name="user", id="addTitleUser")

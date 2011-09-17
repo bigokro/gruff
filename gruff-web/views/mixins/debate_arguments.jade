@@ -22,23 +22,3 @@ mixin arguments(debate)
                   div.title
                     a(href="/debate/" + debate.linkableId() + "/argument/" + argument.id + "/" + argument._id)= argument.bestTitleText()
                   div.body= argument.body
-        div.bottomForm
-          form(method="post", action="/debate/argument/new")
-            input( type="hidden", name="_id", value=debate.linkableId())
-            div
-              span Author:
-              input( type="text", name="user", id="addArgumentUser")
-            div
-              span This argument is:
-              input( type="radio", name="for", value="true", id="addArgumentFor", checked)
-              span in favor of this answer
-              input( type="radio", name="for", value="false", id="addArgumentFor")
-              span against this answer
-            div
-              span Argument Title:
-              input( type="text", name="title", id="addArgumentTitle")
-            div
-              span Argument Description:
-              textarea( name="body", rows=5, id="addArgumentBody")
-            div#addArgumentSubmit
-              input(type="submit", value="Send")

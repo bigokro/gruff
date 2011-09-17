@@ -112,70 +112,70 @@ DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
 
 DebateProvider.prototype.save = function(debates, callback) {
     this.getCollection(function(error, debate_collection) {
-	    if( error ) callback(error)
-	    else {
+	      if( error ) callback(error)
+	      else {
             if( typeof(debates.length)=="undefined")
-		        debates = [debates];
+		            debates = [debates];
             
             for( var i =0;i< debates.length;i++ ) {
-		        debate = debates[i];
-		        debate.date = new Date();
-		        if (debate.title) {
-		            if (debate.titles === undefined) {
-			            debate.titles = [];
-		            }
-		            debate.titles[debate.titles.length] = { 
+		            debate = debates[i];
+		            debate.date = new Date();
+		            if (debate.title) {
+		                if (debate.titles === undefined) {
+			                  debate.titles = [];
+		                }
+		                debate.titles[debate.titles.length] = { 
                         user: debate.user,
-			            title: debate.title,
-			            date: new Date()
-		            };
-		            debate.title = null;
-		        }
-		        if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answers === undefined ) {
+			                  title: debate.title,
+			                  date: new Date()
+		                };
+		                debate.title = null;
+		            }
+		            if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answers === undefined ) {
                     debate.answers = [];
                     debate.answerIds = [];
                 }
-		        if( debate.type == Debate.prototype.DebateTypes.ANSWER && debate.arguments === undefined ) debate.arguments = [];
-		        if( debate.comments === undefined ) debate.comments = [];
-		        for(var j =0;j< debate.comments.length; j++) {
-		            debate.comments[j].date = new Date();
-		        }
+		            if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.arguments === undefined ) debate.arguments = [];
+		            if( debate.comments === undefined ) debate.comments = [];
+		            for(var j =0;j< debate.comments.length; j++) {
+		                debate.comments[j].date = new Date();
+		            }
             }
             
             debate_collection.insert(debates, function() {
-		        callback(null, debates);
+		            callback(null, debates);
             });
-	    }
+	      }
     });
 };
 
 DebateProvider.prototype.addCommentToDebate = function(debateId, comment, callback) {
     this.getCollection(function(error, debate_collection) {
-	if( error ) callback( error );
-	else {
-	    debate_collection.update(
-		{_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
-		{"$push": {comments: comment}},
-		function(error, debate){
-		    if( error ) callback(error);
-		    else callback(null, debate)
-		});
-	}
+	      if( error ) callback( error );
+	      else {
+	          debate_collection.update(
+		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
+		            {"$push": {comments: comment}},
+		            function(error, debate){
+		                if( error ) callback(error);
+		                else callback(null, debate)
+		            });
+	      }
     });
 };
 
 DebateProvider.prototype.addTitleToDebate = function(debateId, title, callback) {
     this.getCollection(function(error, debate_collection) {
-	if( error ) callback( error );
-	else {
-	    debate_collection.update(
-		{_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
-		{"$push": {titles: title}},
-		function(error, debate){
-		    if( error ) callback(error);
-		    else callback(null, debate)
-		});
-	}
+	      if( error ) callback( error );
+	      else {
+	          debate_collection.update(
+		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
+		            {"$push": {titles: title}},
+		            function(error, debate){
+		                if( error ) callback(error);
+		                else callback(null, debate)
+		            });
+	      }
     });
 };
 
