@@ -2,12 +2,12 @@
  * Module dependencies.
  */
 
-var express = require('express');
-var DebateProvider = require('./debateprovider-mongodb').DebateProvider;
-var Debate = require('./models/debate').Debate;
-
-var port = process.env.NODE_ENV == 'production' ? 80 : 7080;
-var app = module.exports = express.createServer();
+var express = require('express')
+  , DebateProvider = require('./debateprovider-mongodb').DebateProvider
+  , Debate = require('./models/debate').Debate
+  , app = module.exports = express.createServer()
+  , port = process.env.NODE_ENV == 'production' ? 80 : 7080
+  , routes = require('./routes.js');
 
 // Configuration
 
@@ -29,140 +29,22 @@ app.configure('production', function(){
     app.use(express.errorHandler()); 
 });
 
-var debateProvider = new DebateProvider('localhost', 27017);
-
 // Routes
 
-app.get('/', function(req, res){
-    debateProvider.findRecent(10, 0, function(error,docs){
-        res.render('index.jade', { 
-            locals: {
-                title: 'Gruff',
-                debates:docs
-            }
-        });
-    })
-});
+app.get('/', routes.index);
+app.get('/debate/new', routes.getNewDebate);
+app.get('/debate/:id', routes.getDebate);
+app.get('/devate/:id/title', routes.getTitle);
+app.get('/debate/:id/answer/:ansid', routes.getAnswer);
+app.get('/debate/:id/argument/:argid', routes.getArgument);
 
-app.get('/debate/new', function(req, res) {
-    res.render('debate_new.jade', { locals: {
-        title: 'New Debate',
-        debate: new Debate()
-    }
-				});
-});
+app.post('/debate/new', routes.postDebate);
+app.post('/debate/comment/new', routes.postComment);
+app.post('/debate/title/new', routes.postTitle);
+app.post('/debate/answer/new', routes.postAnswer);
+app.post('/debate/argument/new', routes.postArgument);
 
-app.post('/debate/new', function(req, res){
-    debateProvider.save({
-        title: req.param('title'),
-        body: req.param('body'),
-        type: req.param('type')
-    }, function( error, docs) {
-        res.redirect('/')
-    });
-});
-
-app.get('/debate/:id', function(req, res) {
-    debateProvider.findById(req.params.id, function(error, debate) {
-        res.render('debate_show.jade',
-		   { locals: {
-               title:debate.bestTitleText(),
-		       debate:debate
-		   }
-		   });
-    });
-});
-
-
-app.post('/debate/comment/new', function(req, res) {
-    debateProvider.addCommentToDebate(req.param('_id'), {
-        user: req.param('user'),
-        comment: req.param('comment'),
-        date: new Date()
-    } , function( error, docs) {
-        res.redirect('/debate/' + req.param('_id'))
-    });
-});
-
-app.get('/debate/:id/title', function(req, res) {
-    debateProvider.findById(req.params.id, function(error, debate) {
-        res.render('debate_titles_show.jade',
-		   { locals: {
-               title:debate.bestTitleText(),
-		       debate:debate
-		   }
-		   });
-    });
-});
-
-app.post('/debate/title/new', function(req, res) {
-    debateProvider.addTitleToDebate(req.param('_id'), {
-        user: req.param('user'),
-        title: req.param('title'),
-        date: new Date()
-    } , function( error, docs) {
-        res.redirect('/debate/' + req.param('_id') + '/title')
-    });
-});
-
-
-app.post('/debate/answer/new', function(req, res) {
-    debateProvider.addAnswerToDebate(req.param('_id'), {
-        user: req.param('user'),
-        body: req.param('body'),
-        titles: [{
-            user: req.param('user'),
-            title: req.param('title'),
-            date: new Date()
-        }],
-        date: new Date()
-    }, function( error, docs) {
-        res.redirect('/debate/' + req.param('_id'))
-    });
-});
-
-app.get('/debate/:id/answer/:ansid', function(req, res) {
-    debateProvider.findById(req.params.id, function(error, parent) {
-        debateProvider.findById(req.params.ansid, function(error, debate) {
-            res.render('debate_show.jade',
-                       { locals: {
-		                   title:parent.bestTitleText() + " - " + debate.bestTitleText(),
-                           parent:parent,
-                           debate:debate
-		               }
-		               });
-        });
-    });
-});
-
-app.post('/debate/argument/new', function(req, res) {
-    debateProvider.addArgumentToDebate(req.param('_id'), {
-        user: req.param('user'),
-        for: req.param('for'),
-        titles: [{
-            user: req.param('user'),
-	        title: req.param('title'),
-            date: new Date()
-	    }],
-        date: new Date()
-    } , function( error, docs) {
-        res.redirect('/debate/' + req.param('_id'))
-    });
-});
-
-app.get('/debate/:id/argument/:argid', function(req, res) {
-    debateProvider.findById(req.params.id, function(error, debate) {
-        res.render('argument_show.jade',
-		   { locals: {
-		       title:debate.bestTitleText() + " - " + argument.bestTitleText(),
-		       debate:debate,
-		       argument:debate.argument(req.params.argid)
-		   }
-		   });
-    });
-});
-
-
+// Main
 
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
