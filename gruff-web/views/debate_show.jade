@@ -1,6 +1,5 @@
 include mixins/debate_answers
 include mixins/debate_arguments
-//include mixins/debate_fact TODO: this should be "references", which are really attached to arguments
 
 if typeof(parent) == "undefined"
     h1= debate.bestTitleText()
@@ -12,7 +11,7 @@ a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
   div.debate
     div.date= debate.date
     div.body= debate.body
-    if typeof(debate.answers) != "undefined"
+    if debate.answers
         mixin answers(debate)
     if debate.type == debate.DebateTypes.DEBATE
           div.bottomForm
@@ -29,10 +28,9 @@ a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
                 textarea( name="body", rows=5, id="addAnswerBody")
               div#addAnswerSubmit
                 input(type="submit", value="Send")
-    if typeof(debate.arguments) != "undefined"
+    if (debate.argumentsFor || debate.argumentsAgainst)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE
-        //mixin facts(debate)
         h3 Contribute Your Own Argument
         div.bottomForm
           form(method="post", action="/debate/argument/new")
@@ -42,9 +40,9 @@ a(href="/debate/" + debate._id.toHexString() + "/title") View proposed titles
               input( type="text", name="user", id="addArgumentUser")
             div
               span This argument is:
-              input( type="radio", name="for", value="true", id="addArgumentFor", checked)
+              input( type="radio", name="isFor", value="true", id="addArgumentFor", checked)
               span in support of this statement
-              input( type="radio", name="for", value="false", id="addArgumentFor")
+              input( type="radio", name="isFor", value="false", id="addArgumentFor")
               span against this statement
             div
               span Argument Title:

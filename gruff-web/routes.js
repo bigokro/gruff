@@ -53,12 +53,14 @@ exports.getAnswer = function(req, res) {
 };
 
 exports.getArgument = function(req, res) {
-  debateProvider.findById(req.params.id, function(error, debate) {
-    res.render('argument_show.jade', { locals: {
-      title:debate.bestTitleText() + " - " + argument.bestTitleText(),
-      debate:debate,
-      argument:debate.argument(req.params.argid)
-    }});
+  debateProvider.findById(req.params.id, function(error, parent) {
+    debateProvider.findById(req.params.argid, function(error, debate) {
+      res.render('debate_show.jade', { locals: {
+        title:parent.bestTitleText() + " - " + debate.bestTitleText(),
+          parent:parent,
+          debate:debate
+      }});
+    });
   });
 };
 
@@ -110,16 +112,17 @@ exports.postAnswer = function(req, res) {
 };
 
 exports.postArgument = function(req, res) {
-  debateProvider.addArgumentToDebate(req.param('_id'), {
-    user: req.param('user'),
-    for: req.param('for'),
-    titles: [{
-      user: req.param('user'),
-      title: req.param('title'),
-      date: new Date()
-    }],
-    date: new Date()
-  } , function( error, docs) {
-    res.redirect('/debate/' + req.param('_id'))
-  });
+    debateProvider.addArgumentToDebate(req.param('_id'), {
+        user: req.param('user'),
+        titles: [{
+            user: req.param('user'),
+            title: req.param('title'),
+            date: new Date()
+        }],
+        date: new Date()
+    }, 
+    req.param('isFor'),
+    function( error, docs) {
+      res.redirect('/debate/' + req.param('_id'))
+    });
 };

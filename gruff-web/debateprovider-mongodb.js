@@ -4,7 +4,6 @@ var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 var Debate = require('./models/debate').Debate;
-var Argument = require('./models/argument').Argument;
 var ClassHelper = require('./lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
@@ -66,18 +65,27 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
             debate_collection.findOne({_id: objId}, function(error, result) {
 		            if( error ) callback(error)
 		            else {
-                    if (result.answerIds !== undefined)  {
-                        // Pre-load any related answers
-                        provider.findAllByObjID(result.answerIds, function(error, answers) {
-		                        if( error ) callback(error)
-		                        else {
-                                result.answers = answers;
-                                callback(null, augmentDebate(result));
-                            }
-                        });
-                    } else {
-                        callback(null, augmentDebate(result));
-                    }
+                    // Pre-load any related answers
+                    provider.findAllByObjID(result.answerIds, function(error, answers) {
+		                    if( error ) callback(error)
+		                    else {
+                            result.answers = answers;
+                            // Pre-load any related arguments
+                            provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
+		                            if( error ) callback(error)
+		                            else {
+                                    result.argumentsFor = argumentsFor;
+                                    provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
+		                                    if( error ) callback(error)
+		                                    else {
+                                            result.argumentsAgainst = argumentsAgainst;
+                                            callback(null, augmentDebate(result));
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
 	          });
 	      }
@@ -96,15 +104,19 @@ DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback(error)
 	      else {
-            debate_collection.find(
-                {_id: {$in : objIds} }
-            ).toArray(function(error, results) {
-		            if( error ) {
-		                callback(error);
-		            } else {
-		                callback(null, augmentDebates(results));
-		            }
-            });
+            if (objIds == null || objIds === undefined) callback(null, null);
+            else if (objIds.length == 0) callback(null, []);
+            else {
+                debate_collection.find(
+                    {_id: {$in : objIds} }
+                ).toArray(function(error, results) {
+		                if( error ) {
+		                    callback(error);
+		                } else {
+		                    callback(null, augmentDebates(results));
+		                }
+                });
+            }
 	      }
     });
 };
@@ -131,15 +143,16 @@ DebateProvider.prototype.save = function(debates, callback) {
 		                };
 		                debate.title = null;
 		            }
-		            if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answers === undefined ) {
-                    debate.answers = [];
+		            if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answerIds === undefined ) {
                     debate.answerIds = [];
                 }
-		            if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.arguments === undefined ) debate.arguments = [];
+		            if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.argumentsForIds === undefined ) {
+                    debate.argumentsForIds = [];
+                }
+		            if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.argumentsAgainstIds === undefined ) {
+                    debate.argumentsAgainstIds = [];
+                }
 		            if( debate.comments === undefined ) debate.comments = [];
-		            for(var j =0;j< debate.comments.length; j++) {
-		                debate.comments[j].date = new Date();
-		            }
             }
             
             debate_collection.insert(debates, function() {
@@ -201,27 +214,44 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
 	  });
 };
 
-DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, callback) {
+DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFor, callback) {
+    var provider = this;
     this.getCollection(function(error, debate_collection) {
-	    if( error ) callback( error );
-	    else {
-	        debate_collection.update(
-		        {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
-		        {"$push": {arguments: argument}},
-		        function(error, debate){
-		            if( error ) callback(error);
-		            else callback(null, debate)
-		        });
-	    }
-    });
+	      if( error ) callback( error );
+	      else {
+            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            argument.parentId = parentId;
+            provider.save(argument, function(error, arguments) {
+                // Add the answer as a new debate
+                var argumentId = arguments[0]._id;
+	              debate_collection.update(
+		                {_id: parentId},
+		                {"$push": isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId}},
+		                function(error, debate){
+		                    if( error ) callback(error);
+		                    else callback(null, debate)
+		                });
+            });
+        }
+	  });
 };
 
 
 function augmentDebate(result) {
     var debate = classHelper.augment(result, Debate);
-    if (debate.arguments) {
-	      for (argument in debate.arguments) {
-	          classHelper.augment(argument, Argument);
+    if (debate.answers) {
+	      for (answer in debate.answers) {
+	          classHelper.augment(answer, Debate);
+	      }
+    }
+    if (debate.argumentsFor) {
+	      for (argument in debate.argumentsFor) {
+	          classHelper.augment(argument, Debate);
+	      }
+    }
+    if (debate.argumentsAgainst) {
+	      for (argument in debate.argumentsAgainst) {
+	          classHelper.augment(argument, Debate);
 	      }
     }
     return debate;
