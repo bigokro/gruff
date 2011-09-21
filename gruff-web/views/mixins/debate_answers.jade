@@ -5,7 +5,7 @@ mixin answers(debate)
       - each answer in debate.answers
         div.answer
           div.title
-            a(href="/debate/" + debate.linkableId() + "/answer/" + answer.linkableId())= answer.bestTitleText()
+            a(href="/debate/" + answer.linkableId())= answer.bestTitleText()
           div.body= answer.body
     else
       div.none There are currently no proposed answers.

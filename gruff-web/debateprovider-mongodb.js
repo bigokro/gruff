@@ -64,22 +64,30 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
 	      else {
             debate_collection.findOne({_id: objId}, function(error, result) {
 		            if( error ) callback(error)
+                else if (!result) callback(null, null)
 		            else {
-                    // Pre-load any related answers
-                    provider.findAllByObjID(result.answerIds, function(error, answers) {
+                    // Pre-load the parent debate
+                    provider.findByObjID(result.parentId, function(error, parent) {
 		                    if( error ) callback(error)
 		                    else {
-                            result.answers = answers;
-                            // Pre-load any related arguments
-                            provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
+                            result.parent = parent;
+                            // Pre-load any related answers
+                            provider.findAllByObjID(result.answerIds, function(error, answers) {
 		                            if( error ) callback(error)
 		                            else {
-                                    result.argumentsFor = argumentsFor;
-                                    provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
+                                    result.answers = answers;
+                                    // Pre-load any related arguments
+                                    provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
 		                                    if( error ) callback(error)
 		                                    else {
-                                            result.argumentsAgainst = argumentsAgainst;
-                                            callback(null, augmentDebate(result));
+                                            result.argumentsFor = argumentsFor;
+                                            provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
+		                                            if( error ) callback(error)
+		                                            else {
+                                                    result.argumentsAgainst = argumentsAgainst;
+                                                    callback(null, augmentDebate(result));
+                                                }
+                                            });
                                         }
                                     });
                                 }

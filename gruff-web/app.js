@@ -35,8 +35,6 @@ app.get('/', routes.index);
 app.get('/debate/new', routes.getNewDebate);
 app.get('/debate/:id', routes.getDebate);
 app.get('/debate/:id/title', routes.getTitle);
-app.get('/debate/:id/answer/:ansid', routes.getAnswer);
-app.get('/debate/:id/argument/:argid', routes.getArgument);
 
 app.post('/debate/new', routes.postDebate);
 app.post('/debate/comment/new', routes.postComment);

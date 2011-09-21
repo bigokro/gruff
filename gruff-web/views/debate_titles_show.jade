@@ -1,4 +1,11 @@
-h1= title
+if !parent || parent == null
+    h1
+      a(href="/debate/"+debate.linkableId())= debate.bestTitleText()
+else
+    h1
+      a(href="/debate/"+parent.linkableId())= parent.bestTitleText()
+    h2 
+      a(href="/debate/"+debate.linkableId())= debate.bestTitleText()
 #main
   div.debate
     div.date= debate.date
