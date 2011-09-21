@@ -6,7 +6,7 @@ mixin arguments(debate)
             - each argument in debate.argumentsFor
               div.argument
                 div.title
-                  a(href="/debate/" + debate.linkableId() + "/argument/" + argument.id + "/" + argument._id + "/" + argument.for)= argument.bestTitleText()
+                  a(href="/debate/" + debate.linkableId() + "/argument/" + argument.linkableId())= argument.bestTitleText()
                 div.body= argument.body
         div.against
           h2 Arguments Against
@@ -14,5 +14,5 @@ mixin arguments(debate)
             - each argument in debate.argumentsAgainst
               div.argument
                 div.title
-                  a(href="/debate/" + debate.linkableId() + "/argument/" + argument.id + "/" + argument._id + "/" + argument.for)= argument.bestTitleText()
+                  a(href="/debate/" + debate.linkableId() + "/argument/" + argument.linkableId())= argument.bestTitleText()
                 div.body= argument.body

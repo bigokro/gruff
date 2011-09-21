@@ -121,7 +121,7 @@ exports.postArgument = function(req, res) {
         }],
         date: new Date()
     }, 
-    req.param('isFor'),
+    req.param('isFor') == 'true',
     function( error, docs) {
       res.redirect('/debate/' + req.param('_id'))
     });
