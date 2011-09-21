@@ -11,13 +11,14 @@ else
     div.date= debate.date
     div.body= debate.body
     div.titles
-      h2 Titles
+      h3 Titles
       - each title in debate.titles
-        div.title
+        h4.title
           div.user= title.user
           div.date= title.date
           div.body= title.title
     div.bottomForm
+      h4 Propose Your Own Title
       form( method="post", action="/debate/title/new")
         input( type="hidden", name="_id", value=debate.linkableId())
         div

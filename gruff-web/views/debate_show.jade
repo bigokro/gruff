@@ -11,14 +11,15 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
 #main
   div.debate
     div.date= debate.date
-    if debate.ref && debate.ref != null
+    if debate.url && debate.url != null
       div.link
         | External Reference: 
-        a(href=debate.ref, target="_blank")= debate.ref
+        a(href=debate.url, target="_blank")= debate.url
     div.body= debate.body
     if debate.answers
         mixin answers(debate)
     if debate.type == debate.DebateTypes.DEBATE
+        h4 Propose Your Own Answer
           div.bottomForm
             form(method="post", action="/debate/answer/new")
               input( type="hidden", name="_id", value=debate.linkableId())
@@ -30,7 +31,7 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
                 input( type="text", name="title", id="addAnswerTitle")
               div
                 span Optional Link:
-                input( type="text", name="ref", id="addAnswerRef")
+                input( type="text", name="url", id="addAnswerUrl")
               div
                 span Answer Description:
                 textarea( name="body", rows=5, id="addAnswerBody")
@@ -39,7 +40,7 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
     if (debate.argumentsFor || debate.argumentsAgainst)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE
-        h3 Contribute Your Own Argument
+        h4 Propose Your Own Argument
         div.bottomForm
           form(method="post", action="/debate/argument/new")
             input( type="hidden", name="_id", value=debate.linkableId())
@@ -57,14 +58,14 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
               span against this statement
               div
                 span Optional Link:
-                input( type="text", name="ref", id="addArgumentRef")
+                input( type="text", name="url", id="addArgumentUrl")
             div
               span Argument Description:
               textarea( name="body", rows=5, id="addArgumentBody")
             div#addArgumentSubmit
               input(type="submit", value="Send")
     div.comments
-      h2 Comments
+      h3 Comments
       - each comment in debate.comments
         div.comment
           div.user= comment.user

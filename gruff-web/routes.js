@@ -47,7 +47,7 @@ exports.getTitle = function(req, res) {
 exports.postDebate = function(req, res){
   debateProvider.save({
     title: req.param('title'),
-    ref: req.param('ref'),
+    url: req.param('url'),
     body: req.param('body'),
     type: req.param('type')
   }, function( error, docs) {
@@ -78,7 +78,7 @@ exports.postTitle = function(req, res) {
 exports.postAnswer = function(req, res) {
   debateProvider.addAnswerToDebate(req.param('_id'), {
     user: req.param('user'),
-    ref: req.param('ref'),
+    url: req.param('url'),
     body: req.param('body'),
     titles: [{
       user: req.param('user'),
@@ -94,7 +94,7 @@ exports.postAnswer = function(req, res) {
 exports.postArgument = function(req, res) {
     debateProvider.addArgumentToDebate(req.param('_id'), {
         user: req.param('user'),
-        ref: req.param('ref'),
+        url: req.param('url'),
         titles: [{
             user: req.param('user'),
             title: req.param('title'),

@@ -1,18 +1,18 @@
 mixin arguments(debate)
       div.arguments
         div.for
-          h2 Arguments in Favor
+          h3 Arguments in Favor
           if debate.argumentsFor
             - each argument in debate.argumentsFor
               div.argument
-                div.title
+                h4.title
                   a(href="/debate/" + argument.linkableId())= argument.bestTitleText()
                 div.body= argument.body
         div.against
-          h2 Arguments Against
+          h3 Arguments Against
           if debate.argumentsAgainst
             - each argument in debate.argumentsAgainst
               div.argument
-                div.title
+                h4.title
                   a(href="/debate/" + argument.linkableId())= argument.bestTitleText()
                 div.body= argument.body
