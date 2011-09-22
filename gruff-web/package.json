@@ -1,12 +1,13 @@
 {
-    "name": "debates"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "express": "2.4.6"
-    , "jade": ">= 0.0.1"
-    , "mongodb": "0.9.6-13"
-    , "socket.io": "0.7.11"
-    , "stylus": ">= 0.0.1"
+  "name": "debates",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "2.4.6",
+    "jade": ">= 0.0.1",
+    "mongodb": "0.9.6-13",
+    "socket.io": "0.7.11",
+    "stylus": ">= 0.0.1",
+    "everyauth": "~0.2.20"
   }
 }
