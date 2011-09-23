@@ -42,13 +42,23 @@ exports.getTitle = function(req, res) {
   });
 };
 
+exports.getDescription = function(req, res) {
+  debateProvider.findById(req.params.id, function(error, debate) {
+    res.render('debate_descriptions_show.jade', { locals: {
+      title:debate.bestTitleText(),
+      parent:debate.parent,
+      debate:debate
+    }});
+  });
+};
+
 // POST
 
 exports.postDebate = function(req, res){
   debateProvider.save({
     title: req.param('title'),
     url: req.param('url'),
-    body: req.param('body'),
+    desc: req.param('desc'),
     type: req.param('type')
   }, function( error, docs) {
     res.redirect('/')
@@ -61,7 +71,7 @@ exports.postComment = function(req, res) {
     comment: req.param('comment'),
     date: new Date()
   } , function( error, docs) {
-    res.redirect('/debate/' + req.param('_id'))
+    res.redirect('/debates/' + req.param('_id'))
   });
 };
 
@@ -71,7 +81,17 @@ exports.postTitle = function(req, res) {
     title: req.param('title'),
     date: new Date()
   } , function( error, docs) {
-    res.redirect('/debate/' + req.param('_id') + '/title')
+    res.redirect('/debates/' + req.param('_id') + '/titles')
+  });
+};
+
+exports.postDescription = function(req, res) {
+  debateProvider.addDescriptionToDebate(req.param('_id'), {
+    user: req.param('user'),
+    text: req.param('desc'),
+    date: new Date()
+  } , function( error, docs) {
+    res.redirect('/debates/' + req.param('_id') + '/descriptions')
   });
 };
 
@@ -79,7 +99,7 @@ exports.postAnswer = function(req, res) {
   debateProvider.addAnswerToDebate(req.param('_id'), {
     user: req.param('user'),
     url: req.param('url'),
-    body: req.param('body'),
+    desc: req.param('desc'),
     titles: [{
       user: req.param('user'),
       title: req.param('title'),
@@ -87,7 +107,7 @@ exports.postAnswer = function(req, res) {
     }],
     date: new Date()
   }, function( error, docs) {
-    res.redirect('/debate/' + req.param('_id'))
+    res.redirect('/debates/' + req.param('_id'))
   });
 };
 
@@ -95,6 +115,7 @@ exports.postArgument = function(req, res) {
     debateProvider.addArgumentToDebate(req.param('_id'), {
         user: req.param('user'),
         url: req.param('url'),
+        desc: req.param('desc'),
         titles: [{
             user: req.param('user'),
             title: req.param('title'),
@@ -104,6 +125,6 @@ exports.postArgument = function(req, res) {
     }, 
     req.param('isFor') == 'true',
     function( error, docs) {
-      res.redirect('/debate/' + req.param('_id'))
+      res.redirect('/debates/' + req.param('_id'))
     });
 };

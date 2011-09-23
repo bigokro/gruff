@@ -3,7 +3,7 @@
  */
 
 var express = require('express')
-  , DebateProvider = require('./debateprovider-mongodb').DebateProvider
+  , DebateProvider = require('./providers/debate_provider').DebateProvider
   , Debate = require('./models/debate').Debate
   , everyauth = require('./everyauth.js')
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
@@ -38,15 +38,17 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.get('/debate/new', routes.getNewDebate);
-app.get('/debate/:id', routes.getDebate);
-app.get('/debate/:id/title', routes.getTitle);
+app.get('/debates/new', routes.getNewDebate);
+app.get('/debates/:id', routes.getDebate);
+app.get('/debates/:id/titles', routes.getTitle);
+app.get('/debates/:id/descriptions', routes.getDescription);
 
-app.post('/debate/new', routes.postDebate);
-app.post('/debate/comment/new', routes.postComment);
-app.post('/debate/title/new', routes.postTitle);
-app.post('/debate/answer/new', routes.postAnswer);
-app.post('/debate/argument/new', routes.postArgument);
+app.post('/debates/new', routes.postDebate);
+app.post('/debates/comments/new', routes.postComment);
+app.post('/debates/titles/new', routes.postTitle);
+app.post('/debates/descriptions/new', routes.postDescription);
+app.post('/debates/answers/new', routes.postAnswer);
+app.post('/debates/arguments/new', routes.postArgument);
 
 // Main
 

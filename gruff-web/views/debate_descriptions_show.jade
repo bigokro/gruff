@@ -1,0 +1,33 @@
+// TODO: This should be a mixin
+if !parent || parent == null
+    h1
+      a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
+else
+    h1
+      a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
+    h2 
+      a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
+#main
+  div.debate
+    div.date= debate.date
+    div.description= debate.bestDescriptionText()
+    div.descriptions
+      h3 Descriptions
+      - each desc in debate.descs
+        div.description
+          div.user= desc.user
+          div.date= desc.date
+          div.text= desc.text
+    div.bottomForm
+      h4 Propose Your Own Description
+      form( method="post", action="/debates/descriptions/new")
+        input( type="hidden", name="_id", value=debate.linkableId())
+        div
+          span Author:
+          input( type="text", name="user", id="addDescriptionUser")
+        div
+          span Description:
+          textarea( name="desc", rows=10, id="addDescriptionDesc")
+        div#addDescriptionSubmit
+          input(type="submit", value="Send")
+

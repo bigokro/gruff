@@ -1,11 +1,11 @@
 if !parent || parent == null
     h1
-      a(href="/debate/"+debate.linkableId())= debate.bestTitleText()
+      a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
 else
     h1
-      a(href="/debate/"+parent.linkableId())= parent.bestTitleText()
+      a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
     h2 
-      a(href="/debate/"+debate.linkableId())= debate.bestTitleText()
+      a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
 #main
   div.debate
     div.date= debate.date
@@ -19,7 +19,7 @@ else
           div.body= title.title
     div.bottomForm
       h4 Propose Your Own Title
-      form( method="post", action="/debate/title/new")
+      form( method="post", action="/debates/titles/new")
         input( type="hidden", name="_id", value=debate.linkableId())
         div
           span Author:

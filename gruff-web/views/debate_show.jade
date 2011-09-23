@@ -5,9 +5,9 @@ if !parent || parent == null
     h1= debate.bestTitleText()
 else
     h1
-      a(href="/debate/"+parent.linkableId())= parent.bestTitleText()
+      a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
     h2= debate.bestTitleText()
-a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
+a(href="/debates/" + debate.linkableId() + "/titles") View proposed titles
 #main
   div.debate
     div.date= debate.date
@@ -15,13 +15,14 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
       div.link
         | External Reference: 
         a(href=debate.url, target="_blank")= debate.url
-    div.body= debate.body
+    div.description= debate.bestDescriptionText()
+    a(href="/debates/" + debate.linkableId() + "/descriptions") View proposed descriptions
     if debate.answers
         mixin answers(debate)
     if debate.type == debate.DebateTypes.DEBATE
         h4 Propose Your Own Answer
           div.bottomForm
-            form(method="post", action="/debate/answer/new")
+            form(method="post", action="/debates/answers/new")
               input( type="hidden", name="_id", value=debate.linkableId())
               div
                 span Author:
@@ -34,7 +35,7 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
                 input( type="text", name="url", id="addAnswerUrl")
               div
                 span Answer Description:
-                textarea( name="body", rows=5, id="addAnswerBody")
+                textarea( name="desc", rows=5, id="addAnswerDesc")
               div#addAnswerSubmit
                 input(type="submit", value="Send")
     if (debate.argumentsFor || debate.argumentsAgainst)
@@ -42,7 +43,7 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
     if debate.type != debate.DebateTypes.DEBATE
         h4 Propose Your Own Argument
         div.bottomForm
-          form(method="post", action="/debate/argument/new")
+          form(method="post", action="/debates/arguments/new")
             input( type="hidden", name="_id", value=debate.linkableId())
             div
               span Author:
@@ -61,7 +62,7 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
                 input( type="text", name="url", id="addArgumentUrl")
             div
               span Argument Description:
-              textarea( name="body", rows=5, id="addArgumentBody")
+              textarea( name="desc", rows=5, id="addArgumentDesc")
             div#addArgumentSubmit
               input(type="submit", value="Send")
     div.comments
@@ -69,9 +70,9 @@ a(href="/debate/" + debate.linkableId() + "/title") View proposed titles
       - each comment in debate.comments
         div.comment
           div.user= comment.user
-          div.body= comment.comment
+          div.comment= comment.comment
     div.bottomForm
-      form( method="post", action="/debate/comment/new")
+      form( method="post", action="/debates/comments/new")
         input( type="hidden", name="_id", value=debate.linkableId())
         div
           span Author:

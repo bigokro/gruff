@@ -1,6 +1,6 @@
 h1= title
 h2 Recent Debates
-a(href="/debate/new") Start your own debate!
+a(href="/debates/new") Start your own debate!
 #main
     div.debates
         - each debate in debates
@@ -8,6 +8,6 @@ a(href="/debate/new") Start your own debate!
             div.date= debate.date
             div.type= debate.type
             div.title
-              a(href="/debate/"+debate._id.toHexString())!= debate.bestTitleText()
-            div.body= debate.body
+              a(href="/debates/"+debate._id.toHexString())!= debate.bestTitleText()
+            div.description= debate.bestDescriptionText()
 

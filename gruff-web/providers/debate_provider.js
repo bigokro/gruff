@@ -3,8 +3,8 @@ var Connection = require('mongodb').Connection;
 var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
-var Debate = require('./models/debate').Debate;
-var ClassHelper = require('./lib/class_helper').ClassHelper;
+var Debate = require('../models/debate').Debate;
+var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
 
@@ -151,6 +151,17 @@ DebateProvider.prototype.save = function(debates, callback) {
 		                };
 		                debate.title = null;
 		            }
+		            if (debate.desc) {
+		                if (debate.descs === undefined) {
+			                  debate.descs = [];
+		                }
+		                debate.descs[debate.descs.length] = { 
+                        user: debate.user,
+			                  text: debate.desc,
+			                  date: new Date()
+		                };
+		                debate.desc = null;
+		            }
 		            if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answerIds === undefined ) {
                     debate.answerIds = [];
                 }
@@ -192,6 +203,21 @@ DebateProvider.prototype.addTitleToDebate = function(debateId, title, callback) 
 	          debate_collection.update(
 		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
 		            {"$push": {titles: title}},
+		            function(error, debate){
+		                if( error ) callback(error);
+		                else callback(null, debate)
+		            });
+	      }
+    });
+};
+
+DebateProvider.prototype.addDescriptionToDebate = function(debateId, description, callback) {
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback( error );
+	      else {
+	          debate_collection.update(
+		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
+		            {"$push": {descs: description}},
 		            function(error, debate){
 		                if( error ) callback(error);
 		                else callback(null, debate)
