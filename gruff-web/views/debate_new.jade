@@ -1,21 +1,27 @@
 h1= title
-form( method="post")
+#main
+  form( method="post")
     div
         div
-            span Title:
+            label(for="title") Title
+              em *
             input(type="text", name="title", id="editDebateTitle")
         div
-            span Description:
-            textarea( name="desc", rows=10, id="editDebateDescription")
+            label(for="desc") Description
+              em *
+            textarea( name="desc", id="editDebateDescription")
         div
-            span What kind of debate is this?
-            select(name="type", id="editDebateType")
-                option(value=debate.DebateTypes.DEBATE)
-                    | A problem to be solved, or a set of options to choose from
-                option(value=debate.DebateTypes.DIALECTIC)
-                    | An action to be taken (or not), or a yes/no decision to be made
-                option(value=debate.DebateTypes.DIALECTIC)
-                    | A discussion on the truth behind a supposed fact
-        dev#editDebateSubmit
-            input(type="submit", value="Send")
+            label(for="type") What kind of debate is this?
+                br
+                input( type="radio", name="type", value=debate.DebateTypes.DEBATE, checked)
+                | A problem to be solved, or a set of options to choose from
+                br
+                input( type="radio", name="type", value=debate.DebateTypes.DIALECTIC)
+                | An action to be taken (or not), or a yes/no decision to be made
+                br
+                input( type="radio", name="type", value=debate.DebateTypes.DIALECTIC)
+                | A discussion on the truth behind a supposed fact
+                br
+        div#editDebateSubmit
+            input(type="submit", value="Send it")
 

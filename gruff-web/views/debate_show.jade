@@ -20,51 +20,59 @@ a.action(href="/debates/" + debate.linkableId() + "/titles") View proposed title
     if debate.answers
         mixin answers(debate)
     if debate.type == debate.DebateTypes.DEBATE
-        h4 Propose Your Own Answer
-          div.bottomForm
-            form(method="post", action="/debates/answers/new")
-              input( type="hidden", name="_id", value=debate.linkableId())
+        div.bottomForm
+          form(method="post", action="/debates/answers/new")
+            input( type="hidden", name="_id", value=debate.linkableId())
+            fieldset
+              legend Propose Your Own Answer
               div
-                span Author:
+                label(for="user") Author
                 input( type="text", name="user", id="addAnswerUser")
               div
-                span Answer Title:
+                label(for="title") Answer Title
+                  em *
                 input( type="text", name="title", id="addAnswerTitle")
               div
-                span Optional Link:
+                label(for="url") Optional Link
                 input( type="text", name="url", id="addAnswerUrl")
               div
-                span Answer Description:
+                label(for="desc") Answer Description
+                  em *
                 textarea( name="desc", rows=5, id="addAnswerDesc")
               div#addAnswerSubmit
-                input(type="submit", value="Send")
+                input(type="submit", value="Send it")
     if (debate.argumentsFor || debate.argumentsAgainst)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE
-        h4 Propose Your Own Argument
-        div.bottomForm
-          form(method="post", action="/debates/arguments/new")
-            input( type="hidden", name="_id", value=debate.linkableId())
+      div.bottomForm
+        form(method="post", action="/debates/arguments/new")
+          input( type="hidden", name="_id", value=debate.linkableId())
+          fieldset
+            legend Propose Your Own Argument
             div
-              span Author:
+              label(for="user") Author
               input( type="text", name="user", id="addArgumentUser")
             div
-              span Argument Title:
+              label(for="title") Argument Title
+                em *
               input( type="text", name="title", id="addArgumentTitle")
             div
-              span This argument is:
-              input( type="radio", name="isFor", value="true", id="addArgumentFor", checked)
-              span in support of this statement
-              input( type="radio", name="isFor", value="false", id="addArgumentFor")
-              span against this statement
-              div
-                span Optional Link:
-                input( type="text", name="url", id="addArgumentUrl")
+              label(for="isFor") This argument is:
+                br
+                input( type="radio", name="isFor", value="true", id="addArgumentFor", checked)
+                | in support of this statement
+                br
+                input( type="radio", name="isFor", value="false", id="addArgumentFor")
+                | against this statement
             div
-              span Argument Description:
-              textarea( name="desc", rows=5, id="addArgumentDesc")
+              label(for="url") Optional Link
+              input( type="text", name="url", id="addArgumentUrl")
+            div
+              label(for="desc") Argument Description
+                em *
+              textarea( name="desc", id="addArgumentDesc")
             div#addArgumentSubmit
-              input(type="submit", value="Send")
+              input(type="submit", value="Send it")
     div.comments
       h3 Comments
       - each comment in debate.comments
@@ -75,12 +83,13 @@ a.action(href="/debates/" + debate.linkableId() + "/titles") View proposed title
       form( method="post", action="/debates/comments/new")
         input( type="hidden", name="_id", value=debate.linkableId())
         div
-          span Author:
+          label(for="user") Author
           input( type="text", name="user", id="addCommentUser")
         div
-          span Comment:
+          label(for="comment") Comment
+            em *
           textarea( name="comment", rows=5, id="addCommentComment")
         div#addCommentSubmit
-          input(type="submit", value="Send")
+          input(type="submit", value="Send it")
 
 

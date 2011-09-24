@@ -19,15 +19,17 @@ else
           div.date= desc.date
           div(class="text unchecked")= desc.text
     div.bottomForm
-      h4 Propose Your Own Description
       form( method="post", action="/debates/descriptions/new")
         input( type="hidden", name="_id", value=debate.linkableId())
-        div
-          span Author:
-          input( type="text", name="user", id="addDescriptionUser")
-        div
-          span Description:
-          textarea( name="desc", rows=10, id="addDescriptionDesc")
-        div#addDescriptionSubmit
-          input(type="submit", value="Send")
+        fieldset
+          legend Propose Your Own Description
+          div
+            label(for="user") Author
+            input( type="text", name="user", id="addDescriptionUser")
+          div
+            label(for="desc") Description
+              em *
+            textarea( name="desc", id="addDescriptionDesc")
+          div#addDescriptionSubmit
+            input(type="submit", value="Send it")
 
