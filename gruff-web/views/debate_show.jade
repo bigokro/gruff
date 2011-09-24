@@ -1,13 +1,8 @@
+include mixins/debate_header
 include mixins/debate_answers
 include mixins/debate_arguments
 
-if !parent || parent == null
-  h1= debate.bestTitleText()
-else
-  h1
-    a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
-  h2= debate.bestTitleText()
-a.action(href="/debates/" + debate.linkableId() + "/titles") View proposed titles
+mixin header(debate, false)
 #main
   div.debate
     div.date= debate.date

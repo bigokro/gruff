@@ -1,11 +1,6 @@
-if !parent || parent == null
-    h1
-      a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
-else
-    h1
-      a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
-    h2 
-      a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
+include mixins/debate_header
+
+mixin header(debate, true)
 #main
   div.debate
     div.date= debate.date
