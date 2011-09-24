@@ -16,7 +16,7 @@ else
         h4.title
           div.user= title.user
           div.date= title.date
-          div.body= title.title
+          div(class="body unchecked")= title.title
     div.bottomForm
       h4 Propose Your Own Title
       form( method="post", action="/debates/titles/new")

@@ -1,6 +1,5 @@
 body
   font-family "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial
-  /*font-family "Helvetica Neue", "Lucida Grande", "Arial"*/
   font-size 13px
   text-align center
   text-stroke 1px rgba(255, 255, 255, 0.1)
@@ -13,9 +12,11 @@ h1, h2, h3
   color #343434
 h1
   text-shadow 1px 2px 2px #ddd
+  text-align center
   font-size 60px
 h2
   font-size 34px
+  text-align center
 .error
   color #a33
 h4.title, h4.title a
@@ -24,12 +25,18 @@ h4.title, h4.title a
   letter-spacing -1px
   font-weight bold
   color #A3181E
-
-#main
+a.action
+  display block
+  margin-left  auto
+  margin-right auto
+  width 200px
+  text-align center
+div
   text-align left
+#main
   margin-left auto
   margin-right auto
-  width 600px
+  width 900px
   .debates
       .debate
         margin 20px
@@ -44,13 +51,10 @@ h4.title, h4.title a
             display none
         .title a
             font-family "Courier New", Courier, monospace
-            background url(http://www.csszengarden.com/145/h3bg.gif) no-repeat 6px 0
-            padding-left 35px
             color #A3181E
             font-size 20px
             letter-spacing -1px
             font-weight bold
-            /*padding 10px 0px 0px 20px*/
         .description
             font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
             padding 5px
@@ -70,6 +74,12 @@ h4.title, h4.title a
   textarea
     width 490px
     height 90px
+.for
+  float left
+  width 50%
+.against
+  float right
+  width 50%
 .comments
   margin-top 20px
   .comment
@@ -102,3 +112,9 @@ h4.title, h4.title a
       background-color #ffa
 .bottomForm
     margin-top 20px
+.checked
+  padding 5px 0px 0px 32px
+  background url(/images/checked.png) no-repeat 6px 0
+.unchecked
+  padding 5px 0px 0px 32px
+  background url(/images/unchecked.png) no-repeat 6px 0

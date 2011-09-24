@@ -17,7 +17,7 @@ else
         div.description
           div.user= desc.user
           div.date= desc.date
-          div.text= desc.text
+          div(class="text unchecked")= desc.text
     div.bottomForm
       h4 Propose Your Own Description
       form( method="post", action="/debates/descriptions/new")
