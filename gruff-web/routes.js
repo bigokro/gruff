@@ -1,17 +1,13 @@
-// Routes
-
 var debateProvider = new DebateProvider('localhost', 27017)
 
 //GET
 
 exports.index = function(req, res){
-  debateProvider.findRecent(10, 0, function(error,docs){
-    res.render('index.jade', {
-      locals: {
-        title: 'Gruff',
-        debates:docs
-      }
-    });
+  debateProvider.findRecent(10, 0, function(error, docs){
+    res.render('index.jade', { locals: {
+      title: 'Gruff',
+      debates:docs
+    }});
   })
 };
 

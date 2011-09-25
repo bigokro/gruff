@@ -7,12 +7,10 @@ var Debate = require('../models/debate').Debate;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
-
 DebateProvider = function(host, port) {
     this.db= new Db('node-mongo-blog', new Server(host, port, {auto_reconnect: true}, {}));
     this.db.open(function(){});
 };
-
 
 DebateProvider.prototype.getCollection= function(callback) {
     this.db.collection('debates', function(error, debate_collection) {
@@ -35,7 +33,6 @@ DebateProvider.prototype.findAll = function(callback) {
 	      }
     });
 };
-
 
 DebateProvider.prototype.findRecent = function(limit, skip, callback) {
     this.getCollection(function(error, debate_collection) {
@@ -128,7 +125,6 @@ DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
 	      }
     });
 };
-
 
 DebateProvider.prototype.save = function(debates, callback) {
     this.getCollection(function(error, debate_collection) {
@@ -270,7 +266,6 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
 	  });
 };
 
-
 function augmentDebate(result) {
     var debate = classHelper.augment(result, Debate);
     if (debate.answers) {
@@ -300,6 +295,5 @@ function augmentDebates(results) {
 	  }
     return results;
 }
-
 
 exports.DebateProvider = DebateProvider;

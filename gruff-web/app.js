@@ -5,9 +5,10 @@
 var express = require('express')
   , DebateProvider = require('./providers/debate_provider').DebateProvider
   , Debate = require('./models/debate').Debate
-  , everyauth = require('./everyauth.js')
+  , UserProvider = require('./providers/user_provider').UserProvider
+  , everyauth = require('./everyauth').everyauth
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
-  , routes = require('./routes.js')
+  , routes = require('./routes')
   ;
 
 // Configuration
@@ -22,7 +23,7 @@ app.configure(function(){
     app.use(express.session({secret: ':DP:DP:DP:DP'}));
     app.use(express.methodOverride());
     app.use(require('stylus').middleware({ src: __dirname + '/public' }));
-    app.use(everyauth.everyauth.middleware());
+    app.use(everyauth.middleware());
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
 });
@@ -52,6 +53,6 @@ app.post('/debates/arguments/new', routes.postArgument);
 
 // Main
 
-everyauth.everyauth.helpExpress(app);
+everyauth.helpExpress(app);
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

@@ -1,8 +1,10 @@
-var everyauth = require('everyauth');
+var everyauth = require('everyauth')
+, userProvider = new UserProvider('localhost', 27017)
+, usersById = {}
+, nextUserId = 0
+;
 
-var usersById = {};
-var nextUserId = 0;
-
+/*
 function addUser (source, sourceUser) {
   var user;
   if (arguments.length === 1) { // password-based
@@ -15,14 +17,19 @@ function addUser (source, sourceUser) {
   }
   return user;
 }
+*/
 
-var usersByLogin = {
-  'brian@example.com': addUser({ login: 'brian@example.com', password: 'password'})
-};
+addUser = function (source, sourceUser) {
+  var user;
+  if (arguments.length === 1) { // password-based
+    user = sourceUser = source;
+    return userProvider.save(user);
+  }
+}
 
 everyauth.everymodule
   .findUserById( function (id, callback) {
-    callback(null, usersById[id]);
+    callback(null, userProvider.findById(id));
   });
 
 everyauth
@@ -33,7 +40,7 @@ everyauth
     .loginLocals( function (req, res, done) {
       setTimeout( function () {
         done(null, {
-          title: 'Async login'
+          title: 'Gruff Login'
         });
       }, 200);
     })
@@ -42,7 +49,7 @@ everyauth
       if (!login) errors.push('Missing login');
       if (!password) errors.push('Missing password');
       if (errors.length) return errors;
-      var user = usersByLogin[login];
+      var user = userProvider.findByLogin(login);
       if (!user) return ['Login failed'];
       if (user.password !== password) return ['Login failed'];
       return user;
@@ -60,16 +67,15 @@ everyauth
     })
     .validateRegistration( function (newUserAttrs, errors) {
       var login = newUserAttrs.login;
-      if (usersByLogin[login]) errors.push('Login already taken');
+      if (userProvider.findByLogin(login)) errors.push('Login already taken');
       return errors;
     })
     .registerUser( function (newUserAttrs) {
       var login = newUserAttrs[this.loginKey()];
-      return usersByLogin[login] = addUser(newUserAttrs);
+      return addUser(newUserAttrs);
     })
 
     .loginSuccessRedirect('/')
     .registerSuccessRedirect('/');
 
 exports.everyauth = everyauth;
-
