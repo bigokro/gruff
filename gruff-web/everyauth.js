@@ -19,14 +19,6 @@ function addUser (source, sourceUser) {
 }
 */
 
-addUser = function (source, sourceUser) {
-  var user;
-  if (arguments.length === 1) { // password-based
-    user = sourceUser = source;
-    return userProvider.save(user);
-  }
-}
-
 everyauth.everymodule
   .findUserById( function (id, callback) {
     callback(null, userProvider.findById(id));
@@ -61,20 +53,24 @@ everyauth
     .registerLocals( function (req, res, done) {
       setTimeout( function () {
         done(null, {
-          title: 'Async Register'
+          title: 'Gruff Registration'
         });
       }, 200);
     })
     .validateRegistration( function (newUserAttrs, errors) {
       var login = newUserAttrs.login;
-      if (userProvider.findByLogin(login)) errors.push('Login already taken');
+      // if (userProvider.findByLogin(login)) errors.push('Login already taken');
       return errors;
     })
     .registerUser( function (newUserAttrs) {
+      var promise = this.Promise();
       var login = newUserAttrs[this.loginKey()];
-      return addUser(newUserAttrs);
+      userProvider.save(newUserAttrs, function(err, users) {
+        if (err) return promise.fulfill([err]);
+        promise.fulfill(users[0]);
+      });
+      return promise;
     })
-
     .loginSuccessRedirect('/')
     .registerSuccessRedirect('/');
 
