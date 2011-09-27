@@ -1,20 +1,20 @@
-include mixins/debate_header
+include mixins/describable_header
 
-mixin header(debate, true)
+mixin header(type, describable, true)
 #main
-  div.debate
-    div.date= debate.date
-    div.body= debate.body
+  div.describable
+    div.date= describable.date
+    div.body= describable.body
     div.titles
       h3 Titles
-      - each title in debate.titles
+      - each title in describable.titles
         h4.title
           div.user= title.user
           div.date= title.date
           div(class="body unchecked")= title.title
     div.bottomForm
-      form( method="post", action="/debates/titles/new")
-        input( type="hidden", name="_id", value=debate.linkableId())
+      form( method="post", action="/" + type + "s/titles/new")
+        input( type="hidden", name="_id", value=describable.linkableId())
         fieldset
           legend Propose Your Own Title
           div

@@ -1,8 +1,9 @@
-include mixins/debate_header
-include mixins/debate_answers
+include mixins/describable_header
 include mixins/debate_arguments
+include mixins/debate_answers
+include mixins/references
 
-mixin header(debate, false)
+mixin header("debate", debate, false)
 #main
   div.debate
     div.date= debate.date
@@ -19,7 +20,7 @@ mixin header(debate, false)
           form(method="post", action="/debates/answers/new")
             input( type="hidden", name="_id", value=debate.linkableId())
             fieldset
-              legend Propose Your Own Answer
+              legend Propose Your Own Answer or Sub-debate
               div
                 label(for="user") Author
                 input( type="text", name="user", id="addAnswerUser")
@@ -34,6 +35,9 @@ mixin header(debate, false)
                 label(for="desc") Answer Description
                   em *
                 textarea( name="desc", rows=5, id="addAnswerDesc")
+              div
+                input( type="checkbox", name="type", value="debate", id="addAnswerType")
+                | This is for a sub-debate (or category of answers)
               div#addAnswerSubmit
                 input(type="submit", value="Send it")
     if (debate.argumentsFor || debate.argumentsAgainst)
@@ -68,6 +72,28 @@ mixin header(debate, false)
               textarea( name="desc", id="addArgumentDesc")
             div#addArgumentSubmit
               input(type="submit", value="Send it")
+    mixin references(debate)
+    div.bottomForm
+          form(method="post", action="/references/new")
+            input( type="hidden", name="_id", value=debate.linkableId())
+            fieldset
+              legend Add an external reference
+              div
+                label(for="user") Author
+                input( type="text", name="user", id="addReferenceUser")
+              div
+                label(for="title") Reference Title
+                  em *
+                input( type="text", name="title", id="addReferenceTitle")
+              div
+                label(for="url") URL
+                input( type="text", name="url", id="addReferenceUrl")
+              div
+                label(for="desc") Reference Description
+                  em *
+                textarea( name="desc", rows=5, id="addReferenceDesc")
+              div#addReferenceSubmit
+                input(type="submit", value="Send it")
     div.comments
       h3 Comments
       - each comment in debate.comments

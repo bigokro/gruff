@@ -4,8 +4,10 @@
 
 var express = require('express')
   , DebateProvider = require('./providers/debate_provider').DebateProvider
-  , Debate = require('./models/debate').Debate
+  , DescribableProvider = require('./providers/describable_provider').DescribableProvider
+  , ReferenceProvider = require('./providers/reference_provider').ReferenceProvider
   , UserProvider = require('./providers/user_provider').UserProvider
+  , Debate = require('./models/debate').Debate
   , everyauth = require('./everyauth').everyauth
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
   , routes = require('./routes')
@@ -41,15 +43,22 @@ app.configure('production', function(){
 app.get('/', routes.index);
 app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
-app.get('/debates/:id/titles', routes.getTitle);
-app.get('/debates/:id/descriptions', routes.getDescription);
+app.get('/debates/:id/titles', routes.getDebateTitle);
+app.get('/debates/:id/descriptions', routes.getDebateDescription);
+app.get('/references/:id', routes.getReference);
+app.get('/references/:id/titles', routes.getReferenceTitle);
+app.get('/references/:id/descriptions', routes.getReferenceDescription);
 
 app.post('/debates/new', routes.postDebate);
-app.post('/debates/comments/new', routes.postComment);
-app.post('/debates/titles/new', routes.postTitle);
-app.post('/debates/descriptions/new', routes.postDescription);
+app.post('/debates/comments/new', routes.postDebateComment);
+app.post('/debates/titles/new', routes.postDebateTitle);
+app.post('/debates/descriptions/new', routes.postDebateDescription);
 app.post('/debates/answers/new', routes.postAnswer);
 app.post('/debates/arguments/new', routes.postArgument);
+app.post('/references/new', routes.postReference);
+app.post('/references/comments/new', routes.postReferenceComment);
+app.post('/references/titles/new', routes.postReferenceTitle);
+app.post('/references/descriptions/new', routes.postReferenceDescription);
 
 // Main
 

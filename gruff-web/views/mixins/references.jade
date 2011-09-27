@@ -1,0 +1,10 @@
+mixin references(debate)
+  div.references
+    h3 References
+    if debate.references
+      - each reference in debate.references
+        div.reference
+          h4.title
+            a(href="/references/" + reference.linkableId())= reference.bestTitleText()
+    else
+      div.none No references have been added to this debate.

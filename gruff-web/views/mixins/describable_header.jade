@@ -1,0 +1,19 @@
+mixin header(type, describable, linkToMe)
+  - var parent = type == "reference" ? describable.debate : describable.parent
+  if parent && parent != null
+    h1
+      a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
+    if linkToMe
+      h2 
+        a(href="/" + type + "s/"+describable.linkableId())= describable.bestTitleText()
+    else
+      h2= describable.bestTitleText()
+      a.action(href="/" + type + "s/" + describable.linkableId() + "/titles") View proposed titles
+  else
+    if linkToMe
+      h1
+        a(href="/" + type + "s/"+describable.linkableId())= describable.bestTitleText()
+    else
+      h1= describable.bestTitleText()
+      a.action(href="/" + type + "s/" + describable.linkableId() + "/titles") View proposed titles
+

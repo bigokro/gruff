@@ -6,6 +6,5 @@ mixin answers(debate)
         div.answer
           h4.title
             a(href="/debates/" + answer.linkableId())= answer.bestTitleText()
-          div.body= answer.body
     else
       div.none There are currently no proposed answers.

@@ -4,12 +4,14 @@ var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 var Debate = require('../models/debate').Debate;
+var Reference = require('../models/reference').Reference;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
-DebateProvider = function(host, port) {
+DebateProvider = function(host, port, reference_provider) {
     this.db= new Db('node-mongo-blog', new Server(host, port, {auto_reconnect: true}, {}));
     this.db.open(function(){});
+    this.reference_provider = reference_provider;
 };
 
 DebateProvider.prototype.getCollection= function(callback) {
@@ -81,8 +83,14 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
                                             provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
 		                                            if( error ) callback(error)
 		                                            else {
-                                                    result.argumentsAgainst = argumentsAgainst;
-                                                    callback(null, augmentDebate(result));
+                                                    // Pre-load any related references
+                                                    provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
+		                                                    if( error ) callback(error)
+		                                                    else {
+                                                            result.references = references;
+                                                            callback(null, augmentDebate(result));
+                                                        }
+                                                    });
                                                 }
                                             });
                                         }
@@ -177,51 +185,6 @@ DebateProvider.prototype.save = function(debates, callback) {
     });
 };
 
-DebateProvider.prototype.addCommentToDebate = function(debateId, comment, callback) {
-    this.getCollection(function(error, debate_collection) {
-	      if( error ) callback( error );
-	      else {
-	          debate_collection.update(
-		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
-		            {"$push": {comments: comment}},
-		            function(error, debate){
-		                if( error ) callback(error);
-		                else callback(null, debate)
-		            });
-	      }
-    });
-};
-
-DebateProvider.prototype.addTitleToDebate = function(debateId, title, callback) {
-    this.getCollection(function(error, debate_collection) {
-	      if( error ) callback( error );
-	      else {
-	          debate_collection.update(
-		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
-		            {"$push": {titles: title}},
-		            function(error, debate){
-		                if( error ) callback(error);
-		                else callback(null, debate)
-		            });
-	      }
-    });
-};
-
-DebateProvider.prototype.addDescriptionToDebate = function(debateId, description, callback) {
-    this.getCollection(function(error, debate_collection) {
-	      if( error ) callback( error );
-	      else {
-	          debate_collection.update(
-		            {_id: debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId)},
-		            {"$push": {descs: description}},
-		            function(error, debate){
-		                if( error ) callback(error);
-		                else callback(null, debate)
-		            });
-	      }
-    });
-};
-
 DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback) {
     var provider = this;
     this.getCollection(function(error, debate_collection) {
@@ -266,6 +229,27 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
 	  });
 };
 
+DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, callback) {
+    var provider = this;
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback( error );
+	      else {
+            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            reference.debateId = parentId;
+            provider.reference_provider.save(reference, function(error, references) {
+                var referenceId = references[0]._id;
+	              debate_collection.update(
+		                {_id: parentId},
+		                {"$push": {referenceIds: referenceId}},
+		                function(error, debate){
+		                    if( error ) callback(error);
+		                    else callback(null, debate)
+		                });
+            });
+        }
+	  });
+};
+
 function augmentDebate(result) {
     var debate = classHelper.augment(result, Debate);
     if (debate.answers) {
@@ -281,6 +265,11 @@ function augmentDebate(result) {
     if (debate.argumentsAgainst) {
 	      for (argument in debate.argumentsAgainst) {
 	          classHelper.augment(argument, Debate);
+	      }
+    }
+    if (debate.references) {
+	      for (reference in debate.references) {
+	          classHelper.augment(reference, Reference);
 	      }
     }
     return debate;
