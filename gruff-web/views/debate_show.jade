@@ -7,9 +7,15 @@ include mixins/references
 include mixins/reference_form
 include mixins/comments
 include mixins/comment_form
+include mixins/search_form
 
 
 mixin header("debate", debate, false)
+#left
+  mixin search_form
+#right
+  mixin references(debate)
+  mixin reference_form(debate)
 #main
   div.debate
     div.date= debate.date
@@ -27,8 +33,5 @@ mixin header("debate", debate, false)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE
         mixin argument_form(debate)
-    mixin references(debate)
-    mixin reference_form(debate)
     mixin comments(debate)
     mixin comment_form("debate", debate)
-

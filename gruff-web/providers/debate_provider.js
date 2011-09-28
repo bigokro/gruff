@@ -52,6 +52,27 @@ DebateProvider.prototype.findRecent = function(limit, skip, callback) {
 };
 
 
+DebateProvider.prototype.search = function(query, callback) {
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback(error)
+	      else {
+            var expr = '.*' + query + '.*';
+            debate_collection.find(
+                { $or: [
+                    {"titles.title": { $regex : expr, $options: 'i'}},
+                    {"descs.text": { $regex : expr, $options: 'i'}}
+                ]}
+            ).toArray(function(error, results) {
+		            if( error ) {
+		                callback(error);
+		            } else {
+		                callback(null, augmentDebates(results));
+		            }
+            });
+	      }
+    });
+};
+
 DebateProvider.prototype.findById = function(id, callback) {
     this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
 };

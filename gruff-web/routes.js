@@ -13,6 +13,15 @@ exports.index = function(req, res){
   })
 };
 
+exports.getSearch = function(req, res){
+    debateProvider.search(req.param('value'), function(error, results) {
+        res.render('search_results.jade', { locals: {
+            title: 'Search Results',
+            results:results
+        }});
+    });
+};
+
 exports.getNewDebate = function(req, res) {
   res.render('debate_new.jade', { locals: {
     title: 'New Debate',
