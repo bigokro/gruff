@@ -1,0 +1,30 @@
+mixin argument_form(debate)
+      div.bottomForm
+        form(method="post", action="/debates/arguments/new")
+          input( type="hidden", name="_id", value=debate.linkableId())
+          fieldset
+            legend Propose Your Own Argument
+            div
+              label(for="user") Author
+              input( type="text", name="user", id="addArgumentUser")
+            div
+              label(for="title") Argument Title
+                em *
+              input( type="text", name="title", id="addArgumentTitle")
+            div
+              label(for="isFor") This argument is:
+                br
+                input( type="radio", name="isFor", value="true", id="addArgumentFor", checked)
+                | in support of this statement
+                br
+                input( type="radio", name="isFor", value="false", id="addArgumentFor")
+                | against this statement
+            div
+              label(for="url") Optional Link
+              input( type="text", name="url", id="addArgumentUrl")
+            div
+              label(for="desc") Argument Description
+                em *
+              textarea( name="desc", id="addArgumentDesc")
+            div#addArgumentSubmit
+              input(type="submit", value="Send it")

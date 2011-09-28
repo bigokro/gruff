@@ -1,7 +1,13 @@
 include mixins/describable_header
-include mixins/debate_arguments
-include mixins/debate_answers
+include mixins/arguments
+include mixins/argument_form
+include mixins/answers
+include mixins/answer_form
 include mixins/references
+include mixins/reference_form
+include mixins/comments
+include mixins/comment_form
+
 
 mixin header("debate", debate, false)
 #main
@@ -16,101 +22,13 @@ mixin header("debate", debate, false)
     if debate.answers
         mixin answers(debate)
     if debate.type == debate.DebateTypes.DEBATE
-        div.bottomForm
-          form(method="post", action="/debates/answers/new")
-            input( type="hidden", name="_id", value=debate.linkableId())
-            fieldset
-              legend Propose Your Own Answer or Sub-debate
-              div
-                label(for="user") Author
-                input( type="text", name="user", id="addAnswerUser")
-              div
-                label(for="title") Answer Title
-                  em *
-                input( type="text", name="title", id="addAnswerTitle")
-              div
-                label(for="url") Optional Link
-                input( type="text", name="url", id="addAnswerUrl")
-              div
-                label(for="desc") Answer Description
-                  em *
-                textarea( name="desc", rows=5, id="addAnswerDesc")
-              div
-                input( type="checkbox", name="type", value="debate", id="addAnswerType")
-                | This is for a sub-debate (or category of answers)
-              div#addAnswerSubmit
-                input(type="submit", value="Send it")
+        mixin answer_form(debate)
     if (debate.argumentsFor || debate.argumentsAgainst)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE
-      div.bottomForm
-        form(method="post", action="/debates/arguments/new")
-          input( type="hidden", name="_id", value=debate.linkableId())
-          fieldset
-            legend Propose Your Own Argument
-            div
-              label(for="user") Author
-              input( type="text", name="user", id="addArgumentUser")
-            div
-              label(for="title") Argument Title
-                em *
-              input( type="text", name="title", id="addArgumentTitle")
-            div
-              label(for="isFor") This argument is:
-                br
-                input( type="radio", name="isFor", value="true", id="addArgumentFor", checked)
-                | in support of this statement
-                br
-                input( type="radio", name="isFor", value="false", id="addArgumentFor")
-                | against this statement
-            div
-              label(for="url") Optional Link
-              input( type="text", name="url", id="addArgumentUrl")
-            div
-              label(for="desc") Argument Description
-                em *
-              textarea( name="desc", id="addArgumentDesc")
-            div#addArgumentSubmit
-              input(type="submit", value="Send it")
+        mixin argument_form(debate)
     mixin references(debate)
-    div.bottomForm
-          form(method="post", action="/references/new")
-            input( type="hidden", name="_id", value=debate.linkableId())
-            fieldset
-              legend Add an external reference
-              div
-                label(for="user") Author
-                input( type="text", name="user", id="addReferenceUser")
-              div
-                label(for="title") Reference Title
-                  em *
-                input( type="text", name="title", id="addReferenceTitle")
-              div
-                label(for="url") URL
-                input( type="text", name="url", id="addReferenceUrl")
-              div
-                label(for="desc") Reference Description
-                  em *
-                textarea( name="desc", rows=5, id="addReferenceDesc")
-              div#addReferenceSubmit
-                input(type="submit", value="Send it")
-    div.comments
-      h3 Comments
-      - each comment in debate.comments
-        div.comment
-          div.user= comment.user
-          div.comment= comment.comment
-    div.bottomForm
-      form( method="post", action="/debates/comments/new")
-        input( type="hidden", name="_id", value=debate.linkableId())
-        div
-          label(for="user") Author
-          input( type="text", name="user", id="addCommentUser")
-        div
-          label(for="comment") Comment
-            em *
-          textarea( name="comment", rows=5, id="addCommentComment")
-        div#addCommentSubmit
-          input(type="submit", value="Send it")
-
+    mixin reference_form(debate)
+    mixin comments(debate)
+    mixin comment_form("debate", debate)
 

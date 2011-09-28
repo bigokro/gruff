@@ -1,4 +1,6 @@
 include mixins/describable_header
+include mixins/comments
+include mixins/comment_form
 
 mixin header("reference", reference, false)
 #main
@@ -10,23 +12,5 @@ mixin header("reference", reference, false)
         a(href=reference.url, target="_blank")= reference.url
     div.description= reference.bestDescriptionText()
     a.action(href="/references/" + reference.linkableId() + "/descriptions") View proposed descriptions
-    div.comments
-      h3 Comments
-      - each comment in reference.comments
-        div.comment
-          div.user= comment.user
-          div.comment= comment.comment
-    div.bottomForm
-      form( method="post", action="/references/comments/new")
-        input( type="hidden", name="_id", value=reference.linkableId())
-        div
-          label(for="user") Author
-          input( type="text", name="user", id="addCommentUser")
-        div
-          label(for="comment") Comment
-            em *
-          textarea( name="comment", rows=5, id="addCommentComment")
-        div#addCommentSubmit
-          input(type="submit", value="Send it")
-
-
+    mixin comments(reference)
+    mixin comment_form("reference", reference)

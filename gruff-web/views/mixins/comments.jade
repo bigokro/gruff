@@ -1,0 +1,7 @@
+mixin comments(commentable)
+    div.comments
+      h3 Comments
+      - each comment in commentable.comments
+        div.comment
+          div.user= comment.user
+          div.comment= comment.comment

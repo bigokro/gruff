@@ -1,0 +1,13 @@
+mixin comment_form(type, commentable)
+    div.bottomForm
+      form( method="post", action="/"+type+"s/comments/new")
+        input( type="hidden", name="_id", value=commentable.linkableId())
+        div
+          label(for="user") Author
+          input( type="text", name="user", id="addCommentUser")
+        div
+          label(for="comment") Comment
+            em *
+          textarea( name="comment", rows=5, id="addCommentComment")
+        div#addCommentSubmit
+          input(type="submit", value="Send it")
