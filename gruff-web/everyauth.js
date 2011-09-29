@@ -4,21 +4,6 @@ var everyauth = require('everyauth')
 , nextUserId = 0
 ;
 
-/*
-function addUser (source, sourceUser) {
-  var user;
-  if (arguments.length === 1) { // password-based
-    user = sourceUser = source;
-    user.id = ++nextUserId;
-    return usersById[nextUserId] = user;
-  } else { // non-password-based
-    user = usersById[++nextUserId] = {id: nextUserId};
-    user[source] = sourceUser;
-  }
-  return user;
-}
-*/
-
 everyauth.everymodule
   .findUserById( function (id, callback) {
     callback(null, userProvider.findById(id));
@@ -59,14 +44,25 @@ everyauth
     })
     .validateRegistration( function (newUserAttrs, errors) {
       var login = newUserAttrs.login;
-      // if (userProvider.findByLogin(login)) errors.push('Login already taken');
-      return errors;
+      var promise = this.Promise();
+      userProvider.findByLogin(login, function(err, user) {
+        if (user) {
+          errors.push('Login already taken');
+        }
+        else if (err) {
+          errors.push(err);
+        }
+        promise.fulfill(errors);
+      });
+      return promise;
     })
     .registerUser( function (newUserAttrs) {
       var promise = this.Promise();
       var login = newUserAttrs[this.loginKey()];
       userProvider.save(newUserAttrs, function(err, users) {
-        if (err) return promise.fulfill([err]);
+        if (err) {
+          return promise.fulfill([err]);
+        }
         promise.fulfill(users[0]);
       });
       return promise;
