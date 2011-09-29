@@ -37,93 +37,110 @@ DebateProvider.prototype.findAll = function(callback) {
 };
 
 DebateProvider.prototype.findRecent = function(limit, skip, callback) {
-    this.getCollection(function(error, debate_collection) {
-	      if( error ) callback(error)
-	      else {
-            debate_collection.find({parentId: null}).sort({date: -1}).skip(skip).limit(limit).toArray(function(error, results) {
-		            if( error ) {
-		                callback(error);
-		            } else {
-		                callback(null, augmentDebates(results));
-		            }
-            });
-	      }
+  this.getCollection(function(error, debate_collection) {
+    if( error ) callback(error)
+    else {
+      debate_collection.find({parentId: null}).sort({date: -1}).skip(skip).limit(limit).toArray(function(error, results) {
+        if( error ) {
+          callback(error);
+        } else {
+          callback(null, augmentDebates(results));
+        }
     });
+  }
+  });
 };
 
-
 DebateProvider.prototype.search = function(query, callback) {
-    this.getCollection(function(error, debate_collection) {
-	      if( error ) callback(error)
-	      else {
-            var expr = '.*' + query + '.*';
-            debate_collection.find(
-                { $or: [
-                    {"titles.title": { $regex : expr, $options: 'i'}},
-                    {"descs.text": { $regex : expr, $options: 'i'}}
-                ]}
-            ).toArray(function(error, results) {
-		            if( error ) {
-		                callback(error);
-		            } else {
-		                callback(null, augmentDebates(results));
-		            }
-            });
-	      }
-    });
+  this.getCollection(function(error, debate_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      var expr = '.*' + query + '.*';
+      debate_collection.find(
+        { $or: [
+          {"titles.title": { $regex : expr, $options: 'i'}},
+          {"descs.text": { $regex : expr, $options: 'i'}}
+        ]}
+      ).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          callback(null, augmentDebates(results));
+        }
+      });
+    }
+  });
 };
 
 DebateProvider.prototype.findById = function(id, callback) {
-    this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
+  console.log(id);
+  console.log(this.db.bson_serializer.ObjectID.createFromHexString(id));
+  this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
 };
 
 DebateProvider.prototype.findByObjID = function(objId, callback) {
-    var provider = this;
-    this.getCollection(function(error, debate_collection) {
-	    if( error ) callback(error)
-	      else {
-            debate_collection.findOne({_id: objId}, function(error, result) {
-		            if( error ) callback(error)
-                else if (!result) callback(null, null)
-		            else {
-                    // Pre-load the parent debate
-                    provider.findByObjID(result.parentId, function(error, parent) {
-		                    if( error ) callback(error)
-		                    else {
-                            result.parent = parent;
-                            // Pre-load any related answers
-                            provider.findAllByObjID(result.answerIds, function(error, answers) {
-		                            if( error ) callback(error)
-		                            else {
-                                    result.answers = answers;
-                                    // Pre-load any related arguments
-                                    provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
-		                                    if( error ) callback(error)
-		                                    else {
-                                            result.argumentsFor = argumentsFor;
-                                            provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
-		                                            if( error ) callback(error)
-		                                            else {
-                                                    // Pre-load any related references
-                                                    provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
-		                                                    if( error ) callback(error)
-		                                                    else {
-                                                            result.references = references;
-                                                            callback(null, augmentDebate(result));
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
+  var provider = this;
+  this.getCollection(function(error, debate_collection) {
+    if( error ) callback(error)
+      else {
+        debate_collection.findOne({_id: objId}, function(error, result) {
+          if (error) {
+            callback(error)
+          }
+          else if (!result) {
+            callback(null, null)
+          }
+          else {
+            // Pre-load the parent debate
+            provider.findByObjID(result.parentId, function(error, parent) {
+              if (error) {
+                callback(error)
+              }
+              else {
+                result.parent = parent;
+                // Pre-load any related answers
+                provider.findAllByObjID(result.answerIds, function(error, answers) {
+                  if (error) {
+                    callback(error)
+                  }
+                  else {
+                    result.answers = answers;
+                    // Pre-load any related arguments
+                    provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
+                      if (error) {
+                        callback(error)
+                      }
+                      else {
+                        result.argumentsFor = argumentsFor;
+                        provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
+                          if (error) {
+                            callback(error)
+                          }
+                          else {
+                            // Pre-load any related references
+                            provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
+                              if (error) {
+                                callback(error)
+                              }
+                              else {
+                                result.references = references;
+                                callback(null, augmentDebate(result));
+                              }
                             });
-                        }
+                          }
+                        });
+                      }
                     });
-                }
-	          });
-	      }
-    });
+                  }
+                });
+              }
+          });
+        }
+      });
+    }
+  });
 };
 
 DebateProvider.prototype.findAllById = function(ids, callback) {
