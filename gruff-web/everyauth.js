@@ -23,13 +23,33 @@ everyauth
     })
     .authenticate( function (login, password) {
       var errors = [];
-      if (!login) errors.push('Missing login');
-      if (!password) errors.push('Missing password');
-      if (errors.length) return errors;
-      var user = userProvider.findByLogin(login);
-      if (!user) return ['Login failed'];
-      if (user.password !== password) return ['Login failed'];
-      return user;
+      if (!login) {
+        errors.push('Missing login');
+      }
+      if (!password) {
+        errors.push('Missing password');
+      }
+      if (errors.length) {
+        return errors;
+      }
+      var promise = this.Promise();
+      userProvider.findByLogin(login, function (err, user) {
+        if (err) {
+          promise.fulfill(err);
+        }
+        else {
+          if (!user) {
+            promise.fulfill(['Login failed']);
+          }
+          else if (user.password !== password) {
+           promise.fulfill(['Login failed']);
+          }
+          else {
+            promise.fulfill(user);
+          }
+        }
+      });
+      return promise;
     })
 
     .getRegisterPath('/register')
