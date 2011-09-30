@@ -57,32 +57,32 @@ DebateProvider.prototype.search = function(query, callback) {
             callback(error)
         }
         else {
-            // Commented out code is for the ANDed search. Not supported until mongodb 1.9.1
-//            var queryExprs = [];
-            var queryStrings = [];
+            // Commented out code is for the ORed search. Required for versions earlier than mongodb 1.9.1
+            var queryExprs = [];
+//            var queryStrings = [];
             var queries = query.split(" ");
             for (var i=0; i < queries.length; i++) {
                 var q = queries[i];
                 if (q.trim() != '') {
                     var qForRegex = q.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, "");
-                    queryStrings.push('(.*' + qForRegex + '.*)');
-/*                    var expr = '(.*' + qForRegex + '.*)';
+//                    queryStrings.push('(.*' + qForRegex + '.*)');
+                    var expr = '(.*' + qForRegex + '.*)';
                     queryExprs.push(
                         { $or: [
                             {"titles.title": { $regex : expr, $options: 'i'}},
                             {"descs.text": { $regex : expr, $options: 'i'}}
                         ]}
                     );
-*/
+
                 }
             }
-            var expr = queryStrings.join('|');
-//            var search = { $and: queryExprs };                
+            var search = { $and: queryExprs };                
+/*            var expr = queryStrings.join('|');
             var search = { $or: [
                             {"titles.title": { $regex : expr, $options: 'i'}},
                             {"descs.text": { $regex : expr, $options: 'i'}}
             ]};
-            debate_collection.find(
+*/            debate_collection.find(
                 search
             ).toArray(function(error, results) {
                 if (error) {
