@@ -4,7 +4,7 @@ mixin header(type, describable, true)
 #main
   div.describable
     div.date= describable.date
-    div.body= describable.body
+    div.description= describable.bestDescriptionText()
     div.titles
       h3 Titles
       - each title in describable.titles
