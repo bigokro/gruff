@@ -52,26 +52,47 @@ DebateProvider.prototype.findRecent = function(limit, skip, callback) {
 };
 
 DebateProvider.prototype.search = function(query, callback) {
-  this.getCollection(function(error, debate_collection) {
-    if (error) {
-      callback(error)
-    }
-    else {
-      var expr = '.*' + query + '.*';
-      debate_collection.find(
-        { $or: [
-          {"titles.title": { $regex : expr, $options: 'i'}},
-          {"descs.text": { $regex : expr, $options: 'i'}}
-        ]}
-      ).toArray(function(error, results) {
+    this.getCollection(function(error, debate_collection) {
         if (error) {
-          callback(error);
-        } else {
-          callback(null, augmentDebates(results));
+            callback(error)
         }
-      });
-    }
-  });
+        else {
+            // Commented out code is for the ANDed search. Not supported until mongodb 1.9.1
+//            var queryExprs = [];
+            var queryStrings = [];
+            var queries = query.split(" ");
+            for (var i=0; i < queries.length; i++) {
+                var q = queries[i];
+                if (q.trim() != '') {
+                    var qForRegex = q.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, "");
+                    queryStrings.push('(.*' + qForRegex + '.*)');
+/*                    var expr = '(.*' + qForRegex + '.*)';
+                    queryExprs.push(
+                        { $or: [
+                            {"titles.title": { $regex : expr, $options: 'i'}},
+                            {"descs.text": { $regex : expr, $options: 'i'}}
+                        ]}
+                    );
+*/
+                }
+            }
+            var expr = queryStrings.join('|');
+//            var search = { $and: queryExprs };                
+            var search = { $or: [
+                            {"titles.title": { $regex : expr, $options: 'i'}},
+                            {"descs.text": { $regex : expr, $options: 'i'}}
+            ]};
+            debate_collection.find(
+                search
+            ).toArray(function(error, results) {
+                if (error) {
+                    callback(error);
+                } else {
+                    callback(null, augmentDebates(results));
+                }
+            });
+        }
+    });
 };
 
 DebateProvider.prototype.findById = function(id, callback) {

@@ -1,6 +1,11 @@
-h1= title
-h2 Recent Debates
-a(href="/debates/new") Start your own debate!
+include mixins/search_form
+
+#header
+  h1= title
+  h2 Recent Debates
+  a(href="/debates/new") Start your own debate!
+#left
+  mixin search_form
 #main
     div.debates
         - each debate in debates
