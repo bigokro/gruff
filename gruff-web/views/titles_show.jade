@@ -8,7 +8,7 @@ mixin header(type, describable, true)
     div.titles
       h3 Titles
       - each title in describable.titles
-        h4.title
+        h4.choose-title
           div.user= title.user
           div.date= title.date
           div(class="body unchecked")= title.title

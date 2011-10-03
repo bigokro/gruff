@@ -1,3 +1,4 @@
+
 body
   font-family "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial
   font-size 13px
@@ -81,11 +82,14 @@ textarea
             font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
             padding 5px
             background-color #fff
+            border none
 .debate
   .date
     display none
-  .description
+.description
+    min-height 26px
     margin-top 10px
+    margin-bottom 10px
     font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
     padding 5px
     background-color #fff
@@ -94,6 +98,16 @@ textarea
     border-width 2px
     border-color #A3181E
     background-color #DDD
+    .vote-link
+      float right
+      text-align right
+.vote-link
+  margin-left 15px
+.descriptions 
+  .choose-description
+      border-top-style dashed
+      border-bottom-style none
+      padding-bottom 10px
 .for
   float left
   width 50%
@@ -112,14 +126,12 @@ textarea
       background-color #ffa
 .titles
   margin-top 20px
-  .title
+  .choose-title
     margin-top 10px
     .user
       font-weight bold
       text-decoration underline
       background-color #eee
-    .description
-      background-color #ffa
 .answers
   margin-top 20px
   .answer
@@ -128,14 +140,14 @@ textarea
       font-weight bold
       text-decoration underline
       background-color #eee
-    .description
-      background-color #ffa
 .bottomForm
     margin-top 20px
 .checked
+  min-height 26px
   padding 5px 0px 0px 32px
   background url(/images/checked.png) no-repeat 6px 0
 .unchecked
+  min-height 26px
   padding 5px 0px 0px 32px
   background url(/images/unchecked.png) no-repeat 6px 0
 #left
