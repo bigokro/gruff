@@ -11,6 +11,8 @@ mixin header("reference", reference, false)
         | External Reference: 
         a(href=reference.url, target="_blank")= reference.url
     div.description= reference.bestDescriptionText()
-    a.action(href="/references/" + reference.linkableId() + "/descriptions") View proposed descriptions
+      div.vote-link
+        a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
+          img(src="/images/checked.png")
     mixin comments(reference)
     mixin comment_form("reference", reference)

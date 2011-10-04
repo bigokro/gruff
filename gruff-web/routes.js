@@ -1,6 +1,7 @@
 var referenceProvider = new ReferenceProvider('localhost', 27017)
 var debateProvider = new DebateProvider('localhost', 27017, referenceProvider)
 var describableProvider = new DescribableProvider('localhost', 27017)
+var debate = new Debate();
 
 //GET
 
@@ -139,7 +140,6 @@ exports.postAnswer = function(req, res) {
     var debate = new Debate();
     debateProvider.addAnswerToDebate(req.param('_id'), {
         user: req.param('user'),
-        url: req.param('url'),
         type: req.param('type') ? debate.DebateTypes.DEBATE : debate.DebateTypes.DIALECTIC,
         desc: req.param('desc'),
         titles: [{
@@ -156,7 +156,6 @@ exports.postAnswer = function(req, res) {
 exports.postArgument = function(req, res) {
     debateProvider.addArgumentToDebate(req.param('_id'), {
         user: req.param('user'),
-        url: req.param('url'),
         type: debate.DebateTypes.DIALECTIC,
         desc: req.param('desc'),
         titles: [{

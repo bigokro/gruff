@@ -52,27 +52,67 @@ DebateProvider.prototype.findRecent = function(limit, skip, callback) {
 };
 
 DebateProvider.prototype.search = function(query, callback) {
-  this.getCollection(function(error, debate_collection) {
-    if (error) {
-      callback(error)
-    }
-    else {
-      var expr = '.*' + query + '.*';
-      debate_collection.find(
-        { $or: [
-          {"titles.title": { $regex : expr, $options: 'i'}},
-          {"descs.text": { $regex : expr, $options: 'i'}}
-        ]}
-      ).toArray(function(error, results) {
+    this.getCollection(function(error, debate_collection) {
         if (error) {
-          callback(error);
-        } else {
-          callback(null, augmentDebates(results));
+            callback(error)
         }
-      });
-    }
-  });
+        else {
+            // TODO: This is really our first big candidate for a unit test!
+            // Which also implies the logic to construct the query should be extracted
+            var queryExprs = [];
+            var queries = query.split(" ");
+            var search = buildSearchQueryExpression(queries);
+            if (search.length < 1) {
+                callback(null, []);
+            }
+            debate_collection.find(
+                search
+            ).toArray(function(error, results) {
+                if (error) {
+                    callback(error);
+                } else {
+                    callback(null, augmentDebates(results));
+                }
+            });
+        }
+    });
 };
+
+// Unit test this sucka!
+function buildSearchQueryExpression(tokens) {
+    var result = [[]];
+    var orCount = 0;
+    for (var i=0; i < tokens.length; i++) {
+        var token = tokens[i].toLowerCase().trim();
+        if (token == 'or') {
+            if (i == 0 || i == tokens.length-1) {
+                // Just ignore. Toss out "OR" operators at the start or end of the query.
+            } else {
+                orCount += 1;
+                result.push([]);
+            }
+        } else if (token != '' && token != 'and') {
+            var tokenForRegex = token.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, "");
+            var expr = '(.*' + tokenForRegex + '.*)';
+            result[orCount].push(
+                { $or: [
+                    {"titles.title": { $regex : expr, $options: 'i'}},
+                    {"descs.text": { $regex : expr, $options: 'i'}}
+                ]}
+            );
+        }
+    }
+    for (var i=0; i < result.length; i++) {
+        if (result[i].length > 1) {
+            result[i] = { $and: result[i] };
+        } else if (result[i].length == 0) {
+            result[i] = [];
+        } else {
+            result[i] = result[i][0];
+        }
+    }
+    return result.length == 1 ? result[0] : { $or: result };
+}
 
 DebateProvider.prototype.findById = function(id, callback) {
   console.log(id);
@@ -119,6 +159,7 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
                             callback(error)
                           }
                           else {
+                              result.argumentsAgainst = argumentsAgainst;
                             // Pre-load any related references
                             provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
                               if (error) {
@@ -257,7 +298,7 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
                 var argumentId = arguments[0]._id;
 	              debate_collection.update(
 		                {_id: parentId},
-		                {"$push": isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId}},
+		                {"$push": (isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId})},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else callback(null, debate)

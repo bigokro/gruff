@@ -2,13 +2,13 @@ include mixins/describable_header
 
 mixin header(type, describable, true)
 #main
-  div.describable
+  div.debate
     div.date= describable.date
-    div.body= describable.body
+    div.description= describable.bestDescriptionText()
     div.titles
       h3 Titles
       - each title in describable.titles
-        h4.title
+        h4.choose-title
           div.user= title.user
           div.date= title.date
           div(class="body unchecked")= title.title

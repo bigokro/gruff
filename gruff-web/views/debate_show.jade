@@ -19,12 +19,10 @@ mixin header("debate", debate, false)
 #main
   div.debate
     div.date= debate.date
-    if debate.url && debate.url != null
-      div.reference
-        | External Reference: 
-        a(href=debate.url, target="_blank")= debate.url
     div.description= debate.bestDescriptionText()
-    a.action(href="/debates/" + debate.linkableId() + "/descriptions") View proposed descriptions
+      div.vote-link
+        a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
+          img(src="/images/checked.png")
     if debate.answers
         mixin answers(debate)
     if debate.type == debate.DebateTypes.DEBATE
