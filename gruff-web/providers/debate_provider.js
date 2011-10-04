@@ -115,8 +115,6 @@ function buildSearchQueryExpression(tokens) {
 }
 
 DebateProvider.prototype.findById = function(id, callback) {
-  console.log(id);
-  console.log(this.db.bson_serializer.ObjectID.createFromHexString(id));
   this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
 };
 

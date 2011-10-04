@@ -16,6 +16,7 @@ var express = require('express')
 // Configuration
 
 var app = module.exports = express.createServer();
+everyauth.helpExpress(app);
 
 app.configure(function(){
     app.set('views', __dirname + '/views');
@@ -63,6 +64,5 @@ app.post('/references/descriptions/new', routes.postReferenceDescription);
 
 // Main
 
-everyauth.helpExpress(app);
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

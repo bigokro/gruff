@@ -1,4 +1,12 @@
 #header
   a.site-name(href='/') Gruff
-  div.user-block User Placeholder
+  ul.user-actions
+    if everyauth.loggedIn
+      li.logout
+        a.logout(href='/logout') Logout
+    else
+      li.login
+        a(href='/login') Login
+      li.register
+        a(href='/register') Register
   a(href="/debates/new") Start your own debate!
