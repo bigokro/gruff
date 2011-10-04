@@ -159,6 +159,7 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
                             callback(error)
                           }
                           else {
+                              result.argumentsAgainst = argumentsAgainst;
                             // Pre-load any related references
                             provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
                               if (error) {
@@ -297,7 +298,7 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
                 var argumentId = arguments[0]._id;
 	              debate_collection.update(
 		                {_id: parentId},
-		                {"$push": isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId}},
+		                {"$push": (isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId})},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else callback(null, debate)
