@@ -40,7 +40,6 @@ UserProvider.prototype.findAll = function(callback) {
 
 UserProvider.prototype.findById = function(id, callback) {
   this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
-  this.findByObjID(id, callback);
 };
 
 UserProvider.prototype.findByObjID = function(objId, callback) {
@@ -55,9 +54,9 @@ UserProvider.prototype.findByObjID = function(objId, callback) {
           callback(error)
         }
         else {
-          callback(null, result);
+          result.id = result._id;
+	  callback(null, result);
         }
-
       });
     }
   });

@@ -6,7 +6,7 @@ var everyauth = require('everyauth')
 
 everyauth.everymodule
   .findUserById( function (id, callback) {
-    callback(null, userProvider.findById(id));
+    userProvider.findById(id, callback);
   });
 
 everyauth
@@ -45,6 +45,8 @@ everyauth
            promise.fulfill(['Login failed']);
           }
           else {
+            // Annoying!
+            user.id = user._id;
             promise.fulfill(user);
           }
         }
