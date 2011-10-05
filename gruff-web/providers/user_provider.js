@@ -30,6 +30,9 @@ UserProvider.prototype.findAll = function(callback) {
         if( error ) {
           callback(error);
         }
+        else {
+          callback(null, results);
+        }
       });
     }
   });
@@ -51,6 +54,10 @@ UserProvider.prototype.findByObjID = function(objId, callback) {
         if( error ) {
           callback(error)
         }
+        else {
+          callback(null, result);
+        }
+
       });
     }
   });
@@ -81,8 +88,11 @@ UserProvider.prototype.findAllByObjID = function(objIds, callback) {
           .find({_id: {$in : objIds} })
           .toArray(function(error, results) {
             if( error ) {
-              callback(error);
+                callback(error);
             }
+              else {
+                  callback(null, results);
+              }
           });
       }
     }
