@@ -138,19 +138,36 @@ exports.postDebateDescription = function(req, res) {
 
 exports.postAnswer = function(req, res) {
     var debate = new Debate();
-    debateProvider.addAnswerToDebate(req.param('_id'), {
-        user: req.param('user'),
-        type: req.param('type') ? debate.DebateTypes.DEBATE : debate.DebateTypes.DIALECTIC,
-        desc: req.param('desc'),
-        titles: [{
+    if (req.param('type') == 'debate') {
+        debateProvider.addSubdebateToDebate(req.param('_id'), {
             user: req.param('user'),
-            title: req.param('title'),
+            type: debate.DebateTypes.DEBATE,
+            desc: req.param('desc'),
+            titles: [{
+                user: req.param('user'),
+                title: req.param('title'),
+                date: new Date()
+            }],
             date: new Date()
-        }],
-        date: new Date()
-    }, function( error, docs) {
-        res.redirect('/debates/' + req.param('_id'))
-    });
+        }, function( error, docs) {
+            res.redirect('/debates/' + req.param('_id'))
+        });
+    }
+    else {
+        debateProvider.addAnswerToDebate(req.param('_id'), {
+            user: req.param('user'),
+            type: debate.DebateTypes.DIALECTIC,
+            desc: req.param('desc'),
+            titles: [{
+                user: req.param('user'),
+                title: req.param('title'),
+                date: new Date()
+            }],
+            date: new Date()
+        }, function( error, docs) {
+            res.redirect('/debates/' + req.param('_id'))
+        });
+    }
 };
 
 exports.postArgument = function(req, res) {

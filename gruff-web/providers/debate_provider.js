@@ -143,42 +143,51 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
                   if (error) {
                     callback(error)
                   }
-                  else {
-                    result.answers = answers;
-                    // Pre-load any related arguments
-                    provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
-                      if (error) {
-                        callback(error)
-                      }
-                      else {
-                        result.argumentsFor = argumentsFor;
-                        provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
-                          if (error) {
-                            callback(error)
-                          }
-                          else {
-                              result.argumentsAgainst = argumentsAgainst;
-                            // Pre-load any related references
-                            provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
-                              if (error) {
+                    else {
+                        result.answers = answers;
+                        // Pre-load any related subdebates
+                        provider.findAllByObjID(result.subdebateIds, function(error, subdebates) {
+                            if (error) {
                                 callback(error)
-                              }
-                              else {
-                                result.references = references;
-                                callback(null, augmentDebate(result));
-                              }
-                            });
-                          }
+                            }
+                            else {
+                                result.subdebates = subdebates;
+                                // Pre-load any related arguments
+                                provider.findAllByObjID(result.argumentsForIds, function(error, argumentsFor) {
+                                    if (error) {
+                                        callback(error)
+                                    }
+                                    else {
+                                        result.argumentsFor = argumentsFor;
+                                        provider.findAllByObjID(result.argumentsAgainstIds, function(error, argumentsAgainst) {
+                                            if (error) {
+                                                callback(error)
+                                            }
+                                            else {
+                                                result.argumentsAgainst = argumentsAgainst;
+                                                // Pre-load any related references
+                                                provider.reference_provider.findAllByObjID(result, result.referenceIds, function(error, references) {
+                                                    if (error) {
+                                                        callback(error)
+                                                    }
+                                                    else {
+                                                        result.references = references;
+                                                        callback(null, augmentDebate(result));
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
                         });
-                      }
-                    });
-                  }
+                    }
                 });
               }
-          });
-        }
-      });
-    }
+            });
+          }
+        });
+      }
   });
 };
 
@@ -275,6 +284,28 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
 	              debate_collection.update(
 		                {_id: parentId},
 		                {"$push": {answerIds: answerId}},
+		                function(error, debate){
+		                    if( error ) callback(error);
+		                    else callback(null, debate)
+		                });
+            });
+        }
+	  });
+};
+
+DebateProvider.prototype.addSubdebateToDebate = function(debateId, subdebate, callback) {
+    var provider = this;
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback( error );
+	      else {
+            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            subdebate.parentId = parentId;
+            provider.save(subdebate, function(error, subdebates) {
+                // Add the subdebate as a new debate
+                var subdebateId = subdebates[0]._id;
+	              debate_collection.update(
+		                {_id: parentId},
+		                {"$push": {subdebateIds: subdebateId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else callback(null, debate)

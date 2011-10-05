@@ -1,6 +1,7 @@
 include mixins/describable_header
 include mixins/arguments
 include mixins/argument_form
+include mixins/subdebates
 include mixins/answers
 include mixins/answer_form
 include mixins/references
@@ -23,13 +24,15 @@ mixin header("debate", debate, false)
       div.vote-link
         a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
           img(src="/images/checked.png")
-    if debate.answers
-        mixin answers(debate)
-    if debate.type == debate.DebateTypes.DEBATE
-        mixin answer_form(debate)
     if (debate.argumentsFor || debate.argumentsAgainst)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE
         mixin argument_form(debate)
+    if debate.answers
+        mixin answers(debate)
+    if debate.subdebates
+        mixin subdebates(debate)
+    if debate.type == debate.DebateTypes.DEBATE
+        mixin answer_form(debate)
     mixin comments(debate)
     mixin comment_form("debate", debate)

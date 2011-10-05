@@ -1,0 +1,10 @@
+mixin subdebates(debate)
+  div.subdebates
+    h3 Sub-debates
+    if debate.subdebates
+      - each sub in debate.subdebates
+        div.subdebate
+          h4.title
+            a(href="/debates/" + sub.linkableId())= sub.bestTitleText()
+    else
+      div.none There are no sub-debates attached to this debate.
