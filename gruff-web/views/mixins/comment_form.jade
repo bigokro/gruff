@@ -1,5 +1,6 @@
 mixin comment_form(type, commentable)
-    div.bottomForm
+  div.bottomForm
+    if everyauth.loggedIn
       form( method="post", action="/"+type+"s/comments/new")
         input( type="hidden", name="_id", value=commentable.linkableId())
         div
@@ -11,3 +12,5 @@ mixin comment_form(type, commentable)
           textarea( name="comment", rows=5, id="addCommentComment")
         div#addCommentSubmit
           input(type="submit", value="Send it")
+    else
+      a(href="/login") Want to contribute? Log in!

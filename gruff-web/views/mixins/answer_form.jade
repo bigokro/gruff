@@ -1,12 +1,10 @@
 mixin answer_form(debate)
-        div.bottomForm
+    div.bottomForm
+      if everyauth.loggedIn
           form(method="post", action="/debates/answers/new")
             input( type="hidden", name="_id", value=debate.linkableId())
             fieldset
               legend Propose Your Own Answer or Sub-debate
-              div
-                label(for="user") Author
-                input( type="text", name="user", id="addAnswerUser")
               div
                 label(for="title") Answer Title
                   em *
@@ -20,3 +18,5 @@ mixin answer_form(debate)
                 | This is for a sub-debate (or category of answers)
               div#addAnswerSubmit
                 input(type="submit", value="Send it")
+      else
+        a(href="/login") Want to contribute? Log in!

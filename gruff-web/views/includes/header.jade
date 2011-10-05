@@ -9,4 +9,7 @@
         a(href='/login') Login
       li.register
         a(href='/register') Register
-  a(href="/debates/new") Start your own debate!
+  if everyauth.loggedIn
+    a(href="/debates/new") Start your own debate!
+  else
+    a(href="/login") Log in to start your own debate!

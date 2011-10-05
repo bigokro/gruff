@@ -1,5 +1,6 @@
 mixin argument_form(debate)
-      div.bottomForm
+    div.bottomForm
+      if everyauth.loggedIn
         form(method="post", action="/debates/arguments/new")
           input( type="hidden", name="_id", value=debate.linkableId())
           fieldset
@@ -25,3 +26,5 @@ mixin argument_form(debate)
               textarea( name="desc", id="addArgumentDesc")
             div#addArgumentSubmit
               input(type="submit", value="Send it")
+      else
+        a(href="/login") Want to contribute? Log in!
