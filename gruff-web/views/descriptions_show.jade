@@ -13,17 +13,18 @@ mixin header(type, describable, true)
           div.date= desc.date
           div(class="text unchecked")= desc.text
     div.bottomForm
-      form( method="post", action="/" + type + "s/descriptions/new")
-        input( type="hidden", name="_id", value=describable.linkableId())
-        fieldset
-          legend Propose Your Own Description
-          div
-            label(for="user") Author
-            input( type="text", name="user", id="addDescriptionUser")
-          div
-            label(for="desc") Description
-              em *
-            textarea( name="desc", id="addDescriptionDesc")
-          div#addDescriptionSubmit
-            input(type="submit", value="Send it")
+      if everyauth.loggedIn
+        form( method="post", action="/" + type + "s/descriptions/new")
+          input( type="hidden", name="_id", value=describable.linkableId())
+          input( type="hidden", name="user", value=everyauth.user.login)
+          fieldset
+            legend Propose Your Own Description
+            div
+              label(for="desc") Description
+                em *
+              textarea( name="desc", id="addDescriptionDesc")
+            div#addDescriptionSubmit
+              input(type="submit", value="Send it")
+      else
+        a(href="/login") Want to contribute? Log in!
 

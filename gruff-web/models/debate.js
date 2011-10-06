@@ -17,6 +17,7 @@ Debate.prototype.DebateTypes = {
     DIALECTIC : "Dialectic"
 };
 
+
 classHelper.augmentClass(Debate, Identifiable);
 classHelper.augmentClass(Debate, Describable);
 

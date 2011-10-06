@@ -21,6 +21,13 @@ DebateProvider.prototype.getCollection= function(callback) {
     });
 };
 
+DebateProvider.prototype.getHistoryCollection= function(callback) {
+    this.db.collection('history', function(error, history_collection) {
+	      if( error ) callback(error);
+	      else callback(null, history_collection);
+    });
+};
+
 DebateProvider.prototype.findAll = function(callback) {
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback(error)
@@ -357,6 +364,77 @@ DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, ca
         }
 	  });
 };
+
+DebateProvider.prototype.addReferenceToDebate = function(userId, redundantId, survivorId, callback) {
+    var provider = this;
+    var userObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(userId);
+    var redundantObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(redundantId);
+    var survivorObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(survivorId);
+    this.getCollection(function(error, debate_collection) {
+	      if( error ) callback( error );
+	      else {
+            this.getHistoryCollection(function(error, history_collection) {
+	              if( error ) callback( error );
+	              else {
+                    debate_collection.findOne({_id: redundantObjId}, function(error, redundant) {
+                        if (error) {
+                            callback(error)
+                        }
+                        else {
+                            debate_collection.findOne({_id: survivorObjId}, function(error, survivor) {
+                                if (error) {
+                                    callback(error)
+                                }
+                                else {
+                                    // Merge debates
+                                    survivor.titles.concat(redundant.titles);
+                                    survivor.descriptions.concat(redundant.descriptions);
+                                    survivor.answerIds.concat(redundant.answerIds);
+                                    survivor.subdebateIds.concat(redundant.subdebateIds);
+                                    survivor.argumentsForIds.concat(redundant.argumentsForIds);
+                                    survivor.argumentsAgainstIds.concat(redundant.argumentsAgainstIds);
+                                    survivor.referenceIds.concat(redundant.referenceIds);
+                                    survivor.comments.concat(redundant.comments);
+                                    
+                                    // Save change history
+                                    var history = {
+                                        type: "merge",
+                                        fromId: redundantObjId,
+                                        toId: survivorObjId,
+                                        date: new Date(),
+                                        user: userObjId,
+                                        fromObj: redundant
+                                    };
+                                    history_collection.insert(history, function() {
+
+                                        // Update survivor
+	                                      debate_collection.update(
+		                                        {_id: survivorObjId},
+		                                        survivor,
+		                                        function(error, debate){
+		                                            if( error ) callback(error);
+		                                            else {
+
+                                                    // Delete redundant
+	                                                  debate_collection.remove({_id: redundantObjId}, function(error, removed) {
+		                                                        if( error ) callback(error);
+		                                                        else {
+                                                                callback(null, survivor);
+                                                            }
+                                                    });
+                                                }
+		                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+	  });
+};
+
 
 function augmentDebate(result) {
     var debate = classHelper.augment(result, Debate);

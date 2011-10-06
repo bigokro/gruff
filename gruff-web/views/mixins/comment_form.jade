@@ -3,9 +3,7 @@ mixin comment_form(type, commentable)
     if everyauth.loggedIn
       form( method="post", action="/"+type+"s/comments/new")
         input( type="hidden", name="_id", value=commentable.linkableId())
-        div
-          label(for="user") Author
-          input( type="text", name="user", id="addCommentUser")
+        input( type="hidden", name="user", value=everyauth.user.login)
         div
           label(for="comment") Comment
             em *

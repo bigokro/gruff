@@ -3,11 +3,9 @@ mixin reference_form(debate)
       if everyauth.loggedIn
           form(method="post", action="/references/new")
             input( type="hidden", name="_id", value=debate.linkableId())
+            input( type="hidden", name="user", value=everyauth.user.login)
             fieldset
               legend Add an external reference
-              div
-                label(for="user") Author
-                input( type="text", name="user", id="addReferenceUser")
               div
                 label(for="title") Reference Title
                   em *

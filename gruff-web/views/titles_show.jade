@@ -13,17 +13,18 @@ mixin header(type, describable, true)
           div.date= title.date
           div(class="body unchecked")= title.title
     div.bottomForm
-      form( method="post", action="/" + type + "s/titles/new")
-        input( type="hidden", name="_id", value=describable.linkableId())
-        fieldset
-          legend Propose Your Own Title
-          div
-            label(for="user") Author
-            input( type="text", name="user", id="addTitleUser")
-          div
-            label(for="title") Title
-              em *
-            input( type="text", name="title", id="addTitleTitle")
-          div#addTitleSubmit
-            input(type="submit", value="Send it")
+      if everyauth.loggedIn
+        form( method="post", action="/" + type + "s/titles/new")
+          input( type="hidden", name="_id", value=describable.linkableId())
+          input( type="hidden", name="user", value=everyauth.user.login)
+          fieldset
+            legend Propose Your Own Title
+            div
+              label(for="title") Title
+                em *
+              input( type="text", name="title", id="addTitleTitle")
+            div#addTitleSubmit
+              input(type="submit", value="Send it")
+      else
+        a(href="/login") Want to contribute? Log in!
 
