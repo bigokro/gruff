@@ -1,16 +1,17 @@
-#header
-  a.site-name(href='/') Gruff
-  ul.user-actions
+#top
+  div#logo
+    a.site-name(href='/') Gruff
+  ul#user
     if everyauth.loggedIn
       li.user You are logged in as #{user.login}
       li.logout
         a.logout(href='/logout') Logout
+      li.new
+        a(href="/debates/new") Start your own debate!
     else
       li.login
         a(href='/login') Login
       li.register
         a(href='/register') Register
-  if everyauth.loggedIn
-    a(href="/debates/new") Start your own debate!
-  else
-    a(href="/login") Log in to start your own debate!
+      li.new
+        a(href="/login") Log in to start your own debate!
