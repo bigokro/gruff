@@ -365,7 +365,7 @@ DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, ca
 	  });
 };
 
-DebateProvider.prototype.addReferenceToDebate = function(userId, redundantId, survivorId, callback) {
+DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId, callback) {
     var provider = this;
     var userObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(userId);
     var redundantObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(redundantId);
