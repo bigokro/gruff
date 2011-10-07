@@ -11,6 +11,7 @@ var express = require('express')
   , everyauth = require('./everyauth').everyauth
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
   , routes = require('./routes')
+  , stylus = require('stylus')
   ;
 
 // Configuration
@@ -24,7 +25,7 @@ app.configure(function(){
     app.use(express.cookieParser());
     app.use(express.session({secret: ':DP:DP:DP:DP'}));
     app.use(express.methodOverride());
-    app.use(require('stylus').middleware({ src: __dirname + '/public' }));
+    app.use(stylus.middleware({ src: __dirname + '/public' }));
     app.use(everyauth.middleware());
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
