@@ -15,12 +15,12 @@ exports.index = function(req, res){
 };
 
 exports.getSearch = function(req, res){
-    debateProvider.search(req.param('value'), function(error, results) {
-        res.render('search_results.jade', { locals: {
-            title: 'Search Results',
-            results: results
-        }});
-    });
+  debateProvider.search(req.param('value'), function(error, results) {
+    res.render('search_results.jade', { locals: {
+      title: 'Search Results',
+      results: results
+    }});
+  });
 };
 
 exports.getNewDebate = function(req, res) {
@@ -36,9 +36,9 @@ exports.getNewDebate = function(req, res) {
 exports.getDebate = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     res.render('debate_show.jade', { locals: {
-      title:debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText() ,
-      parent:debate.parent,
-      debate:debate
+      title: debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText() ,
+      parent: debate.parent,
+      debate: debate
     }});
   });
 };
@@ -47,7 +47,7 @@ exports.getReference = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
     res.render('reference_show.jade', { locals: {
         title: reference.debate.bestTitleText() + " - " + reference.bestTitleText(),
-        reference:reference
+        reference: reference
     }});
   });
 };
@@ -56,9 +56,9 @@ exports.getDebateTitle = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     res.render('titles_show.jade', { locals: {
       type: 'debate',
-      title:debate.bestTitleText(),
-      parent:debate.parent,
-      describable:debate
+      title: debate.bestTitleText(),
+      parent: debate.parent,
+      describable: debate
     }});
   });
 };
@@ -67,9 +67,9 @@ exports.getDebateDescription = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     res.render('descriptions_show.jade', { locals: {
       type: 'debate',
-      title:debate.bestTitleText(),
-      parent:debate.parent,
-      describable:debate
+      title: debate.bestTitleText(),
+      parent: debate.parent,
+      describable: debate
     }});
   });
 };
@@ -78,9 +78,9 @@ exports.getReferenceTitle = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
     res.render('titles_show.jade', { locals: {
       type: 'reference',
-      title:reference.bestTitleText(),
-      parent:reference.debate,
-      describable:reference
+      title: reference.bestTitleText(),
+      parent: reference.debate,
+      describable: reference
     }});
   });
 };
@@ -89,9 +89,9 @@ exports.getReferenceDescription = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
     res.render('descriptions_show.jade', { locals: {
       type: 'reference',
-      title:reference.bestTitleText(),
-      parent:reference.debate,
-      describable:reference
+      title: reference.bestTitleText(),
+      parent: reference.debate,
+      describable: reference
     }});
   });
 };
