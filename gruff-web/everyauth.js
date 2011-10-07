@@ -17,7 +17,7 @@ everyauth
     .loginLocals( function (req, res, done) {
       setTimeout( function () {
         done(null, {
-          title: 'Gruff Login'
+          title: 'Login'
         });
       }, 200);
     })
@@ -60,7 +60,7 @@ everyauth
     .registerLocals( function (req, res, done) {
       setTimeout( function () {
         done(null, {
-          title: 'Gruff Registration'
+          title: 'Register'
         });
       }, 200);
     })
