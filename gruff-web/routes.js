@@ -9,7 +9,7 @@ exports.index = function(req, res){
   debateProvider.findRecent(10, 0, function(error, docs){
     res.render('index.jade', { locals: {
       title: 'Recent Debates',
-      debates:docs
+      debates: docs
     }});
   })
 };
@@ -18,12 +18,15 @@ exports.getSearch = function(req, res){
     debateProvider.search(req.param('value'), function(error, results) {
         res.render('search_results.jade', { locals: {
             title: 'Search Results',
-            results:results
+            results: results
         }});
     });
 };
 
 exports.getNewDebate = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   res.render('debate_new.jade', { locals: {
     title: 'New Debate',
     debate: new Debate()
@@ -96,17 +99,23 @@ exports.getReferenceDescription = function(req, res) {
 // POST
 
 exports.postDebate = function(req, res){
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   debateProvider.save({
     title: req.param('title'),
     url: req.param('url'),
     desc: req.param('desc'),
     type: req.param('type')
   }, function( error, docs) {
-    res.redirect('/')
+    res.redirect('/');
   });
 };
 
 exports.postDebateComment = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   describableProvider.addComment('debates', req.param('_id'), {
     user: req.param('user'),
     comment: req.param('comment'),
@@ -117,6 +126,9 @@ exports.postDebateComment = function(req, res) {
 };
 
 exports.postDebateTitle = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   describableProvider.addTitle("debates", req.param('_id'), {
     user: req.param('user'),
     title: req.param('title'),
@@ -127,6 +139,9 @@ exports.postDebateTitle = function(req, res) {
 };
 
 exports.postDebateDescription = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   describableProvider.addDescription("debates", req.param('_id'), {
     user: req.param('user'),
     text: req.param('desc'),
@@ -137,75 +152,87 @@ exports.postDebateDescription = function(req, res) {
 };
 
 exports.postAnswer = function(req, res) {
-    var debate = new Debate();
-    if (req.param('type') == 'debate') {
-        debateProvider.addSubdebateToDebate(req.param('_id'), {
-            user: req.param('user'),
-            type: debate.DebateTypes.DEBATE,
-            desc: req.param('desc'),
-            titles: [{
-                user: req.param('user'),
-                title: req.param('title'),
-                date: new Date()
-            }],
-            date: new Date()
-        }, function( error, docs) {
-            res.redirect('/debates/' + req.param('_id'))
-        });
-    }
-    else {
-        debateProvider.addAnswerToDebate(req.param('_id'), {
-            user: req.param('user'),
-            type: debate.DebateTypes.DIALECTIC,
-            desc: req.param('desc'),
-            titles: [{
-                user: req.param('user'),
-                title: req.param('title'),
-                date: new Date()
-            }],
-            date: new Date()
-        }, function( error, docs) {
-            res.redirect('/debates/' + req.param('_id'))
-        });
-    }
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  var debate = new Debate();
+  if (req.param('type') == 'debate') {
+    debateProvider.addSubdebateToDebate(req.param('_id'), {
+      user: req.param('user'),
+      type: debate.DebateTypes.DEBATE,
+      desc: req.param('desc'),
+      titles: [{
+        user: req.param('user'),
+        title: req.param('title'),
+        date: new Date()
+      }],
+      date: new Date()
+    }, function( error, docs) {
+      res.redirect('/debates/' + req.param('_id'))
+    });
+  }
+  else {
+    debateProvider.addAnswerToDebate(req.param('_id'), {
+      user: req.param('user'),
+      type: debate.DebateTypes.DIALECTIC,
+      desc: req.param('desc'),
+      titles: [{
+        user: req.param('user'),
+        title: req.param('title'),
+        date: new Date()
+      }],
+      date: new Date()
+    }, function( error, docs) {
+      res.redirect('/debates/' + req.param('_id'))
+    });
+  }
 };
 
 exports.postArgument = function(req, res) {
-    debateProvider.addArgumentToDebate(req.param('_id'), {
-        user: req.param('user'),
-        type: debate.DebateTypes.DIALECTIC,
-        desc: req.param('desc'),
-        titles: [{
-            user: req.param('user'),
-            title: req.param('title'),
-            date: new Date()
-        }],
-        date: new Date()
-    }, 
-    req.param('isFor') == 'true',
-    function( error, docs) {
-      res.redirect('/debates/' + req.param('_id'))
-    });
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  debateProvider.addArgumentToDebate(req.param('_id'), {
+    user: req.param('user'),
+    type: debate.DebateTypes.DIALECTIC,
+    desc: req.param('desc'),
+    titles: [{
+      user: req.param('user'),
+      title: req.param('title'),
+      date: new Date()
+    }],
+    date: new Date()
+  },
+  req.param('isFor') == 'true',
+  function( error, docs) {
+    res.redirect('/debates/' + req.param('_id'))
+  });
 }
 
 exports.postReference = function(req, res) {
-    debateProvider.addReferenceToDebate(req.param('_id'), {
-        user: req.param('user'),
-        url: req.param('url'),
-        desc: req.param('desc'),
-        titles: [{
-            user: req.param('user'),
-            title: req.param('title'),
-            date: new Date()
-        }],
-        date: new Date()
-    },
-    function( error, docs) {
-      res.redirect('/debates/' + req.param('_id'))
-    });
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  debateProvider.addReferenceToDebate(req.param('_id'), {
+    user: req.param('user'),
+    url: req.param('url'),
+    desc: req.param('desc'),
+    titles: [{
+      user: req.param('user'),
+      title: req.param('title'),
+      date: new Date()
+    }],
+    date: new Date()
+  },
+  function( error, docs) {
+    res.redirect('/debates/' + req.param('_id'))
+  });
 };
 
 exports.postReferenceComment = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   describableProvider.addComment('references', req.param('_id'), {
     user: req.param('user'),
     comment: req.param('comment'),
@@ -216,6 +243,9 @@ exports.postReferenceComment = function(req, res) {
 };
 
 exports.postReferenceTitle = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   describableProvider.addTitle("references", req.param('_id'), {
     user: req.param('user'),
     title: req.param('title'),
@@ -226,6 +256,9 @@ exports.postReferenceTitle = function(req, res) {
 };
 
 exports.postReferenceDescription = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
   describableProvider.addDescription("references", req.param('_id'), {
     user: req.param('user'),
     text: req.param('desc'),
@@ -235,3 +268,15 @@ exports.postReferenceDescription = function(req, res) {
   });
 };
 
+// Helpers
+
+bounceAnonymous = function (req, res) {
+  if (! req.loggedIn) {
+    console.log('bouncing anonymous user');
+    res.redirect('/login');
+    return true;
+  }
+  else {
+    return false;
+  }
+}
