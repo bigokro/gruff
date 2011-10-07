@@ -12,5 +12,5 @@ include mixins/search_form
         div.type= debate.type
         div(class="title checked")
           a(href="/debates/"+debate._id.toHexString())= debate.bestTitleText()
-          div.description= debate.bestDescriptionText()
+        div.description= debate.bestDescriptionText()
 
