@@ -117,7 +117,7 @@ exports.postDebateComment = function(req, res) {
     return;
   }
   describableProvider.addComment('debates', req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     comment: req.param('comment'),
     date: new Date()
   } , function( error, docs) {
@@ -130,7 +130,7 @@ exports.postDebateTitle = function(req, res) {
     return;
   }
   describableProvider.addTitle("debates", req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     title: req.param('title'),
     date: new Date()
   } , function( error, docs) {
@@ -143,7 +143,7 @@ exports.postDebateDescription = function(req, res) {
     return;
   }
   describableProvider.addDescription("debates", req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     text: req.param('desc'),
     date: new Date()
   } , function( error, docs) {
@@ -158,11 +158,11 @@ exports.postAnswer = function(req, res) {
   var debate = new Debate();
   if (req.param('type') == 'debate') {
     debateProvider.addSubdebateToDebate(req.param('_id'), {
-      user: req.param('user'),
+      user: req.user.login,
       type: debate.DebateTypes.DEBATE,
       desc: req.param('desc'),
       titles: [{
-        user: req.param('user'),
+        user: req.user.login,
         title: req.param('title'),
         date: new Date()
       }],
@@ -173,11 +173,11 @@ exports.postAnswer = function(req, res) {
   }
   else {
     debateProvider.addAnswerToDebate(req.param('_id'), {
-      user: req.param('user'),
+      user: req.user.login,
       type: debate.DebateTypes.DIALECTIC,
       desc: req.param('desc'),
       titles: [{
-        user: req.param('user'),
+        user: req.user.login,
         title: req.param('title'),
         date: new Date()
       }],
@@ -193,11 +193,11 @@ exports.postArgument = function(req, res) {
     return;
   }
   debateProvider.addArgumentToDebate(req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     type: debate.DebateTypes.DIALECTIC,
     desc: req.param('desc'),
     titles: [{
-      user: req.param('user'),
+      user: req.user.login,
       title: req.param('title'),
       date: new Date()
     }],
@@ -214,11 +214,11 @@ exports.postReference = function(req, res) {
     return;
   }
   debateProvider.addReferenceToDebate(req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     url: req.param('url'),
     desc: req.param('desc'),
     titles: [{
-      user: req.param('user'),
+      user: req.user.login,
       title: req.param('title'),
       date: new Date()
     }],
@@ -234,7 +234,7 @@ exports.postReferenceComment = function(req, res) {
     return;
   }
   describableProvider.addComment('references', req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     comment: req.param('comment'),
     date: new Date()
   } , function( error, docs) {
@@ -247,7 +247,7 @@ exports.postReferenceTitle = function(req, res) {
     return;
   }
   describableProvider.addTitle("references", req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     title: req.param('title'),
     date: new Date()
   } , function( error, docs) {
@@ -260,7 +260,7 @@ exports.postReferenceDescription = function(req, res) {
     return;
   }
   describableProvider.addDescription("references", req.param('_id'), {
-    user: req.param('user'),
+    user: req.user.login,
     text: req.param('desc'),
     date: new Date()
   } , function( error, docs) {

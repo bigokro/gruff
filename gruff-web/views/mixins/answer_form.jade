@@ -3,7 +3,6 @@ mixin answer_form(debate)
       if everyauth.loggedIn
           form(method="post", action="/debates/answers/new")
             input( type="hidden", name="_id", value=debate.linkableId())
-            input( type="hidden", name="user", value=everyauth.user.login)
             fieldset
               legend Propose Your Own Answer or Sub-debate
               div
