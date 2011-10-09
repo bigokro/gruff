@@ -1,6 +1,6 @@
 var referenceProvider = new ReferenceProvider('localhost', 27017)
-var debateProvider = new DebateProvider('localhost', 27017, referenceProvider)
 var describableProvider = new DescribableProvider('localhost', 27017)
+var debateProvider = new DebateProvider('localhost', 27017, describableProvider, referenceProvider)
 var debate = new Debate();
 
 //GET
@@ -129,11 +129,16 @@ exports.postDebateTitle = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  describableProvider.addTitle("debates", req.param('_id'), {
-    user: req.user.login,
-    title: req.param('title'),
-    date: new Date()
-  } , function( error, docs) {
+  describableProvider.addDescriptor("debates"
+                                    , "title"
+                                    , req.param('_id')
+                                    , req.user.login
+                                    , {
+                                        user: req.user.login,
+                                        title: req.param('title'),
+                                        date: new Date()
+                                    } 
+                                    , function( error, docs) {
     res.redirect('/debates/' + req.param('_id') + '/titles')
   });
 };
@@ -142,11 +147,16 @@ exports.postDebateDescription = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  describableProvider.addDescription("debates", req.param('_id'), {
-    user: req.user.login,
-    text: req.param('desc'),
-    date: new Date()
-  } , function( error, docs) {
+  describableProvider.addDescriptor("debates"
+                                    , "description"
+                                    , req.param('_id')
+                                    , req.user.login
+                                    , {
+                                        user: req.user.login,
+                                        text: req.param('desc'),
+                                        date: new Date()
+                                    } 
+                                    , function( error, docs) {
     res.redirect('/debates/' + req.param('_id') + '/descriptions')
   });
 };
@@ -246,11 +256,16 @@ exports.postReferenceTitle = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  describableProvider.addTitle("references", req.param('_id'), {
-    user: req.user.login,
-    title: req.param('title'),
-    date: new Date()
-  } , function( error, docs) {
+  describableProvider.addDescriptor("references"
+                                    , "title"
+                                    , req.param('_id')
+                                    , req.user.login
+                                    , {
+                                        user: req.user.login,
+                                        title: req.param('title'),
+                                        date: new Date()
+                                    } 
+                                    , function( error, docs) {
     res.redirect('/references/' + req.param('_id') + '/titles')
   });
 };
@@ -259,12 +274,73 @@ exports.postReferenceDescription = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  describableProvider.addDescription("references", req.param('_id'), {
-    user: req.user.login,
-    text: req.param('desc'),
-    date: new Date()
-  } , function( error, docs) {
+  describableProvider.addDescriptor("references"
+                                    , "description"
+                                    , req.param('_id')
+                                    , req.user.login
+                                    , {
+                                        user: req.user.login,
+                                        text: req.param('desc'),
+                                        date: new Date()
+                                    } 
+                                    , function( error, docs) {
     res.redirect('/references/' + req.param('_id') + '/descriptions')
+  });
+};
+
+exports.postDebateTitleVote = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  describableProvider.voteForDescriptor("debates"
+                                         , "title"
+                                         , req.params.id
+                                         , req.user.login
+                                         , req.param('title')
+                                         , function( error, docs) {
+    res.redirect('/debates/' + req.params.id + '/titles')
+  });
+};
+
+exports.postDebateDescriptionVote = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  describableProvider.voteForDescriptor("debates"
+                                         , "description"
+                                         , req.params.id
+                                         , req.user.login
+                                         , req.param('desc')
+                                         , function( error, docs) {
+    res.redirect('/debates/' + req.params.id + '/descriptions')
+  });
+};
+
+exports.postReferenceTitleVote = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  describableProvider.voteForDescriptor("references"
+                                         , "title"
+                                         , req.params.id
+                                         , req.user.login
+                                         , req.param('title')
+                                         , function( error, docs) {
+    res.redirect('/references/' + req.params.id + '/titles')
+  });
+};
+
+exports.postReferenceDescriptionVote = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  describableProvider.voteForDescriptor("references"
+                                         , "description"
+                                         , req.params.id
+                                         , req.user.login
+                                         , req.param('desc')
+                                         , function( error, docs) {
+    res.redirect('/references/' + req.params.id + '/descriptions')
   });
 };
 

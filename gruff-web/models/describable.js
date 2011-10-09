@@ -10,9 +10,18 @@ Describable.prototype.bestTitle = function() {
     if (typeof(this.titles)=="undefined") {
 	return this.title;
     }
-    // Barring a voting algorithm,
-    // for now, let's return the latest
-    return this.titles[this.titles.length-1];
+    var result = this.titles[this.titles.length-1];
+    var votes = result.votes ? result.votes.length : 0;
+    for (i=0; i < this.titles.length; i++) {
+        var title = this.titles[i];
+        if (title.votes) {
+            if (title.votes.length > votes) {
+                result = title;
+                votes = title.votes.length;
+            }
+        }
+    }
+    return result
 };
 
 Describable.prototype.bestTitleText = function() {
@@ -33,9 +42,18 @@ Describable.prototype.bestDescription = function() {
             date: this.date
         }
     }
-    // Barring a voting algorithm,
-    // for now, let's return the latest
-    return this.descs[this.descs.length-1];
+    var result = this.descs[this.descs.length-1];
+    var votes = result.votes ? result.votes.length : 0;
+    for (i=0; i < this.descs.length; i++) {
+        var desc = this.descs[i];
+        if (desc.votes) {
+            if (desc.votes.length > votes) {
+                result = desc;
+                votes = desc.votes.length;
+            }
+        }
+    }
+    return result
 };
 
 Describable.prototype.bestDescriptionText = function() {

@@ -8,9 +8,10 @@ var Reference = require('../models/reference').Reference;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
-DebateProvider = function(host, port, reference_provider) {
+DebateProvider = function(host, port, describable_provider, reference_provider) {
     this.db= new Db('node-mongo-blog', new Server(host, port, {auto_reconnect: true}, {}));
     this.db.open(function(){});
+    this.describable_provider = describable_provider;
     this.reference_provider = reference_provider;
 };
 

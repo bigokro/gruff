@@ -13,6 +13,7 @@ var express = require('express')
   , routes = require('./routes')
   , stylus = require('stylus')
   ;
+require('./lib/utils');
 
 // Configuration
 
@@ -46,10 +47,14 @@ app.get('/search', routes.getSearch);
 app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
 app.get('/debates/:id/titles', routes.getDebateTitle);
+app.get('/debates/:id/titles/vote', routes.postDebateTitleVote);
 app.get('/debates/:id/descriptions', routes.getDebateDescription);
+app.get('/debates/:id/descriptions/vote', routes.postDebateDescriptionVote);
 app.get('/references/:id', routes.getReference);
 app.get('/references/:id/titles', routes.getReferenceTitle);
+app.get('/references/:id/titles/vote', routes.postReferenceTitleVote);
 app.get('/references/:id/descriptions', routes.getReferenceDescription);
+app.get('/references/:id/descriptions/vote', routes.postReferenceDescriptionVote);
 
 app.post('/debates/new', routes.postDebate);
 app.post('/debates/comments/new', routes.postDebateComment);
