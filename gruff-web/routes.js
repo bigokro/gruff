@@ -166,36 +166,39 @@ exports.postAnswer = function(req, res) {
     return;
   }
   var debate = new Debate();
-  if (req.param('type') == 'debate') {
-    debateProvider.addSubdebateToDebate(req.param('_id'), {
+  debateProvider.addAnswerToDebate(req.param('_id'), {
+    user: req.user.login,
+    type: debate.DebateTypes.DIALECTIC,
+    desc: req.param('desc'),
+    titles: [{
       user: req.user.login,
-      type: debate.DebateTypes.DEBATE,
-      desc: req.param('desc'),
-      titles: [{
-        user: req.user.login,
-        title: req.param('title'),
-        date: new Date()
-      }],
+      title: req.param('title'),
       date: new Date()
-    }, function( error, docs) {
-      res.redirect('/debates/' + req.param('_id'))
-    });
+    }],
+    date: new Date()
+  }, function( error, docs) {
+    res.redirect('/debates/' + req.param('_id'))
+  });
+};
+
+exports.postSubdebate = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
   }
-  else {
-    debateProvider.addAnswerToDebate(req.param('_id'), {
+  var debate = new Debate();
+  debateProvider.addSubdebateToDebate(req.param('_id'), {
+    user: req.user.login,
+    type: debate.DebateTypes.DEBATE,
+    desc: req.param('desc'),
+    titles: [{
       user: req.user.login,
-      type: debate.DebateTypes.DIALECTIC,
-      desc: req.param('desc'),
-      titles: [{
-        user: req.user.login,
-        title: req.param('title'),
-        date: new Date()
-      }],
+      title: req.param('title'),
       date: new Date()
-    }, function( error, docs) {
-      res.redirect('/debates/' + req.param('_id'))
-    });
-  }
+    }],
+    date: new Date()
+  }, function( error, docs) {
+    res.redirect('/debates/' + req.param('_id'))
+  });
 };
 
 exports.postArgument = function(req, res) {

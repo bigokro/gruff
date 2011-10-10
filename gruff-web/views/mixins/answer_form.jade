@@ -13,9 +13,6 @@ mixin answer_form(debate)
                 label(for="desc") Answer Description
                   em *
                 textarea( name="desc", rows=5, id="addAnswerDesc")
-              div
-                input( type="checkbox", name="type", value="debate", id="addAnswerType")
-                | This is for a sub-debate (or category of answers)
               div#addAnswerSubmit
                 input(type="submit", value="Send it")
       else

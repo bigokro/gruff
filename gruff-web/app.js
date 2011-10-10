@@ -61,6 +61,7 @@ app.post('/debates/comments/new', routes.postDebateComment);
 app.post('/debates/titles/new', routes.postDebateTitle);
 app.post('/debates/descriptions/new', routes.postDebateDescription);
 app.post('/debates/answers/new', routes.postAnswer);
+app.post('/debates/subdebates/new', routes.postSubdebate);
 app.post('/debates/arguments/new', routes.postArgument);
 app.post('/references/new', routes.postReference);
 app.post('/references/comments/new', routes.postReferenceComment);

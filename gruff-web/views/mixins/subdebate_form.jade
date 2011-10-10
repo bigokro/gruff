@@ -1,0 +1,19 @@
+mixin subdebate_form(debate)
+    div.bottomForm
+      if everyauth.loggedIn
+          form(method="post", action="/debates/subdebates/new")
+            input( type="hidden", name="_id", value=debate.linkableId())
+            fieldset
+              legend Add a New Sub-debate
+              div
+                label(for="title") Debate Title
+                  em *
+                input( type="text", name="title", id="addSubdebateTitle")
+              div
+                label(for="desc") Debate Description
+                  em *
+                textarea( name="desc", rows=5, id="addSubdebateDesc")
+              div#addSubdebateSubmit
+                input(type="submit", value="Send it")
+      else
+        a(href="/login") Want to contribute? Log in!
