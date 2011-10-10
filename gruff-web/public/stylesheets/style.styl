@@ -1,6 +1,6 @@
 body
-  font-family "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial
-  font-size 13px
+  font-family "Courier New",Courier,monospace
+  font-size 1em
   text-align center
   text-stroke 1px rgba(255, 255, 255, 0.1)
   color #555
@@ -8,29 +8,21 @@ h1, h2, h3
   margin 0
   font-variant small-caps
   letter-spacing -1px
-  font-size 22px
   color #343434
 h1
   text-shadow 1px 2px 2px #ddd
   text-align center
-  font-size 48px
+  font-size 3em
 h2
-  font-size 34px
+  font-size 2 em
   text-align center
-.error
-  color #a33
+h3
+  font-size 1.4 em
 h4.title, h4.title a
-  font-family "Courier New", Courier, monospace
-  font-size 20px
+  font-size 1.25 em
   letter-spacing -1px
   font-weight bold
   color #A3181E
-a.action
-  display block
-  margin-left  auto
-  margin-right auto
-  width 200px
-  text-align center
 div
   text-align left
 fieldset
@@ -52,6 +44,35 @@ input[type =radio]
 textarea
   width 100%
   height 90px
+a.action
+  display block
+  margin-left  auto
+  margin-right auto
+  width 200px
+  text-align center
+a.vote
+  text-decoration none
+  font-size 1.6em
+  padding 0px 0px 26px 33px
+  background url(/images/unchecked.png) no-repeat 0px 0
+a.vote:hover
+  text-decoration none
+  font-size 1.6em
+  padding 0px 33px 26px 0px
+  background url(/images/checked.png) no-repeat 0px 0
+#top
+  #user
+    float: right
+  #logo
+    a
+      float left
+      color #343434
+      text-align center
+      font-size 3em
+      text-decoration none
+      font-family 'Special Elite', 'Kranky',"Lucida Grande", "Lucida Sans Unicode", Verdana
+#content
+  clear both
 #header
   width 100%
   text-align center
@@ -72,16 +93,36 @@ textarea
         .type
             display none
         .title a
-            font-family "Courier New", Courier, monospace
             color #A3181E
-            font-size 20px
+            font-size 1.25em
             letter-spacing -1px
             font-weight bold
         .description
             font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
-            padding 5px
+            padding .25em
             background-color #fff
             border none
+#left
+  width 20%
+  float left
+#right
+  width 20%
+  float right
+  .references
+    .reference
+      h4.title, h4.title a
+        font-size 0.75em
+        color #A3181E
+.comments
+  margin-top 20px
+  .comment
+    margin-top 10px
+    .user
+      font-weight bold
+      text-decoration underline
+      background-color #eee
+    .comment
+      background-color #ffa
 .debate
   .date
     display none
@@ -100,30 +141,26 @@ textarea
     .vote-link
       float right
       text-align right
-.vote-link
-  margin-left 15px
-.descriptions 
+.descriptions
   .choose-description
       padding-bottom 10px
+.error
+  color #a33
 .for
+  border 1px solid
+  padding 5px
   float left
-  width 50%
-.against
-  float right
-  width 50%
+  width 48%
   text-align right
   div.argument
     text-align right
-.comments
-  margin-top 20px
-  .comment
-    margin-top 10px
-    .user
-      font-weight bold
-      text-decoration underline
-      background-color #eee
-    .comment
-      background-color #ffa
+.against
+  border 1px solid
+  padding 5px
+  float right
+  width 48%
+.vote-link
+  margin-left 15px
 .titles
   margin-top 20px
   .choose-title
@@ -141,7 +178,8 @@ textarea
       text-decoration underline
       background-color #eee
 .bottomForm
-    margin-top 20px
+  margin-top 20px
+  clear both
 .checked
   min-height 26px
   padding 5px 0px 0px 32px
@@ -150,34 +188,3 @@ textarea
   min-height 26px
   padding 5px 0px 0px 32px
   background url(/images/unchecked.png) no-repeat 6px 0
-a.vote
-  text-decoration none
-  font-size 26px
-  padding 0px 0px 26px 33px
-  background url(/images/unchecked.png) no-repeat 0px 0
-a.vote:hover
-  text-decoration none
-  font-size 26px
-  padding 0px 33px 26px 0px
-  background url(/images/checked.png) no-repeat 0px 0
-#left
-  width 20%
-  float left
-#right
-  width 20%
-  float right
-  .references
-    .reference
-      h4.title, h4.title a
-        font-size 12px
-        color #A3181E
-div#logo a
-  float left
-  color #343434
-  text-align center
-  font-size 48px
-  text-decoration none
-  font-family 'Special Elite', 'Kranky',"Lucida Grande", "Lucida Sans Unicode", Verdana
-ul#user
-  float: right
-
