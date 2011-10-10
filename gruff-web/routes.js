@@ -96,6 +96,32 @@ exports.getReferenceDescription = function(req, res) {
   });
 };
 
+
+// Account Info
+
+exports.getMyDebates = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  debateProvider.findDebatesForUser(req.user.login, function(error, debates) {
+      referenceProvider.findReferencesForUser(req.user.login, function(error, references) {
+          res.render('my/debates.jade', { locals: {
+              title: "My Debates",
+              created: debates.created,
+              contributed: debates.contributed,
+              voted: debates.voted,
+              references_created: references.created,
+              references_contributed: references.contributed,
+              references_voted: references.voted
+          }});
+      });
+  });
+};
+
+
+
+
+
 // POST
 
 exports.postDebate = function(req, res){

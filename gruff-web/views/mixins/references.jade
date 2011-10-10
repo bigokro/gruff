@@ -8,3 +8,14 @@ mixin references(debate)
             a(href="/references/" + reference.linkableId())= reference.bestTitleText()
     else
       div.none No references have been added to this debate.
+
+mixin list_references(title, references)
+  div.references
+    h3= title
+    if references
+      - each reference in references
+        div.reference
+          h4.title
+            a(href="/references/" + reference.linkableId())= reference.bestTitleText()
+    else
+      div.none There are currently no references in this category.

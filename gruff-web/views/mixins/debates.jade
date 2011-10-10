@@ -1,0 +1,10 @@
+mixin list_debates(title, debates)
+  div.debate-list
+    h3= title
+    if debates
+      - each debate in debates
+        div.debate
+          h4.title
+            a(href="/debates/" + debate.linkableId())= debate.bestTitleText()
+    else
+      div.none There are currently no debates in this category.

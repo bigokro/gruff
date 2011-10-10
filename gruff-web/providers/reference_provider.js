@@ -8,6 +8,8 @@ var Reference = require('../models/reference').Reference;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
+// Utility Functions
+
 ReferenceProvider = function(host, port) {
     this.db= new Db('node-mongo-blog', new Server(host, port, {auto_reconnect: true}, {}));
     this.db.open(function(){});
@@ -26,6 +28,16 @@ ReferenceProvider.prototype.getDebateCollection= function(callback) {
 	      else callback(null, debate_collection);
     });
 };
+
+ReferenceProvider.prototype.getUserCollection= function(callback) {
+    this.db.collection('users', function(error, user_collection) {
+	      if( error ) callback(error);
+	      else callback(null, user_collection);
+    });
+};
+
+
+// Finders
 
 ReferenceProvider.prototype.findById = function(id, callback) {
     this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
@@ -87,44 +99,105 @@ ReferenceProvider.prototype.findAllByObjID = function(debate, objIds, callback) 
     });
 };
 
+ReferenceProvider.prototype.findReferencesForUser = function(login, callback) {
+    var provider = this;
+    this.getUserCollection(function(error, user_collection) {
+        if( error ) callback(error)
+        else {
+            user_collection.findOne({login: login}, function(error, user) {
+                if( error ) {
+                    callback(error);
+                } else {
+                    var references = {};
+                    provider.findAllByObjID(null, user.created_references, function(error, created) {
+                        if( error ) {
+                            callback(error);
+                        } else {
+                            references.created = created;
+                            provider.findAllByObjID(null, user.contributed_references, function(error, contributed) {
+                                if( error ) {
+                                    callback(error);
+                                } else {
+                                    references.contributed = contributed;
+                                    provider.findAllByObjID(null, user.voted_references, function(error, voted) {
+                                        if( error ) {
+                                            callback(error);
+                                        } else {
+                                            references.voted = voted;
+		                                        callback(null, references);
+                                        }
+                                    });
+                                }
+                            });
+                        };
+                    });
+                };
+            });
+        };
+    });
+};
+                    
+
+// Modifiers
 
 ReferenceProvider.prototype.save = function(references, callback) {
+    var provider = this;
     this.getCollection(function(error, reference_collection) {
 	      if( error ) callback(error)
 	      else {
-            if( typeof(references.length)=="undefined")
-		            references = [references];
-            
-            for( var i =0;i< references.length;i++ ) {
-		            reference = references[i];
-		            reference.date = new Date();
-		            if (reference.title) {
-		                if (reference.titles === undefined) {
-			                  reference.titles = [];
-		                }
-		                reference.titles[reference.titles.length] = { 
-                        user: reference.user,
-			                  title: reference.title,
-			                  date: new Date()
-		                };
-		                reference.title = null;
-		            }
-		            if (reference.desc) {
-		                if (reference.descs === undefined) {
-			                  reference.descs = [];
-		                }
-		                reference.descs[reference.descs.length] = { 
-                        user: reference.user,
-			                  text: reference.desc,
-			                  date: new Date()
-		                };
-		                reference.desc = null;
-		            }
-		            if( reference.comments === undefined ) reference.comments = [];
-            }
-            
-            reference_collection.insert(references, function() {
-		            callback(null, references);
+            provider.getUserCollection(function(error, user_collection) {
+	              if( error ) callback(error)
+	              else {
+                    if( typeof(references.length)=="undefined")
+		                    references = [references];
+                    var login = references[0].user;
+                    for( var i =0;i< references.length;i++ ) {
+		                    reference = references[i];
+		                    reference.date = new Date();
+		                    if (reference.title) {
+		                        if (reference.titles === undefined) {
+			                          reference.titles = [];
+		                        }
+		                        reference.titles[reference.titles.length] = { 
+                                user: reference.user,
+			                          title: reference.title,
+			                          date: new Date()
+		                        };
+		                        reference.title = null;
+		                    }
+		                    if (reference.desc) {
+		                        if (reference.descs === undefined) {
+			                          reference.descs = [];
+		                        }
+		                        reference.descs[reference.descs.length] = { 
+                                user: reference.user,
+			                          text: reference.desc,
+			                          date: new Date()
+		                        };
+		                        reference.desc = null;
+		                    }
+		                    if( reference.comments === undefined ) reference.comments = [];
+                    }
+                    
+                    reference_collection.insert(references, function(error, results) {
+	                      if( error ) callback( error );
+	                      else {
+                            var ids = [];
+                            for (i=0; i < references.length; i++) {
+                                ids.push(references[i]._id);
+                            }
+                            user_collection.update( 
+                                {login:login}, 
+                                {"$addToSet": { created_references : {$each: ids} } },
+                                function(error, user) {
+	                                  if( error ) callback( error );
+	                                  else {
+		                                    callback(null, references);
+                                    }
+                                });
+                        }
+                    });
+                }
             });
 	      }
     });

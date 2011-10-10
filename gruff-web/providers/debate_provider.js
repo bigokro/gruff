@@ -8,6 +8,8 @@ var Reference = require('../models/reference').Reference;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
+// Utility functions
+
 DebateProvider = function(host, port, describable_provider, reference_provider) {
     this.db= new Db('node-mongo-blog', new Server(host, port, {auto_reconnect: true}, {}));
     this.db.open(function(){});
@@ -28,6 +30,16 @@ DebateProvider.prototype.getHistoryCollection= function(callback) {
 	      else callback(null, history_collection);
     });
 };
+
+DebateProvider.prototype.getUserCollection= function(callback) {
+    this.db.collection('users', function(error, user_collection) {
+	      if( error ) callback(error);
+	      else callback(null, user_collection);
+    });
+};
+
+
+// Finders
 
 DebateProvider.prototype.findAll = function(callback) {
     this.getCollection(function(error, debate_collection) {
@@ -228,52 +240,114 @@ DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
     });
 };
 
+
+DebateProvider.prototype.findDebatesForUser = function(login, callback) {
+    var provider = this;
+    this.getUserCollection(function(error, user_collection) {
+        if( error ) callback(error)
+        else {
+            user_collection.findOne({login: login}, function(error, user) {
+                if( error ) {
+                    callback(error);
+                } else {
+                    var debates = {};
+                    provider.findAllByObjID(user.created_debates, function(error, created) {
+                        if( error ) {
+                            callback(error);
+                        } else {
+                            debates.created = created;
+                            provider.findAllByObjID(user.contributed_debates, function(error, contributed) {
+                                if( error ) {
+                                    callback(error);
+                                } else {
+                                    debates.contributed = contributed;
+                                    provider.findAllByObjID(user.voted_debates, function(error, voted) {
+                                        if( error ) {
+                                            callback(error);
+                                        } else {
+                                            debates.voted = voted;
+		                                        callback(null, debates);
+                                        }
+                                    });
+                                }
+                            });
+                        };
+                    });
+                };
+            });
+        };
+    });
+};
+                    
+// Modifiers
+
 DebateProvider.prototype.save = function(debates, callback) {
+    var provider = this;
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback(error)
 	      else {
-            if( typeof(debates.length)=="undefined")
-		            debates = [debates];
-            
-            for( var i =0;i< debates.length;i++ ) {
-		            debate = debates[i];
-		            debate.date = new Date();
-		            if (debate.title) {
-		                if (debate.titles === undefined) {
-			                  debate.titles = [];
-		                }
-		                debate.titles[debate.titles.length] = { 
-                        user: debate.user,
-			                  title: debate.title,
-			                  date: new Date()
-		                };
-		                debate.title = null;
-		            }
-		            if (debate.desc) {
-		                if (debate.descs === undefined) {
-			                  debate.descs = [];
-		                }
-		                debate.descs[debate.descs.length] = { 
-                        user: debate.user,
-			                  text: debate.desc,
-			                  date: new Date()
-		                };
-		                debate.desc = null;
-		            }
-		            if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answerIds === undefined ) {
-                    debate.answerIds = [];
+            provider.getUserCollection(function(error, user_collection) {
+	              if( error ) callback(error)
+	              else {
+                    if( typeof(debates.length)=="undefined")
+		                    debates = [debates];
+                    var login = debates[0].user;
+                    for( var i =0;i< debates.length;i++ ) {
+		                    debate = debates[i];
+		                    debate.date = new Date();
+		                    if (debate.title) {
+		                        if (debate.titles === undefined) {
+			                          debate.titles = [];
+		                        }
+		                        debate.titles[debate.titles.length] = { 
+                                user: debate.user,
+			                          title: debate.title,
+			                          date: new Date()
+		                        };
+		                        debate.title = null;
+		                    }
+		                    if (debate.desc) {
+		                        if (debate.descs === undefined) {
+			                          debate.descs = [];
+		                        }
+		                        debate.descs[debate.descs.length] = { 
+                                user: debate.user,
+			                          text: debate.desc,
+			                          date: new Date()
+		                        };
+		                        debate.desc = null;
+		                    }
+		                    if( debate.type == Debate.prototype.DebateTypes.DEBATE && debate.answerIds === undefined ) {
+                            debate.answerIds = [];
+                        }
+		                    if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.argumentsForIds === undefined ) {
+                            debate.argumentsForIds = [];
+                        }
+		                    if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.argumentsAgainstIds === undefined ) {
+                            debate.argumentsAgainstIds = [];
+                        }
+		                    if( debate.comments === undefined ) debate.comments = [];
+                    }
+                    
+                    debate_collection.insert(debates, function(error, results) {
+	                      if( error ) callback( error );
+	                      else {
+                            var ids = [];
+                            for (i=0; i < debates.length; i++) {
+                                ids.push(debates[i]._id);
+                            }
+                            user_collection.update( 
+                                {login:login}, 
+                                {"$addToSet": { created_debates : {$each: ids} } },
+                                function(error, user) {
+	                                  if( error ) callback( error );
+	                                  else {
+		                                    callback(null, debates);
+                                    }
+                                });
+                        }
+                    });
                 }
-		            if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.argumentsForIds === undefined ) {
-                    debate.argumentsForIds = [];
-                }
-		            if( debate.type != Debate.prototype.DebateTypes.DEBATE && debate.argumentsAgainstIds === undefined ) {
-                    debate.argumentsAgainstIds = [];
-                }
-		            if( debate.comments === undefined ) debate.comments = [];
-            }
-            
-            debate_collection.insert(debates, function() {
-		            callback(null, debates);
             });
 	      }
     });
