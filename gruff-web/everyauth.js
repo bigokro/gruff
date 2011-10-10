@@ -85,7 +85,9 @@ everyauth
         if (err) {
           return promise.fulfill([err]);
         }
-        promise.fulfill(users[0]);
+        var user = users[0];
+        user.id = user._id
+        promise.fulfill(user);
       });
       return promise;
     })
