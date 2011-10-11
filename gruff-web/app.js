@@ -9,10 +9,13 @@ var express = require('express')
   , UserProvider = require('./providers/user_provider').UserProvider
   , Debate = require('./models/debate').Debate
   , everyauth = require('./everyauth').everyauth
+  , fs = require('fs')
+  , logStream = fs.createWriteStream('gruff.log')
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
   , routes = require('./routes')
   , stylus = require('stylus')
   ;
+
 require('./lib/utils');
 
 // Configuration
@@ -20,16 +23,17 @@ require('./lib/utils');
 var app = module.exports = express.createServer();
 
 app.configure(function(){
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-    app.use(express.bodyParser());
-    app.use(express.cookieParser());
-    app.use(express.session({secret: ':DP:DP:DP:DP'}));
-    app.use(express.methodOverride());
-    app.use(stylus.middleware({ src: __dirname + '/public' }));
-    app.use(everyauth.middleware());
-    app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.use(express.logger({stream: fs.createWriteStream('gruff.' + Date.now() + '.log')}));
+  app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.session({secret: ':DP:DP:DP:DP'}));
+  app.use(express.methodOverride());
+  app.use(stylus.middleware({ src: __dirname + '/public' }));
+  app.use(everyauth.middleware());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 
 app.configure('development', function(){
@@ -73,4 +77,4 @@ app.post('/references/descriptions/new', routes.postReferenceDescription);
 
 everyauth.helpExpress(app);
 app.listen(port);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+console.log('Gruff listening on port ' + app.address().port + ' in ' + app.settings.env + ' mode');
