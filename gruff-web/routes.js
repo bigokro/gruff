@@ -1,3 +1,4 @@
+var tagProvider = new TagProvider('localhost', 27017)
 var referenceProvider = new ReferenceProvider('localhost', 27017)
 var describableProvider = new DescribableProvider('localhost', 27017)
 var debateProvider = new DebateProvider('localhost', 27017, describableProvider, referenceProvider)
@@ -370,6 +371,26 @@ exports.postReferenceDescriptionVote = function(req, res) {
                                          , req.param('desc')
                                          , function( error, docs) {
     res.redirect('/references/' + req.params.id + '/descriptions')
+  });
+};
+
+exports.postTag = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  tagProvider.addTag(req.params.objecttype
+                                         , req.params.objectid
+                                         , req.params.attributetype
+                                         , req.params.attributeid
+                                         , req.user.login
+                                         , req.params.tag
+                                         , function( error, docs) {
+    res.redirect('/' 
+                 + req.params.objecttype
+                 + '/' 
+                 + req.params.objectid 
+                 + (req.params.attributetype ? '/'+req.params.attributetype : '')
+                )
   });
 };
 

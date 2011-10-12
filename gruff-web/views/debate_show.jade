@@ -9,6 +9,7 @@ include mixins/references
 include mixins/reference_form
 include mixins/comments
 include mixins/comment_form
+include mixins/tags
 include mixins/search_form
 
 
@@ -25,6 +26,7 @@ mixin header("debate", debate, false)
       div.vote-link
         a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
           img(src="/images/checked.png")
+    mixin tags(debate)
     if (debate.argumentsFor || debate.argumentsAgainst)
         mixin arguments(debate)
     if debate.type != debate.DebateTypes.DEBATE

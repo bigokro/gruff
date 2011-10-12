@@ -7,6 +7,7 @@ var express = require('express')
   , DescribableProvider = require('./providers/describable_provider').DescribableProvider
   , ReferenceProvider = require('./providers/reference_provider').ReferenceProvider
   , UserProvider = require('./providers/user_provider').UserProvider
+  , TagProvider = require('./providers/tag_provider').TagProvider
   , Debate = require('./models/debate').Debate
   , everyauth = require('./everyauth').everyauth
   , fs = require('fs')
@@ -51,14 +52,10 @@ app.get('/search', routes.getSearch);
 app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
 app.get('/debates/:id/titles', routes.getDebateTitle);
-app.get('/debates/:id/titles/vote', routes.postDebateTitleVote);
 app.get('/debates/:id/descriptions', routes.getDebateDescription);
-app.get('/debates/:id/descriptions/vote', routes.postDebateDescriptionVote);
 app.get('/references/:id', routes.getReference);
 app.get('/references/:id/titles', routes.getReferenceTitle);
-app.get('/references/:id/titles/vote', routes.postReferenceTitleVote);
 app.get('/references/:id/descriptions', routes.getReferenceDescription);
-app.get('/references/:id/descriptions/vote', routes.postReferenceDescriptionVote);
 app.get('/my/debates', routes.getMyDebates);
 
 app.post('/debates/new', routes.postDebate);
@@ -72,6 +69,12 @@ app.post('/references/new', routes.postReference);
 app.post('/references/comments/new', routes.postReferenceComment);
 app.post('/references/titles/new', routes.postReferenceTitle);
 app.post('/references/descriptions/new', routes.postReferenceDescription);
+app.get('/debates/:id/titles/vote', routes.postDebateTitleVote);
+app.get('/debates/:id/descriptions/vote', routes.postDebateDescriptionVote);
+app.get('/references/:id/titles/vote', routes.postReferenceTitleVote);
+app.get('/references/:id/descriptions/vote', routes.postReferenceDescriptionVote);
+app.get('/:objecttype/:objectid/tag/:tag', routes.postTag);
+app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.postTag);
 
 // Main
 

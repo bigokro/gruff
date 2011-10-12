@@ -1,6 +1,7 @@
 include mixins/describable_header
 include mixins/comments
 include mixins/comment_form
+include mixins/tags
 
 mixin header("reference", reference, false)
 #main
@@ -14,5 +15,6 @@ mixin header("reference", reference, false)
       div.vote-link
         a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
           img(src="/images/checked.png")
+    mixin tags(reference)
     mixin comments(reference)
     mixin comment_form("reference", reference)

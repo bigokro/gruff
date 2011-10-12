@@ -1,4 +1,5 @@
 include mixins/describable_header
+include mixins/tags
 
 mixin header(type, describable, true)
 #main
@@ -19,6 +20,7 @@ mixin header(type, describable, true)
                 a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/titles/vote?title="+encodeURIComponent(title.title))
             span.title= title.title
             span.votes= title.votes ? "(" + title.votes.length + " votes)" : "(0 votes)" 
+          mixin tags(desc)
     div.bottomForm
       if everyauth.loggedIn
         form( method="post", action="/" + type + "s/titles/new")
