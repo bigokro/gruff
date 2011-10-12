@@ -8,7 +8,8 @@ mixin header(type, describable, true)
     div.description= describable.bestDescriptionText()
     div.descriptions
       h3 Descriptions
-      - each desc in describable.descs
+      - for (count=0; count < describable.descs.length; count++)
+        - var desc = describable.descs[count]
         div.choose-description
           div.user= desc.user
           div.date= desc.date
@@ -17,7 +18,7 @@ mixin header(type, describable, true)
               if desc.votes && desc.votes.contains(everyauth.user.login)
                 img(src="/images/checked.png")
               else
-                a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/descriptions/vote?desc="+encodeURIComponent(desc.text))
+                a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/descriptions/"+count+"/vote")
             span.description= desc.text
             span.votes= desc.votes ? "(" + desc.votes.length + " votes)" : "(0 votes)" 
           mixin tags(desc)

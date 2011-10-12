@@ -318,59 +318,23 @@ exports.postReferenceDescription = function(req, res) {
   });
 };
 
-exports.postDebateTitleVote = function(req, res) {
+exports.postDescriptorVote = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  describableProvider.voteForDescriptor("debates"
-                                         , "title"
-                                         , req.params.id
+  describableProvider.voteForDescriptor(req.params.objecttype
+                                         , req.params.objectid
+                                         , req.params.attributetype
+                                         , req.params.attributeid
                                          , req.user.login
-                                         , req.param('title')
                                          , function( error, docs) {
-    res.redirect('/debates/' + req.params.id + '/titles')
-  });
-};
-
-exports.postDebateDescriptionVote = function(req, res) {
-  if (bounceAnonymous(req, res)) {
-    return;
-  }
-  describableProvider.voteForDescriptor("debates"
-                                         , "description"
-                                         , req.params.id
-                                         , req.user.login
-                                         , req.param('desc')
-                                         , function( error, docs) {
-    res.redirect('/debates/' + req.params.id + '/descriptions')
-  });
-};
-
-exports.postReferenceTitleVote = function(req, res) {
-  if (bounceAnonymous(req, res)) {
-    return;
-  }
-  describableProvider.voteForDescriptor("references"
-                                         , "title"
-                                         , req.params.id
-                                         , req.user.login
-                                         , req.param('title')
-                                         , function( error, docs) {
-    res.redirect('/references/' + req.params.id + '/titles')
-  });
-};
-
-exports.postReferenceDescriptionVote = function(req, res) {
-  if (bounceAnonymous(req, res)) {
-    return;
-  }
-  describableProvider.voteForDescriptor("references"
-                                         , "description"
-                                         , req.params.id
-                                         , req.user.login
-                                         , req.param('desc')
-                                         , function( error, docs) {
-    res.redirect('/references/' + req.params.id + '/descriptions')
+    res.redirect('/' 
+                 + req.params.objecttype
+                 + '/' 
+                 + req.params.objectid 
+                 + '/' 
+                 + req.params.attributetype
+                )
   });
 };
 

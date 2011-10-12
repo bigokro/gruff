@@ -69,10 +69,7 @@ app.post('/references/new', routes.postReference);
 app.post('/references/comments/new', routes.postReferenceComment);
 app.post('/references/titles/new', routes.postReferenceTitle);
 app.post('/references/descriptions/new', routes.postReferenceDescription);
-app.get('/debates/:id/titles/vote', routes.postDebateTitleVote);
-app.get('/debates/:id/descriptions/vote', routes.postDebateDescriptionVote);
-app.get('/references/:id/titles/vote', routes.postReferenceTitleVote);
-app.get('/references/:id/descriptions/vote', routes.postReferenceDescriptionVote);
+app.get('/:objecttype/:objectid/:attributetype/:attributeid/vote', routes.postDescriptorVote);
 app.get('/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.postTag);
 
