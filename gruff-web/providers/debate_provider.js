@@ -100,38 +100,42 @@ DebateProvider.prototype.search = function(query, callback) {
 
 // Unit test this sucka!
 function buildSearchQueryExpression(tokens) {
-    var result = [[]];
-    var orCount = 0;
-    for (var i=0; i < tokens.length; i++) {
-        var token = tokens[i].toLowerCase().trim();
-        if (token == 'or') {
-            if (i == 0 || i == tokens.length-1) {
-                // Just ignore. Toss out "OR" operators at the start or end of the query.
-            } else {
-                orCount += 1;
-                result.push([]);
-            }
-        } else if (token != '' && token != 'and') {
-            var tokenForRegex = token.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, "");
-            var expr = '(.*' + tokenForRegex + '.*)';
-            result[orCount].push(
-                { $or: [
-                    {"titles.title": { $regex : expr, $options: 'i'}},
-                    {"descs.text": { $regex : expr, $options: 'i'}}
-                ]}
-            );
-        }
+  var result = [[]];
+  var orCount = 0;
+  for (var i=0; i < tokens.length; i++) {
+    var token = tokens[i].toLowerCase().trim();
+    if (token == 'or') {
+      if (i == 0 || i == tokens.length-1) {
+        // Just ignore. Toss out "OR" operators at the start or end of the query.
+      } else {
+        orCount += 1;
+        result.push([]);
+      }
+    } else if (token != '' && token != 'and') {
+      var tokenForRegex = token.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, "");
+      var expr = '(.*' + tokenForRegex + '.*)'; 
+      var tagexpr = '((.*:)?' + tokenForRegex + ')';
+     result[orCount].push(
+        { $or: [
+          {"titles.title": { $regex : expr, $options: 'i'}},
+          {"descs.text": { $regex : expr, $options: 'i'}},
+          {"tags": { $regex : tagexpr, $options: 'i'}},
+          {"titles.tags": { $regex : tagexpr, $options: 'i'}},
+          {"descs.tags": { $regex : tagexpr, $options: 'i'}}
+        ]}
+      );
     }
-    for (var i=0; i < result.length; i++) {
-        if (result[i].length > 1) {
-            result[i] = { $and: result[i] };
-        } else if (result[i].length == 0) {
-            result[i] = [];
-        } else {
-            result[i] = result[i][0];
-        }
+  }
+  for (var i=0; i < result.length; i++) {
+    if (result[i].length > 1) {
+      result[i] = { $and: result[i] };
+    } else if (result[i].length == 0) {
+      result[i] = [];
+    } else {
+      result[i] = result[i][0];
     }
-    return result.length == 1 ? result[0] : { $or: result };
+  }
+  return result.length == 1 ? result[0] : { $or: result };
 }
 
 DebateProvider.prototype.findById = function(id, callback) {
