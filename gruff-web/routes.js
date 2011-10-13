@@ -39,7 +39,10 @@ exports.getDebate = function(req, res) {
     res.render('debate_show.jade', { locals: {
       title: debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText() ,
       parent: debate.parent,
-      debate: debate
+      debate: debate,
+      type: 'debate',
+      describable: debate,
+      linkToMe: false
     }});
   });
 };
@@ -47,8 +50,11 @@ exports.getDebate = function(req, res) {
 exports.getReference = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
     res.render('reference_show.jade', { locals: {
-        title: reference.debate.bestTitleText() + " - " + reference.bestTitleText(),
-        reference: reference
+        title: reference.debate.bestTitleText() + " - " + reference.bestTitleText()
+        , reference: reference
+        , type: 'reference'
+        , describable: reference
+        , linkToMe: false
     }});
   });
 };
@@ -56,10 +62,11 @@ exports.getReference = function(req, res) {
 exports.getDebateTitle = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     res.render('titles_show.jade', { locals: {
-      type: 'debate',
-      title: debate.bestTitleText(),
-      parent: debate.parent,
-      describable: debate
+      title: debate.bestTitleText()
+      , parent: debate.parent
+      , type: 'debate'
+      , describable: debate
+      , linkToMe: true
     }});
   });
 };
@@ -67,10 +74,11 @@ exports.getDebateTitle = function(req, res) {
 exports.getDebateDescription = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     res.render('descriptions_show.jade', { locals: {
-      type: 'debate',
-      title: debate.bestTitleText(),
-      parent: debate.parent,
-      describable: debate
+      title: debate.bestTitleText()
+      , parent: debate.parent
+      , type: 'debate'
+      , describable: debate
+      , linkToMe: true
     }});
   });
 };
@@ -78,10 +86,11 @@ exports.getDebateDescription = function(req, res) {
 exports.getReferenceTitle = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
     res.render('titles_show.jade', { locals: {
-      type: 'reference',
-      title: reference.bestTitleText(),
-      parent: reference.debate,
-      describable: reference
+      title: reference.bestTitleText()
+      , parent: reference.debate
+      , type: 'reference'
+      , describable: reference
+      , linkToMe: true
     }});
   });
 };
@@ -89,14 +98,14 @@ exports.getReferenceTitle = function(req, res) {
 exports.getReferenceDescription = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
     res.render('descriptions_show.jade', { locals: {
-      type: 'reference',
-      title: reference.bestTitleText(),
-      parent: reference.debate,
-      describable: reference
+      title: reference.bestTitleText()
+      , parent: reference.debate
+      , type: 'reference'
+      , describable: reference
+      , linkToMe: true
     }});
   });
 };
-
 
 // Account Info
 
