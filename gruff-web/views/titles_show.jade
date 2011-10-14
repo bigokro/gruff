@@ -1,38 +1,36 @@
 include mixins/tags
 
-#main
-  div.debate
-    div.date= describable.date
-    div.description= describable.bestDescriptionText()
-    div.titles
-      h3 Titles
-      - for (count=0; count < describable.titles.length; count++)
-        - var title = describable.titles[count]
-        h4.choose-title
-          div.user= title.user
-          div.date= title.date
+div.debate
+  div.date= describable.date
+  div.description= describable.bestDescriptionText()
+  div.titles
+    h3 Titles
+    - for (count=0; count < describable.titles.length; count++)
+      - var title = describable.titles[count]
+      h4.choose-title
+        div.user= title.user
+        div.date= title.date
+        div
+          if everyauth.loggedIn
+            if title.votes && title.votes.contains(everyauth.user.login)
+              img(src="/images/checked.png")
+            else
+              a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/titles/"+count+"/vote")
+          span.title= title.title
+          span.votes= title.votes ? "(" + title.votes.length + " votes)" : "(0 votes)"
+        mixin tags(title)
+  div.bottomForm
+    if everyauth.loggedIn
+      form( method="post", action="/" + type + "s/titles/new")
+        input( type="hidden", name="_id", value=describable.linkableId())
+        input( type="hidden", name="user", value=everyauth.user.login)
+        fieldset
+          legend Propose Your Own Title
           div
-            if everyauth.loggedIn
-              if title.votes && title.votes.contains(everyauth.user.login)
-                img(src="/images/checked.png")
-              else
-                a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/titles/"+count+"/vote")
-            span.title= title.title
-            span.votes= title.votes ? "(" + title.votes.length + " votes)" : "(0 votes)" 
-          mixin tags(title)
-    div.bottomForm
-      if everyauth.loggedIn
-        form( method="post", action="/" + type + "s/titles/new")
-          input( type="hidden", name="_id", value=describable.linkableId())
-          input( type="hidden", name="user", value=everyauth.user.login)
-          fieldset
-            legend Propose Your Own Title
-            div
-              label(for="title") Title
-                em *
-              input( type="text", name="title", id="addTitleTitle")
-            div#addTitleSubmit
-              input(type="submit", value="Send it")
-      else
-        a(href="/login") Want to contribute? Log in!
-
+            label(for="title") Title
+              em *
+            input( type="text", name="title", id="addTitleTitle")
+          div#addTitleSubmit
+            input(type="submit", value="Send it")
+    else
+      a(href="/login") Want to contribute? Log in!

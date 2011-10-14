@@ -4,35 +4,27 @@ include mixins/subdebates
 include mixins/subdebate_form
 include mixins/answers
 include mixins/answer_form
-include mixins/references
-include mixins/reference_form
 include mixins/comments
 include mixins/comment_form
 include mixins/tags
 include mixins/search_form
 
-#left
-  mixin search_form
-#right
-  mixin references(debate)
-  mixin reference_form(debate)
-#main
-  div.debate
-    div.date= debate.date
-    div.description= debate.bestDescriptionText()
-      div.vote-link
-        a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
-          img(src="/images/checked.png")
-    mixin tags(debate)
-    if (debate.argumentsFor || debate.argumentsAgainst)
-        mixin arguments(debate)
-    if debate.type != debate.DebateTypes.DEBATE
-        mixin argument_form(debate)
-    if debate.answers
-        mixin answers(debate)
-    if debate.type == debate.DebateTypes.DEBATE
-        mixin answer_form(debate)
-    mixin subdebates(debate)
-    mixin subdebate_form(debate)
-    mixin comments(debate)
-    mixin comment_form("debate", debate)
+div.debate
+  div.date= debate.date
+  div.description= debate.bestDescriptionText()
+    div.vote-link
+      a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description")
+        img(src="/images/checked.png")
+  mixin tags(debate)
+  if (debate.argumentsFor || debate.argumentsAgainst)
+      mixin arguments(debate)
+  if debate.type != debate.DebateTypes.DEBATE
+      mixin argument_form(debate)
+  if debate.answers
+      mixin answers(debate)
+  if debate.type == debate.DebateTypes.DEBATE
+      mixin answer_form(debate)
+  mixin subdebates(debate)
+  mixin subdebate_form(debate)
+  mixin comments(debate)
+  mixin comment_form("debate", debate)

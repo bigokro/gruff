@@ -1,38 +1,36 @@
 include mixins/tags
 
-#main
-  div.debate
-    div.date= describable.date
-    div.description= describable.bestDescriptionText()
-    div.descriptions
-      h3 Descriptions
-      - for (count=0; count < describable.descs.length; count++)
-        - var desc = describable.descs[count]
-        div.choose-description
-          div.user= desc.user
-          div.date= desc.date
+div.debate
+  div.date= describable.date
+  div.description= describable.bestDescriptionText()
+  div.descriptions
+    h3 Descriptions
+    - for (count=0; count < describable.descs.length; count++)
+      - var desc = describable.descs[count]
+      div.choose-description
+        div.user= desc.user
+        div.date= desc.date
+        div
+          if everyauth.loggedIn
+            if desc.votes && desc.votes.contains(everyauth.user.login)
+              img(src="/images/checked.png")
+            else
+              a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/descriptions/"+count+"/vote")
+          span.description= desc.text
+          span.votes= desc.votes ? "(" + desc.votes.length + " votes)" : "(0 votes)"
+        mixin tags(desc)
+  div.bottomForm
+    if everyauth.loggedIn
+      form( method="post", action="/" + type + "s/descriptions/new")
+        input( type="hidden", name="_id", value=describable.linkableId())
+        input( type="hidden", name="user", value=everyauth.user.login)
+        fieldset
+          legend Propose Your Own Description
           div
-            if everyauth.loggedIn
-              if desc.votes && desc.votes.contains(everyauth.user.login)
-                img(src="/images/checked.png")
-              else
-                a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/descriptions/"+count+"/vote")
-            span.description= desc.text
-            span.votes= desc.votes ? "(" + desc.votes.length + " votes)" : "(0 votes)" 
-          mixin tags(desc)
-    div.bottomForm
-      if everyauth.loggedIn
-        form( method="post", action="/" + type + "s/descriptions/new")
-          input( type="hidden", name="_id", value=describable.linkableId())
-          input( type="hidden", name="user", value=everyauth.user.login)
-          fieldset
-            legend Propose Your Own Description
-            div
-              label(for="desc") Description
-                em *
-              textarea( name="desc", id="addDescriptionDesc")
-            div#addDescriptionSubmit
-              input(type="submit", value="Send it")
-      else
-        a(href="/login") Want to contribute? Log in!
-
+            label(for="desc") Description
+              em *
+            textarea( name="desc", id="addDescriptionDesc")
+          div#addDescriptionSubmit
+            input(type="submit", value="Send it")
+    else
+      a(href="/login") Want to contribute? Log in!

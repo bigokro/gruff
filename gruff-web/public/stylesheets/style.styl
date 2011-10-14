@@ -1,9 +1,11 @@
 body
   font-family "Courier New",Courier,monospace
   font-size 1em
-  text-align center
   text-stroke 1px rgba(255, 255, 255, 0.1)
   color #555
+
+/* tags */
+
 h1, h2, h3
   margin 0
   font-variant small-caps
@@ -60,7 +62,10 @@ a.vote:hover
   font-size 1.6em
   padding 0px 33px 26px 0px
   background url(/images/checked.png) no-repeat 0px 0
-#top
+
+/* main content areas */
+
+#header
   #logo
     a
       float left
@@ -77,37 +82,9 @@ a.vote:hover
     margin 0
 #content
   clear both
-#header
-  width 100%
-  text-align center
+  padding-top 20px
 #main
-  margin-left auto
-  margin-right auto
-  width 50%
-  .debates
-      .debate
-        margin 20px
-        border-style dashed
-        border-bottom-style none
-        border-width 2px
-        border-color #A3181E
-        background-color #DDD
-        .date
-            display none
-        .type
-            display none
-        .title a
-            color #A3181E
-            font-size 1.25em
-            letter-spacing -1px
-            font-weight bold
-        .description
-            font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
-            padding .25em
-            background-color #fff
-            border none
-#left
-  width 20%
+  width 70%
   float left
 #right
   width 20%
@@ -115,10 +92,35 @@ a.vote:hover
   .references
     .reference
       h4.title, h4.title a
-        font-size 0.75em
         color #A3181E
+#footer
+  clear both
+  text-align center
+
+/* larger units of content */
+
+.answers
+  margin-top 20px
+  .answer
+    margin-top 10px
+    .answer
+      font-weight bold
+      text-decoration underline
+      background-color #eee
+.against
+  border 1px solid
+  padding 5px
+  float right
+  width 48%
+.bottomForm
+  clear both
+  margin-top 20px
+  border 1px solid
+  padding 10px
 .comments
   margin-top 20px
+  border 1px solid
+  padding 10px
   .comment
     margin-top 10px
     .user
@@ -127,9 +129,32 @@ a.vote:hover
       background-color #eee
     .comment
       background-color #ffa
+.debates
+  .debate
+    margin 20px
+    border 2px dashed #A3181E
+    border-bottom-style none
+    background-color #DDD
+    .date
+        display none
+    .type
+        display none
+    .title a
+        color #A3181E
+        font-size 1.25em
+        letter-spacing -1px
+        font-weight bold
+    .description
+        font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
+        padding .25em
+        background-color #fff
+        border none
 .debate
   .date
     display none
+.descriptions
+  .choose-description
+      padding-bottom 10px
 .description
     min-height 26px
     margin-top 10px
@@ -137,17 +162,12 @@ a.vote:hover
     font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
     padding 5px
     background-color #fff
-    border-style dashed
+    border 2px dashed #A3181E
     border-top-style none
-    border-width 2px
-    border-color #A3181E
     background-color #DDD
     .vote-link
       float right
       text-align right
-.descriptions
-  .choose-description
-      padding-bottom 10px
 .error
   color #a33
 .for
@@ -158,11 +178,6 @@ a.vote:hover
   text-align right
   div.argument
     text-align right
-.against
-  border 1px solid
-  padding 5px
-  float right
-  width 48%
 .vote-link
   margin-left 15px
 .titles
@@ -173,14 +188,10 @@ a.vote:hover
       font-weight bold
       text-decoration underline
       background-color #eee
-.answers
+.subdebates
   margin-top 20px
-  .answer
-    margin-top 10px
-    .answer
-      font-weight bold
-      text-decoration underline
-      background-color #eee
+  border 1px solid
+  padding 10px
 .tags
   a.tag
     padding 2px 4px 2px 4px
@@ -190,9 +201,9 @@ a.vote:hover
     text-decoration none
   a.tag:hover
     text-decoration underline
-.bottomForm
-  margin-top 20px
-  clear both
+
+/* smaller UI units */
+
 .checked
   min-height 26px
   padding 5px 0px 0px 32px

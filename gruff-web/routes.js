@@ -37,12 +37,13 @@ exports.getNewDebate = function(req, res) {
 exports.getDebate = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     res.render('debate_show.jade', { locals: {
-      title: debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText() ,
-      parent: debate.parent,
-      debate: debate,
-      type: 'debate',
-      describable: debate,
-      linkToMe: false
+      title: debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText()
+      , parent: debate.parent
+      , debate: debate
+      , type: 'debate'
+      , describable: debate
+      , linkToMe: false
+      , showReferences: true
     }});
   });
 };
