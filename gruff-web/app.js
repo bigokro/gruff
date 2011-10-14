@@ -56,6 +56,7 @@ app.get('/debates/:id/descriptions', routes.getDebateDescription);
 app.get('/references/:id', routes.getReference);
 app.get('/references/:id/titles', routes.getReferenceTitle);
 app.get('/references/:id/descriptions', routes.getReferenceDescription);
+app.get('/tags/:tag', routes.getTaggedItems);
 app.get('/my/debates', routes.getMyDebates);
 
 app.post('/debates/new', routes.postDebate);

@@ -2,4 +2,4 @@ mixin tags(obj)
   if obj.tags
     div.tags
       each tag in obj.tags
-        span.tag= tag
+        a.tag(href="/tags/"+tag)= tag

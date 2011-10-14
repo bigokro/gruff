@@ -99,6 +99,23 @@ ReferenceProvider.prototype.findAllByObjID = function(debate, objIds, callback) 
     });
 };
 
+ReferenceProvider.prototype.findByTag = function(tag, callback) {
+  this.getCollection(function(error, reference_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      reference_collection.find({ tags: tag }).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          callback(null, augmentReferences(results));
+        }
+      });
+    }
+  });
+};
+
 ReferenceProvider.prototype.findReferencesForUser = function(login, callback) {
     var provider = this;
     this.getUserCollection(function(error, user_collection) {
@@ -205,20 +222,24 @@ ReferenceProvider.prototype.save = function(references, callback) {
 
 
 function augmentReference(result) {
-    var reference = classHelper.augment(result, Reference);
-    if (reference.debate) {
-	      classHelper.augment(reference.debate, Debate);
-    }
-    return reference;
+  var reference = classHelper.augment(result, Reference);
+  if (reference.debate) {
+	  classHelper.augment(reference.debate, Debate);
+  }
+  return reference;
 }
 
 function augmentReferences(debate, results) {
-    var references = [];
-    for (var i=0; i < results.length; i++) {
-		    references[i] = augmentReference(results[i]);
-		    references[i].debate = debate;
-	  }
-    return results;
+  if (!results || results == null) return null;
+  var references = [];
+  for (var i=0; i < results.length; i++) {
+		references[i] = augmentReference(results[i]);
+		references[i].debate = debate;
+	}
+  return results;
 }
+
+ReferenceProvider.prototype.augment = augmentReference;
+ReferenceProvider.prototype.augmentAll = augmentReferences;
 
 exports.ReferenceProvider = ReferenceProvider;

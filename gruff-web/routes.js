@@ -1,7 +1,7 @@
-var tagProvider = new TagProvider('localhost', 27017)
 var referenceProvider = new ReferenceProvider('localhost', 27017)
 var describableProvider = new DescribableProvider('localhost', 27017)
 var debateProvider = new DebateProvider('localhost', 27017, describableProvider, referenceProvider)
+var tagProvider = new TagProvider('localhost', 27017, debateProvider, referenceProvider);
 var debate = new Debate();
 
 //GET
@@ -103,6 +103,19 @@ exports.getReferenceDescription = function(req, res) {
       , type: 'reference'
       , describable: reference
       , linkToMe: true
+    }});
+  });
+};
+
+exports.getTaggedItems = function(req, res) {
+  tagProvider.findAllByTag(req.params.tag, function(error, items) {
+    res.render('tags.jade', { locals: {
+      title: "Stuff Tagged " + req.params.tag
+      , tag: req.params.tag
+      , debates: items.debates
+      , references: items.references
+      , titles: items.titles
+      , descriptions: items.descriptions
     }});
   });
 };

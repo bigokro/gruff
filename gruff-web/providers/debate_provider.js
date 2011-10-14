@@ -71,6 +71,23 @@ DebateProvider.prototype.findRecent = function(limit, skip, callback) {
   });
 };
 
+DebateProvider.prototype.findByTag = function(tag, callback) {
+  this.getCollection(function(error, debate_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      debate_collection.find({ tags: tag }).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          callback(null, augmentDebates(results));
+        }
+      });
+    }
+  });
+};
+
 DebateProvider.prototype.search = function(query, callback) {
     this.getCollection(function(error, debate_collection) {
         if (error) {
@@ -516,38 +533,42 @@ DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId
 
 
 function augmentDebate(result) {
-    var debate = classHelper.augment(result, Debate);
-    if (debate.answers) {
-	      for (answer in debate.answers) {
-	          classHelper.augment(answer, Debate);
-	      }
-    }
-    if (debate.argumentsFor) {
-	      for (argument in debate.argumentsFor) {
-	          classHelper.augment(argument, Debate);
-	      }
-    }
-    if (debate.argumentsAgainst) {
-	      for (argument in debate.argumentsAgainst) {
-	          classHelper.augment(argument, Debate);
-	      }
-    }
-    if (debate.references) {
-	      for (reference in debate.references) {
-	          classHelper.augment(reference, Reference);
-	      }
-    }
-    return debate;
+  var debate = classHelper.augment(result, Debate);
+  if (debate.answers) {
+	  for (answer in debate.answers) {
+	    classHelper.augment(answer, Debate);
+	  }
+  }
+  if (debate.argumentsFor) {
+	  for (argument in debate.argumentsFor) {
+	    classHelper.augment(argument, Debate);
+	  }
+  }
+  if (debate.argumentsAgainst) {
+	  for (argument in debate.argumentsAgainst) {
+	    classHelper.augment(argument, Debate);
+	  }
+  }
+  if (debate.references) {
+	  for (reference in debate.references) {
+	    classHelper.augment(reference, Reference);
+	  }
+  }
+  return debate;
 }
 
 function augmentDebates(results) {
-    var debates = [];
-    for (var i=0; i < results.length; i++) {
-		    // PERF: this is a "deep augmentation". 
-		    // Maybe we only need to augment the Debate itself
-		    debates[i] = augmentDebate(results[i]);
-	  }
-    return results;
+  if (!results || results == null) return null;
+  var debates = [];
+  for (var i=0; i < results.length; i++) {
+		// PERF: this is a "deep augmentation". 
+		// Maybe we only need to augment the Debate itself
+		debates[i] = augmentDebate(results[i]);
+	}
+  return results;
 }
+
+DebateProvider.prototype.augment = augmentDebate;
+DebateProvider.prototype.augmentAll = augmentDebates;
 
 exports.DebateProvider = DebateProvider;
