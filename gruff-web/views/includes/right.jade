@@ -1,0 +1,9 @@
+include ../mixins/search_form
+include ../mixins/references
+include ../mixins/reference_form
+
+#right
+  mixin search_form
+  if typeof showReferences !== 'undefined' && showReferences == true
+    mixin references(debate)
+    mixin reference_form(debate)
