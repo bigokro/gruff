@@ -13,6 +13,7 @@ include mixins/tags
       div.vote-link
         a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
           img(src="/images/checked.png")
-    mixin tags(reference)
+    - var mixinArgs = { objecttype: "references", objectid: reference.linkableId()}
+    mixin tags(reference, mixinArgs)
     mixin comments(reference)
     mixin comment_form("reference", reference)

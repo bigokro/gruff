@@ -19,7 +19,8 @@ include mixins/tags
                 a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/descriptions/"+count+"/vote")
             span.description= desc.text
             span.votes= desc.votes ? "(" + desc.votes.length + " votes)" : "(0 votes)" 
-          mixin tags(desc)
+          - var mixinArgs = { objecttype: type+"s", objectid: describable.linkableId(), attributetype: "descriptions", attributeid: count}
+          mixin tags(desc, mixinArgs)
     div.bottomForm
       if everyauth.loggedIn
         form( method="post", action="/" + type + "s/descriptions/new")

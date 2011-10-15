@@ -73,6 +73,8 @@ app.post('/references/descriptions/new', routes.postReferenceDescription);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/vote', routes.postDescriptorVote);
 app.get('/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.postTag);
+app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
+app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
 
 // Main
 

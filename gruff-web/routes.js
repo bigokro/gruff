@@ -380,6 +380,26 @@ exports.postTag = function(req, res) {
   });
 };
 
+exports.removeTag = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  tagProvider.removeTag(req.params.objecttype
+                                         , req.params.objectid
+                                         , req.params.attributetype
+                                         , req.params.attributeid
+                                         , req.user.login
+                                         , req.params.tag
+                                         , function( error, docs) {
+    res.redirect('/' 
+                 + req.params.objecttype
+                 + '/' 
+                 + req.params.objectid 
+                 + (req.params.attributetype ? '/'+req.params.attributetype : '')
+                )
+  });
+};
+
 // Helpers
 
 bounceAnonymous = function (req, res) {
