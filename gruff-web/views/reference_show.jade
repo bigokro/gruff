@@ -13,7 +13,20 @@ include mixins/tags
       div.vote-link
         a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
           img(src="/images/checked.png")
-    - var mixinArgs = { objecttype: "references", objectid: reference.linkableId()}
-    mixin tags(reference, mixinArgs)
+    mixin tags(reference)
     mixin comments(reference)
     mixin comment_form("reference", reference)
+div.reference
+  div.date= reference.date
+  if reference.url && reference.url != null
+    div.reference
+      | External Reference: 
+      a(href=reference.url, target="_blank")= reference.url
+  div.description= reference.bestDescriptionText()
+    div.vote-link
+      a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
+        img(src="/images/checked.png")
+  - var mixinArgs = { objecttype: "references", objectid: reference.linkableId()}
+  mixin tags(reference, mixinArgs)
+  mixin comments(reference)
+  mixin comment_form("reference", reference)

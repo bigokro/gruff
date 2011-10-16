@@ -18,5 +18,7 @@ html
       })();
   body
     include includes/header
-    div#content!= body
+    #content
+      include includes/right
+      #main!= body
     include includes/footer
