@@ -9,8 +9,9 @@ var debate = new Debate();
 exports.index = function(req, res){
   debateProvider.findRecent(10, 0, function(error, docs){
     res.render('index.jade', { locals: {
-      title: 'Recent Debates',
-      debates: docs
+      title: 'Recent Debates'
+      , debates: docs
+      , showTwitter: true
     }});
   })
 };
