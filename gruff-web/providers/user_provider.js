@@ -98,20 +98,25 @@ UserProvider.prototype.findAllByObjID = function(objIds, callback) {
   });
 };
 
-UserProvider.prototype.findByLogin = function(login, callback) {
+UserProvider.prototype.findByKey = function(value, key, callback) {
   this.getCollection(function(error, user_collection) {
     if (error) {
       callback(error)
     }
     else {
-      user_collection.findOne({login: login}, function(error, result) {
+      var search = {};
+      search[key] = value;
+      user_collection.findOne(search, function(error, result) {
         if (error) {
+          console.log('error');
           callback(error)
         }
         else if (!result) {
+          console.log('no result');
           callback();
         }
         else {
+          console.log(result);
           callback(null, result);
         }
       });
