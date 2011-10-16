@@ -16,6 +16,12 @@ exports.index = function(req, res){
   })
 };
 
+exports.about = function(req, res) {
+  res.render('about.jade', { locals: {
+      title: 'About Gruff'
+  }});
+};
+
 exports.getSearch = function(req, res){
   debateProvider.search(req.param('value'), function(error, results) {
     res.render('search_results.jade', { locals: {

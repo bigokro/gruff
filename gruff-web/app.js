@@ -48,16 +48,17 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.get('/search', routes.getSearch);
+app.get('/about', routes.about);
 app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
 app.get('/debates/:id/titles', routes.getDebateTitle);
 app.get('/debates/:id/descriptions', routes.getDebateDescription);
+app.get('/my/debates', routes.getMyDebates);
 app.get('/references/:id', routes.getReference);
 app.get('/references/:id/titles', routes.getReferenceTitle);
 app.get('/references/:id/descriptions', routes.getReferenceDescription);
+app.get('/search', routes.getSearch);
 app.get('/tags/:tag', routes.getTaggedItems);
-app.get('/my/debates', routes.getMyDebates);
 
 app.post('/debates/new', routes.postDebate);
 app.post('/debates/comments/new', routes.postDebateComment);
