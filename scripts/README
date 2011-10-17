@@ -1,0 +1,6 @@
+gruff.conf is an upstart-style init script.
+
+copy to /etc/init/ and gruff can be started/stopped etc. with upstart commands
+
+see http://kevin.vanzonneveld.net/techblog/article/run_nodejs_as_a_service_on_ubuntu_karmic/
+
