@@ -2,7 +2,7 @@ mixin tags(obj, args)
   - var objecttype = args.objecttype
   - var objectid = args.objectid
   - var attributetype = args.attributetype
-  - var attributeid = args.attributeid ? args.attributeid : ""
+  - var attributeid = args.attributeid != undefined ? args.attributeid : ""
   - var baseurl = "/"+objecttype+"/"+objectid+"/tag/"
   - if (attributetype!=null) baseurl = "/"+objecttype+"/"+objectid+"/"+attributetype+"/"+attributeid+"/tag/"
   div.tags

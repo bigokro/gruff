@@ -1,68 +1,62 @@
 include mixins/search_form
 include mixins/tags
 
-#left
-  mixin search_form
-#main
-    div.debates
-      h2 Debates
-      if debates && debates.length > 0
-        - each debate in debates
-          div.debate
-            div.date= debate.date
-            div.type= debate.type
-            div(class="title checked")
-              a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
-            div.description= debate.bestDescriptionText()
-            - var mixinArgs = { objecttype: "debates", objectid: debate.linkableId() }
-            mixin tags(debate, mixinArgs)
-      else
-        p= "There are no debates tagged with " + tag
+div(class="debates card")
+  h2 Debates
+  if debates && debates.length > 0
+    - each debate in debates
+      div.debate
+        div.date= debate.date
+        div.type= debate.type
+        div(class="title checked")
+          a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
+        - var mixinArgs = { objecttype: "debates", objectid: debate.linkableId() }
+        mixin tags(debate, mixinArgs)
+  else
+    p= "There are no debates tagged with " + tag
 
-    div.references
-      h2 References
-      if references && references.length > 0
-        - each reference in references
-          div.reference
-            div.date= reference.date
-            div.type= reference.type
-            div(class="title checked")
-              a(href="/references/"+reference.linkableId())= reference.bestTitleText()
-            div.description= reference.bestDescriptionText()
-            - var mixinArgs = { objecttype: "references", objectid: reference.linkableId() }
-            mixin tags(reference, mixinArgs)
-      else
-        p= "There are no references tagged with " + tag
+div.references
+  h2 References
+  if references && references.length > 0
+    - each reference in references
+      div.reference
+        div.date= reference.date
+        div.type= reference.type
+        div(class="title checked")
+          a(href="/references/"+reference.linkableId())= reference.bestTitleText()
+        div.description= reference.bestDescriptionText()
+        - var mixinArgs = { objecttype: "references", objectid: reference.linkableId() }
+        mixin tags(reference, mixinArgs)
+  else
+    p= "There are no references tagged with " + tag
 
-    div.titles
-      h2 Titles
-      if titles && titles.length > 0
-        - for (count=0; count < titles.length; count++)
-          - var title = titles[count]
-          div.title
-            div.date= title.date
-            div(class="title checked")
-              a(href="/"+title.parentType+"/"+title.parent.linkableId())= title.title
-            - var mixinArgs = { objecttype: "titles", objectid: title.parent.linkableId(), attributetype: "titles", attributeid: count}
-            mixin tags(debate, mixinArgs)
-            mixin tags(title)
-      else
-        p= "There are no titles tagged with " + tag
+div.titles
+  h2 Titles
+  if titles && titles.length > 0
+    - for (count=0; count < titles.length; count++)
+      - var title = titles[count]
+      div.title
+        div.date= title.date
+        div(class="title checked")
+          a(href="/"+title.parentType+"/"+title.parent.linkableId())= title.title
+        - var mixinArgs = { objecttype: title.parentType+"s", objectid: title.parent.linkableId(), attributetype: "titles", attributeid: count}
+        mixin tags(title.parent, mixinArgs)
+  else
+    p= "There are no titles tagged with " + tag
 
-    div.descriptions
-      h2 Descriptions
-      if descriptions && descriptions.length > 0
-        - for (count=0; count < descriptions.length; count++)
-          - var description = descriptions[count]
-          div.description
-            div.date= description.date
-            div.title
-              a(href="/"+description.parentType+"/"+description.parent.linkableId())= description.parent.bestTitleText()
-            div.text
-              p= description.text
-            - var mixinArgs = { objecttype: type+"s", objectid: describable.linkableId(), attributetype: "descriptions", attributeid: count}
-            mixin tags(debate, mixinArgs)
-            mixin tags(description)
-      else
-        p= "There are no descriptions tagged with " + tag
+div.descriptions
+  h2 Descriptions
+  if descriptions && descriptions.length > 0
+    - for (count=0; count < descriptions.length; count++)
+      - var description = descriptions[count]
+      div.description
+        div.date= description.date
+        div.title
+          a(href="/"+description.parentType+"/"+description.parent.linkableId())= description.parent.bestTitleText()
+        div.text
+          p= description.text
+        - var mixinArgs = { objecttype: description.parentType+"s", objectid: description.parent.linkableId(), attributetype: "descriptions", attributeid: count}
+        mixin tags(description.parent, mixinArgs)
+  else
+    p= "There are no descriptions tagged with " + tag
 
