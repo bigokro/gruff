@@ -1,3 +1,5 @@
+include mixins/describable_header
+
 !!!
 html
   head
@@ -20,5 +22,10 @@ html
     include includes/header
     #content
       include includes/right
+      div#title
+        if typeof type == 'undefined'
+          h1!= title
+        else
+          mixin header(type, describable, linkToMe)
       #main!= body
     include includes/footer

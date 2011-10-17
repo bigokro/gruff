@@ -1,12 +1,10 @@
 include ../mixins/search_form
 include ../mixins/references
-include ../mixins/reference_form
 
 #right
   mixin search_form
   if typeof showReferences !== 'undefined' && showReferences == true
     mixin references(debate)
-    mixin reference_form(debate)
   if typeof showMyReferences !== 'undefined' && showMyReferences == true
     mixin list_references("References Created by You", references_created)
     mixin list_references("References with Contributions from You", references_contributed)

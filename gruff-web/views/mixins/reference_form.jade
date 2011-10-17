@@ -1,9 +1,9 @@
 mixin reference_form(debate)
-    div.bottomForm
+    div.sideForm
       if everyauth.loggedIn
           form(method="post", action="/references/new")
             input( type="hidden", name="_id", value=debate.linkableId())
-            fieldset
+            fieldset(style="display: none;")
               legend Add an external reference
               div
                 label(for="title") Reference Title
@@ -19,5 +19,6 @@ mixin reference_form(debate)
                 textarea( name="desc", rows=5, id="addReferenceDesc")
               div#addReferenceSubmit
                 input(type="submit", value="Send it")
+          a(href="#", onclick="$(this).parent().find('fieldset').show(); $(this).hide(); return false;") Add an external reference
       else
         a(href="/login") Want to contribute? Log in!

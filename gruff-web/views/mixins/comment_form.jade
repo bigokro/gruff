@@ -1,13 +1,15 @@
 mixin comment_form(type, commentable)
   div.bottomForm
     if everyauth.loggedIn
-      form( method="post", action="/"+type+"s/comments/new")
+      form( method="post", action="/"+type+"/comments/new")
         input( type="hidden", name="_id", value=commentable.linkableId())
-        div
-          label(for="comment") Comment
-            em *
-          textarea( name="comment", rows=5, id="addCommentComment")
-        div#addCommentSubmit
-          input(type="submit", value="Send it")
+        fieldset
+          legend Add a comment
+          div
+            label(for="comment") Comment
+              em *
+            textarea( name="comment", rows=5, id="addCommentComment")
+          div#addCommentSubmit
+            input(type="submit", value="Send it")
     else
       a(href="/login") Want to contribute? Log in!

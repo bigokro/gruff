@@ -1,5 +1,3 @@
-include ../mixins/describable_header
-
 #header
   div#logo
     a.site-name(href='/') Gruff
@@ -19,8 +17,3 @@ include ../mixins/describable_header
         a(href='/register') Register
       li.new
         a(href="/login") Log in to start your own debate!
-  div#title
-    if typeof type == 'undefined'
-      h1!= title
-    else
-      mixin header(type, describable, linkToMe)

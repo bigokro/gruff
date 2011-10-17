@@ -1,3 +1,5 @@
+include subdebate_form
+
 mixin subdebates(debate)
   div.subdebates
     h3 Sub-debates
@@ -8,3 +10,4 @@ mixin subdebates(debate)
             a(href="/debates/" + sub.linkableId())= sub.bestTitleText()
     else
       div.none There are no sub-debates related to this debate.
+    mixin subdebate_form(debate)

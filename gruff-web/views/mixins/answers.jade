@@ -1,10 +1,14 @@
+include answer_form
+
 mixin answers(debate)
-  div.answers
-    h3 Proposed Answers
-    if debate.answers
-      - each answer in debate.answers
-        div.answer
-          h4.title
-            a(href="/debates/" + answer.linkableId())= answer.bestTitleText()
-    else
-      div.none There are currently no proposed answers.
+  if debate.type == debate.DebateTypes.DEBATE
+    div.answers
+      h3 Proposed Answers
+      if debate.answers
+        - each answer in debate.answers
+          div.answer
+            h4.title
+              a(href="/debates/" + answer.linkableId())= answer.bestTitleText()
+      else
+        div.none There are currently no proposed answers.
+      mixin answer_form(debate)

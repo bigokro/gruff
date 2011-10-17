@@ -1,4 +1,7 @@
+include argument_form
+
 mixin arguments(debate)
+  if debate.type != debate.DebateTypes.DEBATE
       div.arguments
         div.for
           h3 Arguments in Favor
@@ -16,3 +19,4 @@ mixin arguments(debate)
                 h4.title
                   a(href="/debates/" + argument.linkableId())= argument.bestTitleText()
                 div.body= argument.body
+        mixin argument_form(debate)

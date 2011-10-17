@@ -3,7 +3,7 @@ mixin subdebate_form(debate)
       if everyauth.loggedIn
           form(method="post", action="/debates/subdebates/new")
             input( type="hidden", name="_id", value=debate.linkableId())
-            fieldset
+            fieldset(style="display: none;")
               legend Add a New Sub-debate
               div
                 label(for="title") Debate Title
@@ -15,5 +15,6 @@ mixin subdebate_form(debate)
                 textarea( name="desc", rows=5, id="addSubdebateDesc")
               div#addSubdebateSubmit
                 input(type="submit", value="Send it")
+          a(href="#", onclick="$(this).parent().find('fieldset').show(); $(this).hide(); return false;") Add a New Sub-debate
       else
         a(href="/login") Want to contribute? Log in!

@@ -1,5 +1,4 @@
 include mixins/comments
-include mixins/comment_form
 include mixins/tags
 
 div.reference
@@ -14,5 +13,4 @@ div.reference
         img(src="/images/checked.png")
   - var mixinArgs = { objecttype: "references", objectid: reference.linkableId()}
   mixin tags(reference, mixinArgs)
-  mixin comments(reference)
-  mixin comment_form("reference", reference)
+  mixin comments("reference", reference)

@@ -3,8 +3,8 @@ mixin answer_form(debate)
       if everyauth.loggedIn
           form(method="post", action="/debates/answers/new")
             input( type="hidden", name="_id", value=debate.linkableId())
-            fieldset
-              legend Propose Your Own Answer or Sub-debate
+            fieldset(style="display: none;")
+              legend Propose Your Own Answer
               div
                 label(for="title") Answer Title
                   em *
@@ -15,5 +15,6 @@ mixin answer_form(debate)
                 textarea( name="desc", rows=5, id="addAnswerDesc")
               div#addAnswerSubmit
                 input(type="submit", value="Send it")
+          a(href="#", onclick="$(this).parent().find('fieldset').show(); $(this).hide(); return false;") Propose Your Own Answer
       else
         a(href="/login") Want to contribute? Log in!
