@@ -208,4 +208,48 @@ TagProvider.prototype.addTag = function(objectType, objectId, attributeType, att
   });
 };
 
+TagProvider.prototype.removeTag = function(objectType, objectId, attributeType, attributeId, login, tag, callback) {
+  var provider = this;
+  this.getCollection(objectType, function(error, object_collection) {
+	  if( error ) callback( error );
+	  else {
+      var oid = object_collection.db.bson_serializer.ObjectID.createFromHexString(objectId);
+      provider.getCollection("users", function(error, user_collection) {
+	      if( error ) callback( error );
+	      else {
+              var action = {"$addToSet": { contributed_references : oid } };
+              if (objectType == "debates") {
+                action = {"$addToSet": { contributed_debates : oid } };
+              }
+              user_collection.update( {login:login}, action, function(error, user) {
+	              if( error ) callback( error );
+	              else {
+                  var action = {};
+                  tag = tag.toLowerCase();
+                  switch (attributeType) {
+                  case "titles":
+                    action["titles."+attributeId+".tags"] = tag;
+                    break;
+                  case "descriptions":
+                    action["descs."+attributeId+".tags"] = tag;
+                    break;
+                  default:
+                    action = { tags : tag };
+                  }
+                  action = {"$pull": action };
+	                object_collection.update(
+		                {_id: oid},
+		                action,
+		                function(error){
+		                  if( error ) callback(error);
+		                  else callback(null, tag);
+		                });
+	              }
+              });
+	      }
+      });
+	  }
+  });
+}
+
 exports.TagProvider = TagProvider;

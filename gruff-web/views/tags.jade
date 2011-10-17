@@ -14,7 +14,8 @@ include mixins/tags
             div(class="title checked")
               a(href="/debates/"+debate.linkableId())= debate.bestTitleText()
             div.description= debate.bestDescriptionText()
-            mixin tags(debate)
+            - var mixinArgs = { objecttype: "debates", objectid: debate.linkableId() }
+            mixin tags(debate, mixinArgs)
       else
         p= "There are no debates tagged with " + tag
 
@@ -28,18 +29,22 @@ include mixins/tags
             div(class="title checked")
               a(href="/references/"+reference.linkableId())= reference.bestTitleText()
             div.description= reference.bestDescriptionText()
-            mixin tags(reference)
+            - var mixinArgs = { objecttype: "references", objectid: reference.linkableId() }
+            mixin tags(reference, mixinArgs)
       else
         p= "There are no references tagged with " + tag
 
     div.titles
       h2 Titles
       if titles && titles.length > 0
-        - each title in titles
+        - for (count=0; count < titles.length; count++)
+          - var title = titles[count]
           div.title
             div.date= title.date
             div(class="title checked")
               a(href="/"+title.parentType+"/"+title.parent.linkableId())= title.title
+            - var mixinArgs = { objecttype: "titles", objectid: title.parent.linkableId(), attributetype: "titles", attributeid: count}
+            mixin tags(debate, mixinArgs)
             mixin tags(title)
       else
         p= "There are no titles tagged with " + tag
@@ -47,13 +52,16 @@ include mixins/tags
     div.descriptions
       h2 Descriptions
       if descriptions && descriptions.length > 0
-        - each description in descriptions
+        - for (count=0; count < descriptions.length; count++)
+          - var description = descriptions[count]
           div.description
             div.date= description.date
             div.title
               a(href="/"+description.parentType+"/"+description.parent.linkableId())= description.parent.bestTitleText()
             div.text
               p= description.text
+            - var mixinArgs = { objecttype: type+"s", objectid: describable.linkableId(), attributetype: "descriptions", attributeid: count}
+            mixin tags(debate, mixinArgs)
             mixin tags(description)
       else
         p= "There are no descriptions tagged with " + tag

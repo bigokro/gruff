@@ -1,7 +1,6 @@
 var everyauth = require('everyauth')
 , userProvider = new UserProvider('localhost', 27017)
-, usersById = {}
-, nextUserId = 0
+, validator = require('validator');
 ;
 
 everyauth.everymodule
@@ -33,7 +32,7 @@ everyauth
         return errors;
       }
       var promise = this.Promise();
-      userProvider.findByLogin(login, function (err, user) {
+      userProvider.findByKey(login, 'login', function (err, user) {
         if (err) {
           promise.fulfill(err);
         }
@@ -64,18 +63,16 @@ everyauth
         });
       }, 200);
     })
-    .validateRegistration( function (newUserAttrs, errors) {
-      var login = newUserAttrs.login;
-      var promise = this.Promise();
-      userProvider.findByLogin(login, function(err, user) {
-        if (user) {
-          errors.push('Login already taken');
-        }
-        else if (err) {
-          errors.push(err);
-        }
-        promise.fulfill(errors);
-      });
+    .extractExtraRegistrationParams( function (req) {
+      return {
+          email: req.body.email
+        , displayname: req.body.displayname
+      };
+    })
+    .validateRegistration( function (registration, errors) {
+      var promise = this.Promise()
+      validateEmail(registration.email, errors, promise);
+      validateLogin(registration.login, errors, promise);
       return promise;
     })
     .registerUser( function (newUserAttrs) {
@@ -93,5 +90,35 @@ everyauth
     })
     .loginSuccessRedirect('/')
     .registerSuccessRedirect('/');
+
+validateEmail = function(email, errors, promise) {
+  try {
+    validator.check(email, 'Invalid email address').isEmail();
+  }
+  catch (err) {
+    errors.push(err);
+  }
+  userProvider.findByKey(email, 'email', function(err, user) {
+    if (user) {
+      errors.push('Email already taken');
+    }
+    else if (err) {
+      errors.push(err);
+    }
+    promise.fulfill(errors);
+  });
+}
+
+validateLogin = function(login, errors, promise) {
+  userProvider.findByKey(login, 'login', function(err, user) {
+    if (user) {
+      errors.push('Login already taken');
+    }
+    else if (err) {
+      errors.push(err);
+    }
+    promise.fulfill(errors);
+  });
+}
 
 exports.everyauth = everyauth;

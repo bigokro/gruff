@@ -9,10 +9,17 @@ var debate = new Debate();
 exports.index = function(req, res){
   debateProvider.findRecent(10, 0, function(error, docs){
     res.render('index.jade', { locals: {
-      title: 'Recent Debates',
-      debates: docs
+      title: 'Recent Debates'
+      , debates: docs
+      , showTwitter: true
     }});
   })
+};
+
+exports.about = function(req, res) {
+  res.render('about.jade', { locals: {
+      title: 'About Gruff'
+  }});
 };
 
 exports.getSearch = function(req, res){
@@ -366,6 +373,26 @@ exports.postTag = function(req, res) {
     return;
   }
   tagProvider.addTag(req.params.objecttype
+                                         , req.params.objectid
+                                         , req.params.attributetype
+                                         , req.params.attributeid
+                                         , req.user.login
+                                         , req.params.tag
+                                         , function( error, docs) {
+    res.redirect('/' 
+                 + req.params.objecttype
+                 + '/' 
+                 + req.params.objectid 
+                 + (req.params.attributetype ? '/'+req.params.attributetype : '')
+                )
+  });
+};
+
+exports.removeTag = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  tagProvider.removeTag(req.params.objecttype
                                          , req.params.objectid
                                          , req.params.attributetype
                                          , req.params.attributeid

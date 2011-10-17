@@ -1,5 +1,18 @@
-mixin tags(obj)
+mixin tags(obj, args)
+  - var objecttype = args.objecttype
+  - var objectid = args.objectid
+  - var attributetype = args.attributetype
+  - var attributeid = args.attributeid
   if obj.tags
     div.tags
       each tag in obj.tags
-        a.tag(href="/tags/"+tag)= tag
+        if everyauth.loggedIn
+          - var removeurl = "/"+objecttype+"/"+objectid+"/tag/"+tag+"/remove"
+          - if (attributetype!=null) removeurl = "/"+objecttype+"/"+objectid+"/"+attributetype+"/"+attributeid+"/tag/"+tag+"/remove"
+          span(class="tag spacer", onmouseover="$('.delete-tag', this).show(); $(this).toggleClass('spacer')", onmouseout="$('.delete-tag', this).hide(); $(this).toggleClass('spacer')")
+            a.tag(title="View others with this tag", href="/tags/"+tag)= tag
+            
+            a.delete-tag(title="Remove", href=removeurl, style="display: none;") X
+        else
+          span(class="tag spacer")
+            a.tag(title="View others with this tag", href="/tags/"+tag)= tag

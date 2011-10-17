@@ -2,16 +2,31 @@ include mixins/comments
 include mixins/comment_form
 include mixins/tags
 
+#main
+  div.reference
+    div.date= reference.date
+    if reference.url && reference.url != null
+      div.reference
+        | External Reference: 
+        a(href=reference.url, target="_blank")= reference.url
+    div.description= reference.bestDescriptionText()
+      div.vote-link
+        a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
+          img(src="/images/checked.png")
+    mixin tags(reference)
+    mixin comments(reference)
+    mixin comment_form("reference", reference)
 div.reference
   div.date= reference.date
   if reference.url && reference.url != null
     div.reference
-      | External Reference:
+      | External Reference: 
       a(href=reference.url, target="_blank")= reference.url
   div.description= reference.bestDescriptionText()
     div.vote-link
-      a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description")
+      a(href="/references/" + reference.linkableId() + "/descriptions", title="Improve this description") 
         img(src="/images/checked.png")
-  mixin tags(reference)
+  - var mixinArgs = { objecttype: "references", objectid: reference.linkableId()}
+  mixin tags(reference, mixinArgs)
   mixin comments(reference)
   mixin comment_form("reference", reference)

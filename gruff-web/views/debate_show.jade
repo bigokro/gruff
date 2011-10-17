@@ -13,9 +13,10 @@ div.debate
   div.date= debate.date
   div.description= debate.bestDescriptionText()
     div.vote-link
-      a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description")
+      a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
         img(src="/images/checked.png")
-  mixin tags(debate)
+  - var mixinArgs = { objecttype: "debates", objectid: debate.linkableId()}
+  mixin tags(debate, mixinArgs)
   if (debate.argumentsFor || debate.argumentsAgainst)
       mixin arguments(debate)
   if debate.type != debate.DebateTypes.DEBATE
