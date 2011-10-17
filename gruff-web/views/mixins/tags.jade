@@ -2,13 +2,15 @@ mixin tags(obj, args)
   - var objecttype = args.objecttype
   - var objectid = args.objectid
   - var attributetype = args.attributetype
-  - var attributeid = args.attributeid
-  if obj.tags
-    div.tags
+  - var attributeid = args.attributeid ? args.attributeid : ""
+  - var baseurl = "/"+objecttype+"/"+objectid+"/tag/"
+  - if (attributetype!=null) baseurl = "/"+objecttype+"/"+objectid+"/"+attributetype+"/"+attributeid+"/tag/"
+  div.tags
+    span.label tags:
+    if obj.tags
       each tag in obj.tags
+        - var removeurl = baseurl + tag + "/remove"
         if everyauth.loggedIn
-          - var removeurl = "/"+objecttype+"/"+objectid+"/tag/"+tag+"/remove"
-          - if (attributetype!=null) removeurl = "/"+objecttype+"/"+objectid+"/"+attributetype+"/"+attributeid+"/tag/"+tag+"/remove"
           span(class="tag spacer", onmouseover="$('.delete-tag', this).show(); $(this).toggleClass('spacer')", onmouseout="$('.delete-tag', this).hide(); $(this).toggleClass('spacer')")
             a.tag(title="View others with this tag", href="/tags/"+tag)= tag
             
@@ -16,3 +18,14 @@ mixin tags(obj, args)
         else
           span(class="tag spacer")
             a.tag(title="View others with this tag", href="/tags/"+tag)= tag
+    span.show-add-tag-form(id="show-add-tag-form-"+attributeid)
+      a(title="Add a tag", href="#", onclick="$('#add-tag-form-"+attributeid+"').show(); $('#show-add-tag-form-"+attributeid+"').hide(); $('#add-tag-form-field-"+attributeid+"').focus(); return false;") +
+    span.add-tag-form(id="add-tag-form-"+attributeid, style="display: none;")
+      a(title="Hide tag form", href="#", onclick="$('#show-add-tag-form-"+attributeid+"').show(); $('#add-tag-form-"+attributeid+"').hide(); return false;") -
+      input(type="text", id="add-tag-form-field-"+attributeid)
+      script(type="text/javascript")
+        $('#add-tag-form-field-!{attributeid}').keypress(function(e){
+          if(e.which == 13) {
+            window.location.href = "!{baseurl}" + $('#add-tag-form-field-!{attributeid}').val();
+          }
+        });
