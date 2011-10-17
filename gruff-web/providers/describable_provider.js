@@ -14,7 +14,7 @@ var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 
 DescribableProvider = function(host, port) {
-  this.db= new Db('node-mongo-blog', new Server(host, port, {auto_reconnect: true}, {}));
+  this.db= new Db('gruff', new Server(host, port, {auto_reconnect: true}, {}));
   this.db.open(function(){});
 };
 
