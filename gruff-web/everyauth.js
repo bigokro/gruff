@@ -44,7 +44,6 @@ everyauth
            promise.fulfill(['Login failed']);
           }
           else {
-            // Annoying!
             user.id = user._id;
             promise.fulfill(user);
           }
@@ -83,7 +82,7 @@ everyauth
           return promise.fulfill([err]);
         }
         var user = users[0];
-        user.id = user._id
+        user.id = user._id;
         promise.fulfill(user);
       });
       return promise;

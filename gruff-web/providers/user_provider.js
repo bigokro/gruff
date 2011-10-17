@@ -55,7 +55,7 @@ UserProvider.prototype.findByObjID = function(objId, callback) {
         }
         else {
           result.id = result._id;
-	  callback(null, result);
+          callback(null, result);
         }
       });
     }
