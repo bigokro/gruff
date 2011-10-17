@@ -1,17 +1,5 @@
 include ../mixins/debates
-include ../mixins/references
-include ../mixins/search_form
 
-
-#header
-  h1!= title
-#left
-  mixin search_form
-#right
-  mixin list_references("References Created by You", references_created)
-  mixin list_references("References with Contributions from You", references_contributed)
-  mixin list_references("References on which You Have Voted", references_voted)
-#main
-  mixin list_debates("Debates Created by You", created)
-  mixin list_debates("Debates with Contributions from You", contributed)
-  mixin list_debates("Debates on which You Have Voted", voted)
+mixin list_debates("Debates Created by You", created)
+mixin list_debates("Debates with Contributions from You", contributed)
+mixin list_debates("Debates on which You Have Voted", voted)

@@ -137,13 +137,14 @@ exports.getMyDebates = function(req, res) {
   debateProvider.findDebatesForUser(req.user.login, function(error, debates) {
       referenceProvider.findReferencesForUser(req.user.login, function(error, references) {
           res.render('my/debates.jade', { locals: {
-              title: "My Debates",
-              created: debates.created,
-              contributed: debates.contributed,
-              voted: debates.voted,
-              references_created: references.created,
-              references_contributed: references.contributed,
-              references_voted: references.voted
+              title: "My Debates"
+            , created: debates.created
+            , contributed: debates.contributed
+            , voted: debates.voted
+            , references_created: references.created
+            , references_contributed: references.contributed
+            , references_voted: references.voted
+            , showMyReferences: true
           }});
       });
   });

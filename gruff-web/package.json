@@ -9,6 +9,6 @@
     "socket.io": "0.7.11",
     "stylus": ">= 0.0.1",
     "everyauth": "~0.2.20",
-    "validator": "~0.2.9",
+    "validator": "~0.2.9"
   }
 }
