@@ -11,7 +11,6 @@ var express = require('express')
   , Debate = require('./models/debate').Debate
   , everyauth = require('./everyauth').everyauth
   , fs = require('fs')
-  , logStream = fs.createWriteStream('gruff.log')
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
   , routes = require('./routes')
   , stylus = require('stylus')
@@ -26,7 +25,6 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.logger({stream: fs.createWriteStream('gruff.' + Date.now() + '.log')}));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.session({secret: ':DP:DP:DP:DP'}));
@@ -38,10 +36,12 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
+  app.use(express.logger({stream: fs.createWriteStream('gruff.' + Date.now() + '.log')}));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
+  app.use(express.logger({stream: fs.createWriteStream('/var/log/gruff.' + Date.now() + '.log')}));
   app.use(express.errorHandler());
 });
 
