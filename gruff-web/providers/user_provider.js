@@ -5,7 +5,7 @@ var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 
 UserProvider = function(host, port) {
-  this.db= new Db('gruff', new Server(host, port, {auto_reconnect: true}, {}));
+  this.db= new Db(process.env.DBNAME, new Server(host, port, {auto_reconnect: true}, {}));
   this.db.open(function(){});
 };
 

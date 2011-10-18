@@ -11,7 +11,7 @@ var classHelper = new ClassHelper();
 // Utility functions
 
 DebateProvider = function(host, port, describable_provider, reference_provider) {
-    this.db= new Db('gruff', new Server(host, port, {auto_reconnect: true}, {}));
+    this.db= new Db(process.env.DBNAME, new Server(host, port, {auto_reconnect: true}, {}));
     this.db.open(function(){});
     this.describable_provider = describable_provider;
     this.reference_provider = reference_provider;

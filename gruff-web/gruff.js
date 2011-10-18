@@ -2,6 +2,8 @@
  * Module dependencies.
  */
 
+process.env.DBNAME = process.env.NODE_ENV == 'production' ? 'gruff' : 'gruff-dev';
+
 var express = require('express')
   , DebateProvider = require('./providers/debate_provider').DebateProvider
   , DescribableProvider = require('./providers/describable_provider').DescribableProvider
@@ -15,6 +17,7 @@ var express = require('express')
   , routes = require('./routes')
   , stylus = require('stylus')
   ;
+
 
 require('./lib/utils');
 
