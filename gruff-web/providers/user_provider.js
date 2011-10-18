@@ -108,15 +108,12 @@ UserProvider.prototype.findByKey = function(value, key, callback) {
       search[key] = value;
       user_collection.findOne(search, function(error, result) {
         if (error) {
-          console.log('error');
           callback(error)
         }
         else if (!result) {
-          console.log('no result');
           callback();
         }
         else {
-          console.log(result);
           callback(null, result);
         }
       });

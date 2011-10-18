@@ -15,6 +15,6 @@ form(action='/register', method='post')
     input(type="text", name="email", value=userParams['email'], class="required")
   #displayname
     label(for="displayname") Display Name
-    input(type="text", name="displayname")
+    input(type="text", name="displayname", value=userParams['displayname'])
   #submit
     input(type='submit') Register

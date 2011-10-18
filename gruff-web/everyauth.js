@@ -22,6 +22,7 @@ everyauth
     })
     .authenticate( function (login, password) {
       var errors = [];
+      login = sanitizeLogin(login);
       if (!login) {
         errors.push('Missing login');
       }
@@ -70,8 +71,23 @@ everyauth
     })
     .validateRegistration( function (registration, errors) {
       var promise = this.Promise()
-      validateEmail(registration.email, errors, promise);
-      validateLogin(registration.login, errors, promise);
+      registration.login = sanitizeLogin(registration.login);
+      validateLogin(registration.login, function (newError) {
+        if (typeof newError !== 'undefined') {
+          errors.push(newError);
+        }
+        validateEmail(registration.email, function (newError) {
+          if (typeof newError !== 'undefined') {
+            errors.push(newError);
+          }
+          validateDisplayName(registration.displayname, function (newError) {
+            if (typeof newError !== 'undefined') {
+              errors.push(newError);
+            }
+            promise.fulfill(errors);
+          })
+        })
+      });
       return promise;
     })
     .registerUser( function (newUserAttrs) {
@@ -90,34 +106,57 @@ everyauth
     .loginSuccessRedirect('/')
     .registerSuccessRedirect('/');
 
-validateEmail = function(email, errors, promise) {
+validateLogin = function(login, callback) {
+  userProvider.findByKey(login, 'login', function(err, user) {
+    if (user) {
+      callback('Login already taken');
+    }
+    else if (err) {
+      callback(err);
+    }
+    else {
+      callback();
+    }
+  });
+}
+
+validateEmail = function(email, callback) {
   try {
     validator.check(email, 'Invalid email address').isEmail();
   }
   catch (err) {
-    errors.push(err);
+    callback(err);
+    return;
   }
   userProvider.findByKey(email, 'email', function(err, user) {
     if (user) {
-      errors.push('Email already taken');
+      callback('Email already taken');
     }
     else if (err) {
-      errors.push(err);
+      callback(err);
     }
-    promise.fulfill(errors);
+    else {
+      callback();
+    }
   });
 }
 
-validateLogin = function(login, errors, promise) {
-  userProvider.findByKey(login, 'login', function(err, user) {
+validateDisplayName = function(displayname, callback) {
+  userProvider.findByKey(displayname, 'displayname', function(err, user) {
     if (user) {
-      errors.push('Login already taken');
+      callback('Display name already taken');
     }
     else if (err) {
-      errors.push(err);
+      callback(err);
     }
-    promise.fulfill(errors);
+    else {
+      callback();
+    }
   });
+}
+
+sanitizeLogin = function(login) {
+  return login.toLowerCase();
 }
 
 exports.everyauth = everyauth;
