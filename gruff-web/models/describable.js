@@ -43,10 +43,10 @@ Describable.prototype.bestDescription = function() {
         }
     }
     var result = this.descs[this.descs.length-1];
-    var votes = result.votes ? result.votes.length : 0;
+    var votes = result != null && result.votes ? result.votes.length : 0;
     for (i=0; i < this.descs.length; i++) {
         var desc = this.descs[i];
-        if (desc.votes) {
+        if (desc && desc != null && desc.votes) {
             if (desc.votes.length > votes) {
                 result = desc;
                 votes = desc.votes.length;

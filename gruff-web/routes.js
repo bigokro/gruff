@@ -196,7 +196,7 @@ exports.postDebateTitle = function(req, res) {
     return;
   }
   describableProvider.addDescriptor("debates"
-                                    , "title"
+                                    , "titles"
                                     , req.param('_id')
                                     , req.user.login
                                     , {
@@ -214,7 +214,7 @@ exports.postDebateDescription = function(req, res) {
     return;
   }
   describableProvider.addDescriptor("debates"
-                                    , "description"
+                                    , "descriptions"
                                     , req.param('_id')
                                     , req.user.login
                                     , {
@@ -326,7 +326,7 @@ exports.postReferenceTitle = function(req, res) {
     return;
   }
   describableProvider.addDescriptor("references"
-                                    , "title"
+                                    , "titles"
                                     , req.param('_id')
                                     , req.user.login
                                     , {
@@ -344,7 +344,7 @@ exports.postReferenceDescription = function(req, res) {
     return;
   }
   describableProvider.addDescriptor("references"
-                                    , "description"
+                                    , "descriptions"
                                     , req.param('_id')
                                     , req.user.login
                                     , {

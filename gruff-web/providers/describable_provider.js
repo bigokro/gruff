@@ -56,17 +56,29 @@ DescribableProvider.prototype.addDescriptor = function(describableType, descript
           user_collection.update( {login:login}, action, function(error, user) {
 	          if( error ) callback( error );
 	          else {
-              var action = descriptorType == "title" ? {"$push": {titles: descriptor}} : {"$push": {descs: descriptor}};
+              var action = descriptorType == "titles" ? {"$push": {titles: descriptor}} : {"$push": {descs: descriptor}};
 	            describable_collection.update(
 		            {_id: id},
 		            action,
-		            function(error, describable){
+		            function(error){
 		              if( error ) callback(error);
 		              else {
-                    var descriptorText = descriptorType == "title" ? descriptor.title : descriptor.text;
-                    provider.voteForDescriptor(describableType, descriptorType, describableId, login, descriptorText, function(error, describable) {
+                    describable_collection.findOne({_id: id}, function(error, result) {
 		                  if( error ) callback(error);
-		                  else callback(null, describable);
+		                  else {
+                        var arrayField = descriptorType == "titles" ? "titles" : "descs";
+                        var textField = descriptorType == "titles" ? "title" : "text";
+                        var descriptorText = descriptor[textField];
+                        var descriptorArr = result[arrayField];
+                        var descriptorId = descriptorArr.length-1;
+                        for (; descriptorId >= 0; descriptorId--) {
+                          if (descriptorText == descriptorArr[descriptorId][textField]) break;
+                        }
+                        provider.voteForDescriptor(describableType, describableId, descriptorType, descriptorId, login, function(error, voted) {
+		                      if( error ) callback(error);
+		                      else callback(null, voted);
+		                    });
+	                    }
 		                });
 	                }
                 });
