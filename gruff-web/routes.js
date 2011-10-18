@@ -93,13 +93,21 @@ exports.getDebateDescription = function(req, res) {
 
 exports.getReferenceTitle = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
-    res.render('titles_show.jade', { locals: {
-      title: reference.bestTitleText()
-      , parent: reference.debate
-      , type: 'reference'
-      , describable: reference
-      , linkToMe: true
-    }});
+    if (error !== null) {
+      console.log(error);
+      res.render('error.jade', { locals: {
+          title: 'Horrendous Error'
+      }});
+    }
+    else {
+      res.render('titles_show.jade', { locals: {
+        title: reference.bestTitleText()
+        , parent: reference.debate
+        , type: 'reference'
+        , describable: reference
+        , linkToMe: true
+      }});
+    }
   });
 };
 

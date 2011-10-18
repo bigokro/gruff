@@ -44,30 +44,42 @@ ReferenceProvider.prototype.findById = function(id, callback) {
 };
 
 ReferenceProvider.prototype.findByObjID = function(objId, callback) {
-    var provider = this;
-    this.getCollection(function(error, reference_collection) {
-	    if( error ) callback(error)
-      else {
-            reference_collection.findOne({_id: objId}, function(error, result) {
-		            if( error ) callback(error)
-                else if (!result) callback(null, null)
-		            else {
-                    // Pre-load the debate reference
-                    provider.getDebateCollection(function(error, debate_collection) {
-	                      if( error ) callback(error)
-                        debate_collection.findOne({_id: result.debateId}, function(error, debate) {
-		                        if( error ) callback(error)
-                            else if (!result) callback(null, null)
-		                        else {
-                                result.debate = debate;
-                                callback(null, augmentReference(result));
-                            }
-                        });
- 	                  });
-	              }
+  var provider = this;
+  this.getCollection(function(error, reference_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      reference_collection.findOne({_id: objId}, function(error, result) {
+        if (error) {
+          callback(error)
+        }
+        else if (!result) {
+          callback(null, null)
+        }
+        else {
+          // Pre-load the debate reference
+          provider.getDebateCollection(function(error, debate_collection) {
+            if (error) {
+              callback(error)
+            }
+            debate_collection.findOne({_id: result.debateId}, function(error, debate) {
+              if (error) {
+                callback(error)
+              }
+              else if (!result) {
+                callback(null, null)
+              }
+              else {
+                result.debate = debate;
+                callback(null, augmentReference(result));
+              }
             });
-      }
-    });
+          });
+        }
+      });
+    }
+  });
 }
 
 ReferenceProvider.prototype.findAllById = function(debate, ids, callback) {
