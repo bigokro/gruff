@@ -22,7 +22,6 @@ everyauth
     })
     .authenticate( function (login, password) {
       var errors = [];
-      login = sanitizeLogin(login);
       if (!login) {
         errors.push('Missing login');
       }
@@ -71,7 +70,6 @@ everyauth
     })
     .validateRegistration( function (registration, errors) {
       var promise = this.Promise()
-      registration.login = sanitizeLogin(registration.login);
       validateLogin(registration.login, function (newError) {
         if (typeof newError !== 'undefined') {
           errors.push(newError);
@@ -153,10 +151,6 @@ validateDisplayName = function(displayname, callback) {
       callback();
     }
   });
-}
-
-sanitizeLogin = function(login) {
-  return login.toLowerCase();
 }
 
 exports.everyauth = everyauth;
