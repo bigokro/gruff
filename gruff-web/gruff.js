@@ -64,6 +64,12 @@ app.get('/references/:id/descriptions', routes.getReferenceDescription);
 app.get('/search', routes.getSearch);
 app.get('/tags/:tag', routes.getTaggedItems);
 
+//blitz.io
+app.get('/mu-18cba0e3-0a046521-fdcf6513-860a61a9', function(req, res) {
+  res.write("42");
+  res.end();
+});
+
 app.post('/debates/new', routes.postDebate);
 app.post('/debates/comments/new', routes.postDebateComment);
 app.post('/debates/titles/new', routes.postDebateTitle);
