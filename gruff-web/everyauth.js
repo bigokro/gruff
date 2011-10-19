@@ -65,7 +65,6 @@ everyauth
     .extractExtraRegistrationParams( function (req) {
       return {
           email: req.body.email
-        , displayname: req.body.displayname
       };
     })
     .validateRegistration( function (registration, errors) {
@@ -78,12 +77,7 @@ everyauth
           if (typeof newError !== 'undefined') {
             errors.push(newError);
           }
-          validateDisplayName(registration.displayname, function (newError) {
-            if (typeof newError !== 'undefined') {
-              errors.push(newError);
-            }
-            promise.fulfill(errors);
-          })
+          promise.fulfill(errors);
         })
       });
       return promise;
@@ -129,20 +123,6 @@ validateEmail = function(email, callback) {
   userProvider.findByKey(email, 'email', function(err, user) {
     if (user) {
       callback('Email already taken');
-    }
-    else if (err) {
-      callback(err);
-    }
-    else {
-      callback();
-    }
-  });
-}
-
-validateDisplayName = function(displayname, callback) {
-  userProvider.findByKey(displayname, 'displayname', function(err, user) {
-    if (user) {
-      callback('Display name already taken');
     }
     else if (err) {
       callback(err);
