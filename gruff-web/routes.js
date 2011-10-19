@@ -22,6 +22,13 @@ exports.about = function(req, res) {
   }});
 };
 
+exports.contact = function(req, res) {
+  res.render('contact.jade', { locals: {
+      title: 'Contact Us'
+      , showTwitter: true
+  }});
+};
+
 exports.getSearch = function(req, res){
   debateProvider.search(req.param('value'), function(error, results) {
     res.render('search_results.jade', { locals: {

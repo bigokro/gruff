@@ -52,6 +52,7 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 app.get('/about', routes.about);
+app.get('/contact', routes.contact);
 app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
 app.get('/debates/:id/titles', routes.getDebateTitle);
