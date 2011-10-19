@@ -1,13 +1,14 @@
 #!/bin/bash
 
 HOME=/home/ec2-user
+GITHOME=/home/git
 BACKUP=/var/local/backup
 DATE=`date +%Y%m%d`
 FILE=$DATE.backup.tgz
 
-rsync -a --delete $HOME/gruff $BACKUP/gruff
-rsync -a --delete $HOME/redmine $BACKUP/redmine
-rsync -a --delete $HOME/git/gruff.git $BACKUP/gruff.git
+rsync -a --delete $HOME/gruff/ $BACKUP/gruff/
+rsync -a --delete $HOME/redmine/ $BACKUP/redmine/
+rsync -a --delete $GITHOME/gruff.git/ $BACKUP/gruff.git/
 mysqldump -u backup -pZhBfUR47QxN83g2f redmine | gzip -c > $BACKUP/redmine.sql.gz
 mongodump -o $BACKUP/mongodb
 tar -czf /tmp/$FILE $BACKUP
