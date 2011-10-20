@@ -61,8 +61,6 @@ app.configure('production', function() {
 
 // Routes
 
-// gets
-
 app.get('/', routes.index);
 app.get('/about', routes.about);
 app.get('/contact', routes.contact);
@@ -84,8 +82,8 @@ app.get('/mu-18cba0e3-0a046521-fdcf6513-860a61a9', function(req, res) {
 // status
 app.get('/404', routes.handle404);
 app.get('/500', routes.handle500);
-
-// posts and post-like
+// default
+app.get('*', routes.handle404);
 
 app.post('/debates/new', routes.postDebate);
 app.post('/debates/comments/new', routes.postDebateComment);
@@ -103,9 +101,6 @@ app.get('/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
-
-// default
-app.get('*', routes.handle404);
 
 // Main
 
