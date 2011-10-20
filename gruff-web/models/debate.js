@@ -18,7 +18,36 @@ Debate.prototype.DebateTypes = {
 };
 
 
+Debate.prototype.contributionsCount = function() {
+  var describableCount = this.describableContributionsCount();
+  var referenceCount = this.countItems("references");
+  var answerCount = this.countItems("answers");
+  var forCount = this.countItems("argumentsFor");
+  var againstCount = this.countItems("argumentsAgainst");
+  var subdebateCount = this.countItems("subdebates");
+  return describableCount + referenceCount + answerCount + forCount + againstCount + subdebateCount;
+};
+
+
+Debate.prototype.votesCount = function() {
+  var describableVotes = this.describableVotesCount();
+  return describableVotes;
+};
+
+
+Debate.prototype.countItems = function(attribute) {
+  return this[attribute] ? this[attribute].length : 0;
+}
+
+Debate.prototype.titleLink = function() {
+  var href = "/debates/"+this.linkableId();
+  var titleStr = this.contributionsCount()+" contributions, "+this.votesCount()+" votes";
+  return '<a href="'+href+'" title="'+titleStr+'">'+this.bestTitleText()+'</a>';
+
+}
+
 classHelper.augmentClass(Debate, Identifiable);
 classHelper.augmentClass(Debate, Describable);
+
 
 exports.Debate = Debate;

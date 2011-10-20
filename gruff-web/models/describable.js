@@ -11,7 +11,7 @@ Describable.prototype.bestTitle = function() {
 	return this.title;
     }
     var result = this.titles[this.titles.length-1];
-    var votes = result.votes ? result.votes.length : 0;
+    var votes = result != null && result.votes ? result.votes.length : 0;
     for (i=0; i < this.titles.length; i++) {
         var title = this.titles[i];
         if (title.votes) {
@@ -63,6 +63,33 @@ Describable.prototype.bestDescriptionText = function() {
     } else {
 	      return description.text;
     }
+};
+
+Describable.prototype.describableContributionsCount = function() {
+  var titleCount = this.titles ? this.titles.length : 0;
+  var descCount = this.descs ? this.descs.length : 0;
+  var commentCount = this.comments ? this.comments.length : 0;
+  return titleCount + descCount + commentCount;
+};
+
+Describable.prototype.describableVotesCount = function() {
+  var titleVotes = 0;
+  if (this.titles && this.titles != null) {
+    for (i=0; i < this.titles.length; i++) {
+      if (this.titles[i] != null
+          && this.titles[i].votes 
+          && this.titles[i] != null) titleVotes += this.titles[i].votes.length;
+    }
+  }
+  var descVotes = 0;
+  if (this.descs && this.descs != null) {
+    for (i=0; i < this.descs.length; i++) {
+      if (this.descs[i] != null 
+          && this.descs[i].votes 
+          && this.descs[i].votes != null) descVotes += this.descs[i].votes.length;
+    }
+  }
+  return titleVotes + descVotes;
 };
 
 exports.Describable = Describable;

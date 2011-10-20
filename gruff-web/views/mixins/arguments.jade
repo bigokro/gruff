@@ -8,15 +8,13 @@ mixin arguments(debate)
           if debate.argumentsFor
             - each argument in debate.argumentsFor
               div.argument
-                h4.title
-                  a(href="/debates/" + argument.linkableId())= argument.bestTitleText()
+                h4.title!= argument.titleLink()
                 div.body= argument.body
         div.against
           h3 Arguments Against
           if debate.argumentsAgainst
             - each argument in debate.argumentsAgainst
               div.argument
-                h4.title
-                  a(href="/debates/" + argument.linkableId())= argument.bestTitleText()
+                h4.title!= argument.titleLink()
                 div.body= argument.body
         mixin argument_form(debate)

@@ -3,6 +3,5 @@ div.debates
     div.debate
       div.date= debate.date
       div.type= debate.type
-      div(class="title checked")
-        a(href="/debates/"+debate._id.toHexString())= debate.bestTitleText()
+      div(class="title checked")!= debate.titleLink()
       div.description= debate.bestDescriptionText()

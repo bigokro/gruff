@@ -7,8 +7,7 @@ mixin answers(debate)
       if debate.answers
         - each answer in debate.answers
           div.answer
-            h4.title
-              a(href="/debates/" + answer.linkableId())= answer.bestTitleText()
+            h4.title!= answer.titleLink()
       else
         div.none There are currently no proposed answers.
       mixin answer_form(debate)

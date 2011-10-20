@@ -4,7 +4,6 @@ mixin list_debates(title, debates)
     if debates
       - each debate in debates
         div.debate
-          h4.title
-            a(href="/debates/" + debate.linkableId())= debate.bestTitleText()
+          h4.title!= debate.titleLink()
     else
       div.none There are currently no debates in this category.
