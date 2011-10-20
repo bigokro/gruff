@@ -1,8 +1,13 @@
 /**
+ * Configuration part one
+ */ 
+ 
+process.env.DBNAME = process.env.NODE_ENV == 'production' ? 'gruff' : 'gruff-dev';
+var logHome = process.env.NODE_ENV == 'production' ? '/var/log' : '.';
+
+/**
  * Module dependencies.
  */
-
-process.env.DBNAME = process.env.NODE_ENV == 'production' ? 'gruff' : 'gruff-dev';
 
 var express = require('express')
   , DebateProvider = require('./providers/debate_provider').DebateProvider
@@ -18,16 +23,17 @@ var express = require('express')
   , stylus = require('stylus')
   ;
 
-
 require('./lib/utils');
 
 // Configuration
 
 var app = module.exports = express.createServer();
 
+
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  //app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.' + Date.now() + '.log')}));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.session({secret: ':DP:DP:DP:DP'}));
@@ -38,13 +44,11 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
-app.configure('development', function(){
-  app.use(express.logger({stream: fs.createWriteStream('gruff.' + Date.now() + '.log')}));
+app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.configure('production', function(){
-  app.use(express.logger({stream: fs.createWriteStream('/var/log/gruff.' + Date.now() + '.log')}));
+app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
