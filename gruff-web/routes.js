@@ -8,6 +8,9 @@ var debate = new Debate();
 
 exports.index = function(req, res){
   debateProvider.findRecent(10, 0, function(error, docs){
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.render('index.jade', { locals: {
       title: 'Recent Debates'
       , debates: docs
@@ -31,6 +34,9 @@ exports.contact = function(req, res) {
 
 exports.getSearch = function(req, res){
   debateProvider.search(req.param('value'), function(error, results) {
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.render('search_results.jade', { locals: {
       title: 'Search Results',
       results: results
@@ -50,6 +56,9 @@ exports.getNewDebate = function(req, res) {
 
 exports.getDebate = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
+    if (handleError(req, res, error, debate)) {
+      return;
+    }
     res.render('debate_show.jade', { locals: {
       title: debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText()
       , parent: debate.parent
@@ -64,6 +73,9 @@ exports.getDebate = function(req, res) {
 
 exports.getReference = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
+    if (handleError(req, res, error, reference)) {
+      return;
+    }
     res.render('reference_show.jade', { locals: {
         title: reference.debate.bestTitleText() + " - " + reference.bestTitleText()
         , reference: reference
@@ -76,6 +88,9 @@ exports.getReference = function(req, res) {
 
 exports.getDebateTitle = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
+    if (handleError(req, res, error, debate)) {
+      return;
+    }
     res.render('titles_show.jade', { locals: {
       title: debate.bestTitleText()
       , parent: debate.parent
@@ -88,6 +103,9 @@ exports.getDebateTitle = function(req, res) {
 
 exports.getDebateDescription = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
+    if (handleError(req, res, error, debate)) {
+      return;
+    }
     res.render('descriptions_show.jade', { locals: {
       title: debate.bestTitleText()
       , parent: debate.parent
@@ -100,11 +118,8 @@ exports.getDebateDescription = function(req, res) {
 
 exports.getReferenceTitle = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
-    if (error !== null) {
-      console.log(error);
-      res.render('error.jade', { locals: {
-          title: 'Horrendous Error'
-      }});
+    if (handleError(req, res, error, reference)) {
+      return;
     }
     else {
       res.render('titles_show.jade', { locals: {
@@ -120,6 +135,9 @@ exports.getReferenceTitle = function(req, res) {
 
 exports.getReferenceDescription = function(req, res) {
   referenceProvider.findById(req.params.id, function(error, reference) {
+    if (handleError(req, res, error, reference)) {
+      return;
+    }
     res.render('descriptions_show.jade', { locals: {
       title: reference.bestTitleText()
       , parent: reference.debate
@@ -132,6 +150,9 @@ exports.getReferenceDescription = function(req, res) {
 
 exports.getTaggedItems = function(req, res) {
   tagProvider.findAllByTag(req.params.tag, function(error, items) {
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.render('tags.jade', { locals: {
       title: "Stuff Tagged " + req.params.tag
       , tag: req.params.tag
@@ -150,18 +171,24 @@ exports.getMyDebates = function(req, res) {
     return;
   }
   debateProvider.findDebatesForUser(req.user.login, function(error, debates) {
-      referenceProvider.findReferencesForUser(req.user.login, function(error, references) {
-          res.render('my/debates.jade', { locals: {
-              title: "My Debates"
-            , created: debates.created
-            , contributed: debates.contributed
-            , voted: debates.voted
-            , references_created: references.created
-            , references_contributed: references.contributed
-            , references_voted: references.voted
-            , showMyReferences: true
-          }});
-      });
+    if (handleError(req, res, error, debates)) {
+      return;
+    }
+    referenceProvider.findReferencesForUser(req.user.login, function(error, references) {
+      if (handleError(req, res, error, references)) {
+        return;
+      }
+      res.render('my/debates.jade', { locals: {
+        title: "My Debates"
+        , created: debates.created
+        , contributed: debates.contributed
+        , voted: debates.voted
+        , references_created: references.created
+        , references_contributed: references.contributed
+        , references_voted: references.voted
+        , showMyReferences: true
+      }});
+    });
   });
 };
 
@@ -181,6 +208,9 @@ exports.postDebate = function(req, res){
     desc: req.param('desc'),
     type: req.param('type')
   }, function( error, docs) {
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.redirect('/');
   });
 };
@@ -194,7 +224,10 @@ exports.postDebateComment = function(req, res) {
     comment: req.param('comment'),
     date: new Date()
   } , function( error, docs) {
-    res.redirect('/debates/' + req.param('_id'))
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.redirect('/debates/' + req.param('_id'));
   });
 };
 
@@ -212,7 +245,10 @@ exports.postDebateTitle = function(req, res) {
                                         date: new Date()
                                     } 
                                     , function( error, docs) {
-    res.redirect('/debates/' + req.param('_id') + '/titles')
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+                                      res.redirect('/debates/' + req.param('_id') + '/titles');
   });
 };
 
@@ -230,7 +266,10 @@ exports.postDebateDescription = function(req, res) {
                                         date: new Date()
                                     } 
                                     , function( error, docs) {
-    res.redirect('/debates/' + req.param('_id') + '/descriptions')
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+                                      res.redirect('/debates/' + req.param('_id') + '/descriptions');
   });
 };
 
@@ -250,7 +289,10 @@ exports.postAnswer = function(req, res) {
     }],
     date: new Date()
   }, function( error, docs) {
-    res.redirect('/debates/' + req.param('_id'))
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.redirect('/debates/' + req.param('_id'));
   });
 };
 
@@ -270,7 +312,10 @@ exports.postSubdebate = function(req, res) {
     }],
     date: new Date()
   }, function( error, docs) {
-    res.redirect('/debates/' + req.param('_id'))
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.redirect('/debates/' + req.param('_id'));
   });
 };
 
@@ -291,7 +336,10 @@ exports.postArgument = function(req, res) {
   },
   req.param('isFor') == 'true',
   function( error, docs) {
-    res.redirect('/debates/' + req.param('_id'))
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.redirect('/debates/' + req.param('_id'));
   });
 }
 
@@ -311,7 +359,10 @@ exports.postReference = function(req, res) {
     date: new Date()
   },
   function( error, docs) {
-    res.redirect('/debates/' + req.param('_id'))
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.redirect('/debates/' + req.param('_id'));
   });
 };
 
@@ -324,7 +375,10 @@ exports.postReferenceComment = function(req, res) {
     comment: req.param('comment'),
     date: new Date()
   } , function( error, docs) {
-    res.redirect('/references/' + req.param('_id'))
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.redirect('/references/' + req.param('_id'));
   });
 };
 
@@ -337,13 +391,16 @@ exports.postReferenceTitle = function(req, res) {
                                     , req.param('_id')
                                     , req.user.login
                                     , {
-                                        user: req.user.login,
-                                        title: req.param('title'),
-                                        date: new Date()
+                                      user: req.user.login,
+                                      title: req.param('title'),
+                                      date: new Date()
                                     } 
                                     , function( error, docs) {
-    res.redirect('/references/' + req.param('_id') + '/titles')
-  });
+                                      if (handleError(req, res, error, true)) {
+                                        return;
+                                      }
+                                      res.redirect('/references/' + req.param('_id') + '/titles');
+                                    });
 };
 
 exports.postReferenceDescription = function(req, res) {
@@ -360,7 +417,10 @@ exports.postReferenceDescription = function(req, res) {
                                         date: new Date()
                                     } 
                                     , function( error, docs) {
-    res.redirect('/references/' + req.param('_id') + '/descriptions')
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+                                      res.redirect('/references/' + req.param('_id') + '/descriptions');
   });
 };
 
@@ -374,13 +434,16 @@ exports.postDescriptorVote = function(req, res) {
                                          , req.params.attributeid
                                          , req.user.login
                                          , function( error, docs) {
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.redirect('/' 
                  + req.params.objecttype
                  + '/' 
                  + req.params.objectid 
                  + '/' 
                  + req.params.attributetype
-                )
+                );
   });
 };
 
@@ -395,12 +458,15 @@ exports.postTag = function(req, res) {
                                          , req.user.login
                                          , req.params.tag
                                          , function( error, docs) {
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.redirect('/' 
                  + req.params.objecttype
                  + '/' 
                  + req.params.objectid 
                  + (req.params.attributetype ? '/'+req.params.attributetype : '')
-                )
+                );
   });
 };
 
@@ -415,14 +481,28 @@ exports.removeTag = function(req, res) {
                                          , req.user.login
                                          , req.params.tag
                                          , function( error, docs) {
+    if (handleError(req, res, error, true)) {
+      return;
+    }
     res.redirect('/' 
                  + req.params.objecttype
                  + '/' 
                  + req.params.objectid 
                  + (req.params.attributetype ? '/'+req.params.attributetype : '')
-                )
+                );
   });
 };
+
+// Handlers
+
+exports.handle404 = function(req, res) {
+  res.render('404.jade', { locals: {
+    title: '404 Not Found'
+    , showTwitter: true
+ }});
+};
+
+
 
 // Helpers
 
@@ -430,6 +510,24 @@ bounceAnonymous = function (req, res) {
   if (! req.loggedIn) {
     console.log('bouncing anonymous user');
     res.redirect('/login');
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+handleError = function(req, res, error, value) {
+  if (error) {
+    console.log('Error: ' + error);
+    res.render('error.jade', { locals: {
+      title: 'Horrendous Error'
+    }});
+    return true;
+  }
+  else if (!value || value == null) {
+    console.log('404 error: value is ' + value);
+    res.redirect('/404');
     return true;
   }
   else {

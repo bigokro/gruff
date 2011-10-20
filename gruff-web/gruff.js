@@ -91,6 +91,11 @@ app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.po
 app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
 
+// Errors
+
+app.get('/404', routes.handle404);
+
+
 // Main
 
 everyauth.helpExpress(app);
