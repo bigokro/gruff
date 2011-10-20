@@ -5,7 +5,7 @@ div.debate
   div.description= describable.bestDescriptionText()
   div.descriptions
     h3 Descriptions
-    - for (count=0; count < describable.descs.length; count++)
+    - for (count=0; (describable.descs && describable.descs != null && count < describable.descs.length); count++)
       - var desc = describable.descs[count]
       div.choose-description
         div.user= desc.user
