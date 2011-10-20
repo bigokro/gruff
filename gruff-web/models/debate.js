@@ -20,11 +20,11 @@ Debate.prototype.DebateTypes = {
 
 Debate.prototype.contributionsCount = function() {
   var describableCount = this.describableContributionsCount();
-  var referenceCount = this.countItems("references");
-  var answerCount = this.countItems("answers");
-  var forCount = this.countItems("argumentsFor");
-  var againstCount = this.countItems("argumentsAgainst");
-  var subdebateCount = this.countItems("subdebates");
+  var referenceCount = this.countItems("referenceIds");
+  var answerCount = this.countItems("answerIds");
+  var forCount = this.countItems("argumentsForIds");
+  var againstCount = this.countItems("argumentsAgainstIds");
+  var subdebateCount = this.countItems("subdebateIds");
   return describableCount + referenceCount + answerCount + forCount + againstCount + subdebateCount;
 };
 
@@ -36,7 +36,7 @@ Debate.prototype.votesCount = function() {
 
 
 Debate.prototype.countItems = function(attribute) {
-  return this[attribute] ? this[attribute].length : 0;
+  return this[attribute] && this[attribute] != null ? this[attribute].length : 0;
 }
 
 Debate.prototype.titleLink = function() {
