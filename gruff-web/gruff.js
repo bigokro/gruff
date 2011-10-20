@@ -5,6 +5,13 @@
 process.env.DBNAME = process.env.NODE_ENV == 'production' ? 'gruff' : 'gruff-dev';
 var logHome = process.env.NODE_ENV == 'production' ? '/var/log' : '.';
 
+process.on('uncaughtException', function (err) {
+  var d = new Date();
+  console.log(d.toString());
+  console.log(err.stack);
+  process.exit();
+});
+
 /**
  * Module dependencies.
  */
@@ -33,7 +40,7 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  //app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.' + Date.now() + '.log')}));
+  app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.' + Date.now() + '.log')}));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.session({secret: ':DP:DP:DP:DP'}));
@@ -74,6 +81,10 @@ app.get('/mu-18cba0e3-0a046521-fdcf6513-860a61a9', function(req, res) {
   res.end();
 });
 
+//status
+app.get('/404', routes.handle404);
+app.get('/500', routes.handle500);
+
 app.post('/debates/new', routes.postDebate);
 app.post('/debates/comments/new', routes.postDebateComment);
 app.post('/debates/titles/new', routes.postDebateTitle);
@@ -90,11 +101,6 @@ app.get('/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
-
-// Errors
-
-app.get('/404', routes.handle404);
-
 
 // Main
 

@@ -192,10 +192,6 @@ exports.getMyDebates = function(req, res) {
   });
 };
 
-
-
-
-
 // POST
 
 exports.postDebate = function(req, res){
@@ -475,34 +471,41 @@ exports.removeTag = function(req, res) {
     return;
   }
   tagProvider.removeTag(req.params.objecttype
-                                         , req.params.objectid
-                                         , req.params.attributetype
-                                         , req.params.attributeid
-                                         , req.user.login
-                                         , req.params.tag
-                                         , function( error, docs) {
+    , req.params.objectid
+    , req.params.attributetype
+    , req.params.attributeid
+    , req.user.login
+    , req.params.tag
+    , function( error, docs) {
     if (handleError(req, res, error, true)) {
       return;
     }
     res.redirect('/' 
-                 + req.params.objecttype
-                 + '/' 
-                 + req.params.objectid 
-                 + (req.params.attributetype ? '/'+req.params.attributetype : '')
-                );
-  });
+      + req.params.objecttype
+      + '/' 
+      + req.params.objectid 
+      + (req.params.attributetype ? '/'+req.params.attributetype : '')
+    );
+});
 };
 
 // Handlers
 
 exports.handle404 = function(req, res) {
+  res.statusCode = 404;
   res.render('404.jade', { locals: {
     title: '404 Not Found'
     , showTwitter: true
  }});
 };
 
-
+exports.handle500 = function(req, res) {
+  res.statusCode = 500;
+  res.render('500.jade', { locals: {
+      title: '500 Horrendous Error'
+    }});
+  
+}
 
 // Helpers
 
@@ -520,14 +523,12 @@ bounceAnonymous = function (req, res) {
 handleError = function(req, res, error, value) {
   if (error) {
     console.log('Error: ' + error);
-    res.render('error.jade', { locals: {
-      title: 'Horrendous Error'
-    }});
+    handle403(req, res);
     return true;
   }
-  else if (!value || value == null) {
+  else if (! value || value == null) {
     console.log('404 error: value is ' + value);
-    res.redirect('/404');
+    exports.handle404(req, res);
     return true;
   }
   else {
