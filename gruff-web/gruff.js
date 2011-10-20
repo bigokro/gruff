@@ -47,8 +47,8 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(stylus.middleware({ src: __dirname + '/public' }));
   app.use(everyauth.middleware());
-  app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+  app.use(app.router);
 });
 
 app.configure('development', function() {
@@ -74,16 +74,16 @@ app.get('/references/:id/titles', routes.getReferenceTitle);
 app.get('/references/:id/descriptions', routes.getReferenceDescription);
 app.get('/search', routes.getSearch);
 app.get('/tags/:tag', routes.getTaggedItems);
-
-//blitz.io
+// blitz.io
 app.get('/mu-18cba0e3-0a046521-fdcf6513-860a61a9', function(req, res) {
   res.write("42");
   res.end();
 });
-
-//status
+// status
 app.get('/404', routes.handle404);
 app.get('/500', routes.handle500);
+// default
+app.get('*', routes.handle404);
 
 app.post('/debates/new', routes.postDebate);
 app.post('/debates/comments/new', routes.postDebateComment);
