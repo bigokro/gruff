@@ -522,8 +522,8 @@ bounceAnonymous = function (req, res) {
 
 handleError = function(req, res, error, value) {
   if (error) {
-    console.log('Error: ' + error);
-    handle403(req, res);
+    console.log(error);
+    exports.handle500(req, res);
     return true;
   }
   else if (! value || value == null) {

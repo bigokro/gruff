@@ -156,14 +156,28 @@ function buildSearchQueryExpression(tokens) {
 }
 
 DebateProvider.prototype.findById = function(id, callback) {
-  this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
+  try {
+    var objId = this.db.bson_serializer.ObjectID.createFromHexString(id);
+  }
+  catch (error) {
+    if (error == 'Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters in hex format') {
+      // we want a 404 here and not an error
+      return callback(null, null);
+    }
+    else {
+      callback(error);
+    }
+  }
+  this.findByObjID(objId, callback);
 };
 
 DebateProvider.prototype.findByObjID = function(objId, callback) {
   var provider = this;
   this.getCollection(function(error, debate_collection) {
-    if( error ) callback(error)
-      else {
+    if (error) {
+      callback(error)
+    }
+    else {
         debate_collection.findOne({_id: objId}, function(error, result) {
           if (error) {
             callback(error)
