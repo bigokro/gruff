@@ -40,7 +40,7 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.' + Date.now() + '.log')}));
+  app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.access.log', { flags: 'a' })}));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.session({secret: ':DP:DP:DP:DP'}));
