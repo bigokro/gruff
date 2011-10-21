@@ -18,14 +18,15 @@ mixin tags(obj, args)
         else
           span(class="tag spacer")
             a.tag(title="View others with this tag", href="/tags/"+tag)= tag
-    span.show-add-tag-form(id="show-add-tag-form-"+attributeid)
-      a(title="Add a tag", href="#", onclick="$('#add-tag-form-"+attributeid+"').show(); $('#show-add-tag-form-"+attributeid+"').hide(); $('#add-tag-form-field-"+attributeid+"').focus(); return false;") +
-    span.add-tag-form(id="add-tag-form-"+attributeid, style="display: none;")
-      a(title="Hide tag form", href="#", onclick="$('#show-add-tag-form-"+attributeid+"').show(); $('#add-tag-form-"+attributeid+"').hide(); return false;") -
-      input(type="text", id="add-tag-form-field-"+attributeid)
-      script(type="text/javascript")
-        $('#add-tag-form-field-!{attributeid}').keypress(function(e){
-          if(e.which == 13) {
-            window.location.href = "!{baseurl}" + $('#add-tag-form-field-!{attributeid}').val();
-          }
-        });
+    if everyauth.loggedIn
+      span.show-add-tag-form(id="show-add-tag-form-"+attributeid)
+        a(title="Add a tag", href="#", onclick="$('#add-tag-form-"+attributeid+"').show(); $('#show-add-tag-form-"+attributeid+"').hide(); $('#add-tag-form-field-"+attributeid+"').focus(); return false;") +
+      span.add-tag-form(id="add-tag-form-"+attributeid, style="display: none;")
+        a(title="Hide tag form", href="#", onclick="$('#show-add-tag-form-"+attributeid+"').show(); $('#add-tag-form-"+attributeid+"').hide(); return false;") -
+        input(type="text", id="add-tag-form-field-"+attributeid)
+        script(type="text/javascript")
+          $('#add-tag-form-field-!{attributeid}').keypress(function(e){
+            if(e.which == 13) {
+              window.location.href = "!{baseurl}" + $('#add-tag-form-field-!{attributeid}').val();
+            }
+          });
