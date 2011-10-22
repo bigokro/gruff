@@ -67,6 +67,7 @@ exports.getDebate = function(req, res) {
       , describable: debate
       , linkToMe: false
       , showReferences: true
+      , showTweetThis: true
     }});
   });
 };
