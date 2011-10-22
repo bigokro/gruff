@@ -7,8 +7,9 @@
     "jade": ">= 0.0.1",
     "mongodb": "0.9.6-13",
     "socket.io": "0.7.11",
-    "stylus": ">= 0.0.1",
-    "everyauth": "~0.2.20",
-    "validator": "~0.2.9"
+    "stylus": "~0.18.0",
+    "everyauth": "~0.2.23",
+    "validator": "~0.2.9",
+    "tobi": "~0.3.1"
   }
 }
