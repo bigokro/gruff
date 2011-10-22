@@ -10,6 +10,7 @@ mixin arguments(debate)
               div.argument
                 h4.title!= argument.titleLink()
                 div.body= argument.body
+          mixin argument_form(debate, true)
         div.against
           h3 Arguments Against
           if debate.argumentsAgainst
@@ -17,4 +18,5 @@ mixin arguments(debate)
               div.argument
                 h4.title!= argument.titleLink()
                 div.body= argument.body
-        mixin argument_form(debate)
+          mixin argument_form(debate, false)
+        div.clear

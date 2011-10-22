@@ -15,6 +15,8 @@ h1
   text-shadow 1px 2px 2px #ddd
   text-align center
   font-size 2.5em
+  .vote-link
+    margin-left 15px
 h2
   font-size 1.75em
   text-align center
@@ -185,6 +187,10 @@ a img
 .debate
   .date
     display none
+  .vote-link
+    float right
+    text-align right
+    margin-left 15px
 .references
   margin-top 20px
   border 1px solid
@@ -203,7 +209,20 @@ a img
   box-shadow: 10px 10px 5px #888;
   padding 10px
   .choose-description
-      padding-bottom 10px
+    padding-bottom 10px
+    .user
+      font-weight bold
+      text-decoration underline
+      background-color #eee
+    .vote-link
+      float left
+      margin-left 0px
+    .description
+      margin-left 30px
+      .votes
+        color #A3181E
+        margin-left 5px
+        font-size .75em
 .description
     min-height 26px
     margin-top 10px
@@ -214,9 +233,6 @@ a img
     border 2px dashed #A3181E
     border-top-style none
     background-color #DDD
-    .vote-link
-      float right
-      text-align right
 .error
   color #a33
 .for
@@ -230,8 +246,8 @@ a img
   text-align right
   div.argument
     text-align right
-.vote-link
-  margin-left 15px
+  div.bottomForm
+    text-align right
 .titles
   margin-top 20px
   border 1px solid
@@ -245,6 +261,17 @@ a img
       font-weight bold
       text-decoration underline
       background-color #eee
+    .title
+      font-size 1.15em
+      letter-spacing -1px
+      font-weight bold
+      color #A3181E
+    .vote-link
+      float left
+      margin-left 0px
+    .votes
+      margin-left 5px
+      font-size .75em
 .subdebates
   margin-top 20px
   border 1px solid
@@ -296,6 +323,14 @@ a img
       width 100px
 .bottomForm
   margin-top 20px
+  clear both
+.standaloneForm
+  input
+    width 50%
+  input[type =button], input[type =submit]
+    text-align center
+    width 200px
+div.clear
   clear both
 
 /* smaller UI units */

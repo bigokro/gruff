@@ -3,12 +3,15 @@
   ul#errors
     - each error in errors
       li.error= error
-form(action='/login', method='post')
-  #login
-    label(for=everyauth.password.loginFormFieldName) Login
-    input(type='text', name=everyauth.password.loginFormFieldName)
-  #password
-    label(for=everyauth.password.passwordFormFieldName) Password
-    input(type='password', name=everyauth.password.passwordFormFieldName)
-  #submit
-    input(type='submit') Login
+div.card
+  form.standaloneForm(action='/login', method='post')
+    fieldset  
+      legend Please enter your login information
+      #login
+        label(for=everyauth.password.loginFormFieldName) Login
+        input(type='text', name=everyauth.password.loginFormFieldName)
+      #password
+        label(for=everyauth.password.passwordFormFieldName) Password
+        input(type='password', name=everyauth.password.passwordFormFieldName)
+      #submit
+        input(type='submit') Login

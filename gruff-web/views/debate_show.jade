@@ -7,10 +7,10 @@ include mixins/search_form
 
 div.debate
   div.date= debate.date
+  div.vote-link
+    a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
+      img(src="/images/checked.png")
   div.description= debate.bestDescriptionText()
-    div.vote-link
-      a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
-        img(src="/images/checked.png")
   - var mixinArgs = { objecttype: "debates", objectid: debate.linkableId()}
   mixin tags(debate, mixinArgs)
   mixin arguments(debate)

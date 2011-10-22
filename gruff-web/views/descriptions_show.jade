@@ -10,13 +10,13 @@ div.debate
       div.choose-description
         div.user= desc.user
         div.date= desc.date
-        div
+        div.vote-link
           if everyauth.loggedIn
             if desc.votes && desc.votes.contains(everyauth.user.login)
               img(src="/images/checked.png")
             else
               a.vote(title="Vote for this one", href="/"+type+"s/"+describable.linkableId()+"/descriptions/"+count+"/vote")
-          span.description= desc.text
+        div.description= desc.text
           span.votes= desc.votes ? "(" + desc.votes.length + " votes)" : "(0 votes)" 
         - var mixinArgs = { objecttype: type+"s", objectid: describable.linkableId(), attributetype: "descriptions", attributeid: count }
         mixin tags(desc, mixinArgs)

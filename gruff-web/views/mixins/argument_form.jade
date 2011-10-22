@@ -1,22 +1,15 @@
-mixin argument_form(debate)
+mixin argument_form(debate, isFor)
     div.bottomForm
       if everyauth.loggedIn
         form(method="post", action="/debates/arguments/new")
           input( type="hidden", name="_id", value=debate.linkableId())
+          input( type="hidden", name="isFor", value=String(isFor), id="addArgumentFor")
           fieldset(style="display: none;")
             legend Propose Your Own Argument
             div
               label(for="title") Argument Title
                 em *
               input( type="text", name="title", id="addArgumentTitle")
-            div
-              label(for="isFor") This argument is:
-                br
-                input( type="radio", name="isFor", value="true", id="addArgumentFor", checked)
-                | in support of this statement
-                br
-                input( type="radio", name="isFor", value="false", id="addArgumentFor")
-                | against this statement
             div
               label(for="desc") Argument Description
                 em *
