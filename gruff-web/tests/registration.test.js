@@ -1,3 +1,9 @@
+/*
+ * @file registration.test.js
+ * test the registration process
+ * TODO: teardown script for the user created, or a mock database object
+ */
+
 var tobi = require('tobi')
   , should = require('should')
   , browser = tobi.createBrowser(7080, 'localhost');
