@@ -109,7 +109,6 @@ UserProvider.prototype.findByKey = function(value, key, callback) {
         $regex: '^'+value+'$',
         $options: 'i'
       };
-      //search[key] = value;
       user_collection.findOne(search, function(error, result) {
         if (error) {
           callback(error)
