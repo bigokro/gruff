@@ -1,0 +1,4 @@
+## registration.test.js
+
+- run with `node registration.test.js`
+- before running, delete the user named 'testuser' from the user collection

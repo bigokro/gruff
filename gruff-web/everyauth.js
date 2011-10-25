@@ -67,19 +67,24 @@ everyauth
           email: req.body.email
       };
     })
-    .validateRegistration( function (registration, errors) {
+    .validateRegistration(function (registration, errors) {
       var promise = this.Promise()
-      validateLogin(registration.login, function (newError) {
-        if (typeof newError !== 'undefined') {
-          errors.push(newError);
-        }
-        validateEmail(registration.email, function (newError) {
-          if (typeof newError !== 'undefined') {
-            errors.push(newError);
+        , validators = [validateLogin, validateEmail]
+        , count = validators.length
+        ;
+        
+      validators.forEach(function (validator) {
+        validator(registration, function(error) {
+          if (typeof error !== 'undefined') {
+            errors.push(error);
           }
-          promise.fulfill(errors);
+          count--;
+          if (count <= 0) {
+            promise.fulfill(errors);
+          }
         })
       });
+      
       return promise;
     })
     .registerUser( function (newUserAttrs) {
@@ -98,8 +103,10 @@ everyauth
     .loginSuccessRedirect('/')
     .registerSuccessRedirect('/');
 
-validateLogin = function(login, callback) {
-  userProvider.findByKey(login, 'login', function(err, user) {
+exports.everyauth = everyauth;
+
+var validateLogin = function (registration, callback) {
+  userProvider.findByKey(registration.login, 'login', function(err, user) {
     if (user) {
       callback('Login already taken');
     }
@@ -112,15 +119,15 @@ validateLogin = function(login, callback) {
   });
 }
 
-validateEmail = function(email, callback) {
+var validateEmail = function (registration, callback) {
   try {
-    validator.check(email, 'Invalid email address').isEmail();
+    validator.check(registration.email, 'Invalid email address').isEmail();
   }
   catch (err) {
     callback(err);
     return;
   }
-  userProvider.findByKey(email, 'email', function(err, user) {
+  userProvider.findByKey(registration.email, 'email', function(err, user) {
     if (user) {
       callback('Email already taken');
     }
@@ -132,5 +139,3 @@ validateEmail = function(email, callback) {
     }
   });
 }
-
-exports.everyauth = everyauth;
