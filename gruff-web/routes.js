@@ -6,19 +6,6 @@ var debate = new Debate();
 
 //GET
 
-exports.index = function(req, res){
-  debateProvider.findRecent(10, 0, function(error, docs){
-    if (handleError(req, res, error, true)) {
-      return;
-    }
-    res.render('index.jade', { locals: {
-      title: 'Recent Debates'
-      , debates: docs
-      , showTwitter: true
-    }});
-  })
-};
-
 exports.about = function(req, res) {
   res.render('about.jade', { locals: {
       title: 'About Gruff'
@@ -30,6 +17,21 @@ exports.contact = function(req, res) {
       title: 'Contact Us'
       , showTwitter: true
   }});
+};
+
+exports.feed = function(req, res){
+  debateProvider.findRecent(10, 0, function(error, docs){
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.render('feed.jade', { 
+      layout: 'layout_xml'
+      , locals: {
+        title: 'Recent Debates Feed'
+        , debates: docs
+      }
+    });
+  })
 };
 
 exports.getSearch = function(req, res){
@@ -191,6 +193,19 @@ exports.getMyDebates = function(req, res) {
       }});
     });
   });
+};
+
+exports.index = function(req, res){
+  debateProvider.findRecent(10, 0, function(error, docs){
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.render('index.jade', { locals: {
+      title: 'Recent Debates'
+      , debates: docs
+      , showTwitter: true
+    }});
+  })
 };
 
 // POST
@@ -523,7 +538,7 @@ bounceAnonymous = function (req, res) {
 
 handleError = function(req, res, error, value) {
   if (error) {
-    console.log(error);
+    console.log('500 error: ' + error);
     exports.handle500(req, res);
     return true;
   }
