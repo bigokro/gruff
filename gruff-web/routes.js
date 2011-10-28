@@ -24,11 +24,13 @@ exports.feed = function(req, res){
     if (handleError(req, res, error, true)) {
       return;
     }
+    var date = new Date;
     res.render('feed.jade', { 
       layout: 'layout_xml'
       , locals: {
         title: 'Recent Debates Feed'
         , debates: docs
+        , now: date.toString()
       }
     });
   })

@@ -1,7 +1,12 @@
-div.debates
+feed(xmlns="http://www.w3.org/2005/Atom")
+  title(type="text") Gruff Recent Debates
+  updated!= now
+  link(href="http://gruff.co/feed", rel="self")
+  id tag:gruff,feed:recent-debates
   - each debate in debates
-    div.debate
-      div.date= debate.date
-      div.type= debate.type
-      div(class="title checked")!= debate.titleLink()
-      div.description= debate.bestDescriptionText()
+    entry
+      id tag:gruff,debate:/debates/#{debate.linkableId()}
+      title!= debate.bestTitleText()
+      link(href="/debates/" +debate.linkableId())
+      updated!= debate.date
+      summary!= debate.bestDescriptionText()
