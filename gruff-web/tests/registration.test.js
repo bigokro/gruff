@@ -1,53 +1,52 @@
 /*
  * @file registration.test.js
  * test the registration process
- * TODO: teardown script for the user created, or a mock database object
  */
 
 var tobi = require('tobi')
   , should = require('should')
+  , step = require('step')
   , browser = tobi.createBrowser(7080, 'localhost');
 
-// Test a successful registration
-
-browser.get('/register', function (res, $) {
-  $('form#register')
-    .fill({ login: 'testuser', email: 'test@example.com', password: 'password' })
-    .submit( function (res, $) {
-      res.should.have.status(200);
-      $('li.user').should.have.text('You are logged in as testuser');
-      $('li.login').should.not.have.text('Login');
-    });
-});
-
-// Test registration validation
-
-/*
- * setTimeout is required to induce a block, s.t. the user created above exists when we want to test validation
- * without this block, there's a race condition in the db, and we are testing unique indices in the db
- * instead of the validation functions in code
+/**
+ *  step requires you to pass a callback using "this" to invoke the next step,
+ *  this is passed on to the next function in the series.
+ *  
+ *  tobi's browser.get calls a callback with (res, $)
+ *  
+ *  so we tweak tobi's normal invocation a bit and put the next get request at 
+ *  the end of the prior set of assertions.
  */
 
-setTimeout(
-  function() { browser.get('/register', 
-    function (res, $) {
-      $('form#register')
-        .fill({ login: 'testuser', email: 'test2@example.com', password: 'password' })
-        .submit( function (res, $) {
-          res.should.have.status(200);
-          $('#errors li:first').should.have.text('Login already taken');
-        })
-    }) 
-  }, 1000);
-
-setTimeout(
-  function() { browser.get('/register', 
-    function (res, $) {
-      $('form#register')
-        .fill({ login: 'testuser2', email: 'test@example.com', password: 'password' })
-        .submit( function (res, $) {
-          res.should.have.status(200);
-          $('#errors li:first').should.have.text('Email already taken');
-        })
-    }) 
-  }, 1000);
+step(
+  function primePump() {
+    browser.get('/register', this);
+  },
+  function createUser(res, $) {
+    $('form#register')
+      .fill({ login: 'testuser', email: 'test@example.com', password: 'password' })
+      .submit( function (res, $) {
+        res.should.have.status(200);
+        $('li.user').should.have.text('You are logged in as testuser');
+        $('li.login').should.not.have.text('Login');
+      });
+    browser.get('/register', this);
+  },
+  function sameUsername(res, $) {
+    $('form#register')
+      .fill({ login: 'testuser', email: 'test2@example.com', password: 'password' })
+      .submit( function (res, $) {
+        res.should.have.status(200);
+        $('#errors li:first').should.have.text('Login already taken');
+      });
+    browser.get('/register', this);
+  },
+  function sameEmail(res, $) {
+    $('form#register')
+      .fill({ login: 'testuser2', email: 'test@example.com', password: 'password' })
+      .submit( function (res, $) {
+        res.should.have.status(200);
+        $('#errors li:first').should.have.text('Email already taken');
+      });
+  }
+);
