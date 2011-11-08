@@ -317,7 +317,7 @@ exports.postSubdebate = function(req, res) {
   var debate = new Debate();
   debateProvider.addSubdebateToDebate(req.param('_id'), {
     user: req.user.login,
-    type: debate.DebateTypes.DEBATE,
+    type: req.param('type'),
     desc: req.param('desc'),
     titles: [{
       user: req.user.login,
