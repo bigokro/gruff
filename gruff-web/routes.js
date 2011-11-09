@@ -210,6 +210,15 @@ exports.index = function(req, res){
   })
 };
 
+exports.getTagSearch = function(req, res){
+  tagProvider.findAllByPartialMatch(req.param('term'), function(error, tags){
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.json(tags);
+  })
+};
+
 // POST
 
 exports.postDebate = function(req, res){

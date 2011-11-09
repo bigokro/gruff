@@ -104,6 +104,38 @@ TagProvider.prototype.findDescriptionsByTag = function(objectType, tag, callback
   });
 }
 
+
+
+//TODO: this isn't doing any matching at all
+TagProvider.prototype.findAllByPartialMatch = function(partial, callback) {
+  var matchText = partial && partial != null ? partial.toLowerCase() : "";
+  this.getTagCollection(function(error, tag_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      tag_collection.find({}).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          var alltags = [];
+          for (i=0; i < results.length; i++) {
+            for (j=0; j < results[i].tags.length; j++) {
+              var tag = new String(results[i].tags[j]);
+              if (tag.toLowerCase().indexOf(matchText) != -1) {
+                tag = results[i].type == null ? tag : results[i].type + ":" + tag;
+                alltags.push(tag);
+              }
+            }
+          }
+          callback(null, alltags);
+        }
+      });
+    }
+  });
+};
+
+
 function findTaggedAttributes(objectType, attributeName, provider, tag, callback) {
   provider.getCollection(function(error, provider_collection) {
 	  if( error ) callback(error);
