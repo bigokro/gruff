@@ -105,6 +105,7 @@ app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', ro
 // json
 // TODO: we need a pattern here for json vs xml
 app.get('/rest/tags', routes.getTagSearch);
+app.get('/rest/tags/counts', routes.getTagCounts);
 
 
 // default

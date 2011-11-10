@@ -182,6 +182,7 @@ TagProvider.prototype.findAllTagValues = function(callback) {
   });
 };
 
+// TODO: Only counts tags on debates (skips titles, descs and references)
 TagProvider.prototype.getTagCounts = function(tags, callback) {
   var tagsText = tags && tags != null ? tags.toLowerCase() : "";
   var tagArr = tagsText.split(",");
