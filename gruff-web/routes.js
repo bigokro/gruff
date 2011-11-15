@@ -165,6 +165,7 @@ exports.getTaggedItems = function(req, res) {
       , references: items.references
       , titles: items.titles
       , descriptions: items.descriptions
+      , showTagCloud: true
     }});
   });
 };
@@ -206,7 +207,28 @@ exports.index = function(req, res){
       title: 'Recent Debates'
       , debates: docs
       , showTwitter: true
+      , showTagCloud: true
     }});
+  })
+};
+
+// GET JSON
+
+exports.getTagSearch = function(req, res){
+  tagProvider.findAllByPartialMatch(req.param('term'), function(error, tags){
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.json(tags);
+  })
+};
+
+exports.getTagCounts = function(req, res){
+  tagProvider.getTagCounts(req.param('tags'), function(error, counts){
+    if (handleError(req, res, error, true)) {
+      return;
+    }
+    res.json(counts);
   })
 };
 
@@ -317,7 +339,7 @@ exports.postSubdebate = function(req, res) {
   var debate = new Debate();
   debateProvider.addSubdebateToDebate(req.param('_id'), {
     user: req.user.login,
-    type: debate.DebateTypes.DEBATE,
+    type: req.param('type'),
     desc: req.param('desc'),
     titles: [{
       user: req.user.login,

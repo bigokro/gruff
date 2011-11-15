@@ -13,6 +13,15 @@ mixin subdebate_form(debate)
                 label(for="desc") Debate Description
                   em *
                 textarea( name="desc", rows=5, id="addSubdebateDesc")
+              div
+                label(for="type") What kind of debate do you want?
+                  br
+                  input( type="radio", name="type", value=debate.DebateTypes.DEBATE, checked)
+                  | A multiple answer debate
+                  br
+                  input( type="radio", name="type", value=debate.DebateTypes.DIALECTIC)
+                  | A debate with for and against arguments
+                  br
               div#addSubdebateSubmit
                 input(type="submit", value="Send it")
           a(href="#", onclick="$(this).parent().find('fieldset').show(); $(this).hide(); return false;") Add a New Sub-debate

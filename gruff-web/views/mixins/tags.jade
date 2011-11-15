@@ -30,3 +30,9 @@ mixin tags(obj, args)
               window.location.href = "!{baseurl}" + $('#add-tag-form-field-!{attributeid}').val();
             }
           });
+          $(function() {
+            $( "#add-tag-form-field-!{attributeid}" ).autocomplete({
+              source: "/rest/tags",
+              autoFocus: true
+            });
+          });

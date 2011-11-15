@@ -104,6 +104,7 @@ TagProvider.prototype.findDescriptionsByTag = function(objectType, tag, callback
   });
 }
 
+
 function findTaggedAttributes(objectType, attributeName, provider, tag, callback) {
   provider.getCollection(function(error, provider_collection) {
 	  if( error ) callback(error);
@@ -131,6 +132,103 @@ function findTaggedAttributes(objectType, attributeName, provider, tag, callback
     }
   });
 }
+
+TagProvider.prototype.findAllByPartialMatch = function(partial, callback) {
+  var matchText = partial && partial != null ? partial.toLowerCase() : "";
+  this.getTagCollection(function(error, tag_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      tag_collection.find({}).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          var alltags = [];
+          for (i=0; i < results.length; i++) {
+            for (j=0; j < results[i].tags.length; j++) {
+              var tag = new String(results[i].tags[j]);
+              if (tag.toLowerCase().indexOf(matchText) != -1) {
+                tag = results[i].type == null ? tag : results[i].type + ":" + tag;
+                alltags.push(tag);
+              }
+            }
+          }
+          callback(null, alltags);
+        }
+      });
+    }
+  });
+};
+
+TagProvider.prototype.findAllTagValues = function(callback) {
+  this.getTagCollection(function(error, tag_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      tag_collection.find({}).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          var alltags = [];
+          for (i=0; i < results.length; i++) {
+            alltags = alltags.concat(results[i].tags);
+          }
+          callback(null, alltags);
+        }
+      });
+    }
+  });
+};
+
+TagProvider.prototype.getTagCounts = function(tags, callback) {
+  var tagsText = tags && tags != null ? tags.toLowerCase() : "";
+  var tagArr = tagsText.split(",");
+  this.getCollection("debates", function(error, debate_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      var q = {};
+      if (tagsText != "" && tagArr.length == 1) {
+        q = { tags: tagsText };
+      } else if (tagArr.length > 1) {
+        var criteria = [];
+        for (i=0; i < tagArr.length; i++) {
+          criteria.push({ tags: tagArr[i] });
+        }
+        q = { $and: criteria };
+      }
+      debate_collection.find(q, {'tags':1}).toArray(function(error, results) {
+        if (error) {
+          callback(error);
+        } else {
+          var tagCounts = {};
+          var tagsMatchText = "," + tagsText + ",";
+          for (i=0; i < results.length; i++) {
+            var result = results[i];
+            for (j=0; result.tags && j < result.tags.length; j++) {
+              var tag = new String(result.tags[j]);
+              if (tagCounts[tag]) {
+                tagCounts[tag] += 1;
+              } else if (tagsMatchText.indexOf("," + tag.toLowerCase() + ",") != -1) {
+                // ignore tags included in search
+              } else {
+                tagCounts[tag] = 1;
+              }
+            }
+          }
+          callback(null, tagCounts);
+        }
+      });
+    }
+  });
+};
+
+
+
+// UPDATES
 
 TagProvider.prototype.addTag = function(objectType, objectId, attributeType, attributeId, login, tag, callback) {
   var provider = this;

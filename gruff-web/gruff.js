@@ -102,6 +102,12 @@ app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.po
 app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
 
+// json
+// TODO: we need a pattern here for json vs xml
+app.get('/rest/tags', routes.getTagSearch);
+app.get('/rest/tags/counts', routes.getTagCounts);
+
+
 // default
 app.get('*', routes.handle404);
 
