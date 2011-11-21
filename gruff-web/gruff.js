@@ -69,6 +69,7 @@ app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
 app.get('/debates/:id/titles', routes.getDebateTitle);
 app.get('/debates/:id/descriptions', routes.getDebateDescription);
+app.get('/debates/:parentId/switch/:argumentId', routes.switchArgumentSides);
 app.get('/feed', routes.feed);
 app.get('/my/debates', routes.getMyDebates);
 app.get('/references/:id', routes.getReference);

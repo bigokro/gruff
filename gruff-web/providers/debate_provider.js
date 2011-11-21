@@ -546,6 +546,66 @@ DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId
 };
 
 
+// TODO: Save in history
+DebateProvider.prototype.switchSides = function(userId, argumentId, parentId, callback) {
+  var provider = this;
+  var argumentObjId = this.db.bson_serializer.ObjectID.createFromHexString(argumentId);
+  var parentObjId = this.db.bson_serializer.ObjectID.createFromHexString(parentId);
+  this.getCollection(function(error, debate_collection) {
+	  if( error ) callback( error );
+	  else {
+      provider.getHistoryCollection(function(error, history_collection) {
+	      if( error ) callback( error );
+	      else {
+          debate_collection.findOne({_id: parentObjId}, function(error, parent) {
+            if (error) {
+              callback(error)
+            }
+            else {
+              var isFor = true;
+              if (parent.argumentsAgainstIds.join(',').indexOf(argumentObjId) != -1) {
+                isFor = false;
+              }
+              var removeAction = "";
+              var addAction = "";
+              if (isFor) {
+                removeAction = { $pull: { argumentsForIds: argumentObjId }};
+                addAction = { $addToSet: { argumentsAgainstIds: argumentObjId }};
+              } else {
+                removeAction = { $pull: { argumentsAgainstIds: argumentObjId }};
+                addAction = { $addToSet: { argumentsForIds: argumentObjId }};
+              }
+              debate_collection.update(
+                {_id: parentObjId}, 
+                addAction,
+                function(error, switched) {
+                  if (error) {
+                    callback(error)
+                  }
+                  else {
+                    debate_collection.update(
+                      {_id: parentObjId}, 
+                      removeAction,
+                      function(error, switched) {
+                        if (error) {
+                          callback(error)
+                        }
+                        else {
+                          callback(null, augmentDebate(parent));
+                        }
+                      });
+                  }
+                });
+            }
+          });
+        }
+      });
+    }
+  });
+};
+
+
+
 function augmentDebate(result) {
   var debate = classHelper.augment(result, Debate);
   if (debate.answers) {

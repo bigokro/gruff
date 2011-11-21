@@ -7,7 +7,7 @@ mixin arguments(debate)
           h3 Arguments in Favor
           if debate.argumentsFor
             - each argument in debate.argumentsFor
-              div.argument
+              div.argument.argumentFor(id=argument.linkableId())
                 h4.title!= argument.titleLink()
                 div.body= argument.body
           mixin argument_form(debate, true)
@@ -15,8 +15,27 @@ mixin arguments(debate)
           h3 Arguments Against
           if debate.argumentsAgainst
             - each argument in debate.argumentsAgainst
-              div.argument
+              div.argument.argumentAgainst(id=argument.linkableId())
                 h4.title!= argument.titleLink()
                 div.body= argument.body
           mixin argument_form(debate, false)
         div.clear
+        if everyauth.loggedIn
+          script(type="text/javascript")
+            $(function() {
+              $( ".argument" ).draggable({ revert: true });
+              $( ".for, .against" ).droppable({
+                drop: function( event, ui ) {
+                  var dragged = ui.draggable[0];
+                  if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against'))
+                      || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for'))) {
+                    if (confirm("Do you want to change sides?")) {
+                      var url = "/debates/!{debate.linkableId()}/switch/"+dragged.id;
+                      window.location.href = url;
+                      //ui.helper.animate(ui.position, 500);
+                      breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();
+                    }
+                  }
+                }
+              });
+            });

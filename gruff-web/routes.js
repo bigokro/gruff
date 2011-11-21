@@ -170,6 +170,18 @@ exports.getTaggedItems = function(req, res) {
   });
 };
 
+exports.switchArgumentSides = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  debateProvider.switchSides(req.user.login, req.params.argumentId, req.params.parentId, function(error, debate) {
+    if (handleError(req, res, error, debate)) {
+      return;
+    }
+    res.redirect('/debates/' + debate.linkableId());
+  });
+};
+
 // Account Info
 
 exports.getMyDebates = function(req, res) {
