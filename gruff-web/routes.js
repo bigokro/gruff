@@ -170,11 +170,13 @@ exports.getTaggedItems = function(req, res) {
   });
 };
 
-exports.switchArgumentSides = function(req, res) {
+// Curation
+
+exports.moveDebate = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  debateProvider.switchSides(req.user.login, req.params.argumentId, req.params.parentId, function(error, debate) {
+  debateProvider.moveTo(req.user.login, req.params.debateId, req.params.parentId, req.params.destination, function(error, debate) {
     if (handleError(req, res, error, debate)) {
       return;
     }

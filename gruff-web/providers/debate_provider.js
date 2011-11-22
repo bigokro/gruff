@@ -546,10 +546,9 @@ DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId
 };
 
 
-// TODO: Save in history
-DebateProvider.prototype.switchSides = function(userId, argumentId, parentId, callback) {
+DebateProvider.prototype.moveTo = function(user, movedId, parentId, moveTo, callback) {
   var provider = this;
-  var argumentObjId = this.db.bson_serializer.ObjectID.createFromHexString(argumentId);
+  var movedObjId = this.db.bson_serializer.ObjectID.createFromHexString(movedId);
   var parentObjId = this.db.bson_serializer.ObjectID.createFromHexString(parentId);
   this.getCollection(function(error, debate_collection) {
 	  if( error ) callback( error );
@@ -562,40 +561,73 @@ DebateProvider.prototype.switchSides = function(userId, argumentId, parentId, ca
               callback(error)
             }
             else {
-              var isFor = true;
-              if (parent.argumentsAgainstIds.join(',').indexOf(argumentObjId) != -1) {
-                isFor = false;
+              // Save change history
+              var history = {
+                type: 'move',
+                parentId: parentObjId,
+                movedId: movedObjId,
+                moveTo: moveTo,
+                date: new Date(),
+                user: user,
+                parentObj: parent
+              };
+              var moveFrom = "";
+              if (parent.argumentsForIds.join(',').indexOf(movedObjId) != -1) {
+                moveFrom = "argumentsFor";
+              } else if (parent.argumentsAgainstIds.join(',').indexOf(movedObjId) != -1) {
+                moveFrom = "argumentsAgainst";
+              } else if (parent.subdebateIds.join(',').indexOf(movedObjId) != -1) {
+                moveFrom = "subdebates";
               }
-              var removeAction = "";
-              var addAction = "";
-              if (isFor) {
-                removeAction = { $pull: { argumentsForIds: argumentObjId }};
-                addAction = { $addToSet: { argumentsAgainstIds: argumentObjId }};
+              if (moveFrom == '') {
+                history["movedFrom"] = moveFrom;
               } else {
-                removeAction = { $pull: { argumentsAgainstIds: argumentObjId }};
-                addAction = { $addToSet: { argumentsForIds: argumentObjId }};
+                // TODO: get old parent id
+                history["oldParentId"] = "oldparent";
               }
-              debate_collection.update(
-                {_id: parentObjId}, 
-                addAction,
-                function(error, switched) {
-                  if (error) {
-                    callback(error)
-                  }
-                  else {
-                    debate_collection.update(
-                      {_id: parentObjId}, 
-                      removeAction,
-                      function(error, switched) {
-                        if (error) {
-                          callback(error)
-                        }
-                        else {
-                          callback(null, augmentDebate(parent));
-                        }
-                      });
-                  }
-                });
+              history_collection.insert(history, function() {
+                var addAction = "";
+                if (moveTo == 'argumentsFor') {
+                  addAction = { $addToSet: { argumentsForIds: movedObjId }};
+                } else if (moveTo == 'argumentsAgainst') {
+                  addAction = { $addToSet: { argumentsAgainstIds: movedObjId }};
+                } else if (moveTo == 'subdebates') {
+                  addAction = { $addToSet: { subdebateIds: movedObjId }};
+                }
+                debate_collection.update(
+                  {_id: parentObjId}, 
+                  addAction,
+                  function(error, switched) {
+                    if (error) {
+                      callback(error)
+                    }
+                    else {
+                      var targetId = parentObjId;
+                      var updateAction = "";
+                      if (moveFrom == 'argumentsFor') {
+                        updateAction = { $pull: { argumentsForIds: movedObjId }};
+                      } else if (moveFrom == 'argumentsAgainst') {
+                        updateAction = { $pull: { argumentsAgainstIds: movedObjId }};
+                      } else if (moveFrom == 'subdebates') {
+                        updateAction = { $pull: { subdebateIds: movedObjId }};
+                      } else {
+                        targetId = movedObjId;
+                        updateAction = { $set: { parentId: parentObjId }};
+                      }
+                      debate_collection.update(
+                        {_id: targetId}, 
+                        updateAction,
+                        function(error, moved) {
+                          if (error) {
+                            callback(error)
+                          }
+                          else {
+                            callback(null, augmentDebate(parent));
+                          }
+                        });
+                    }
+                  });
+              });
             }
           });
         }

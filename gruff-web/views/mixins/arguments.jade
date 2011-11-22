@@ -28,9 +28,11 @@ mixin arguments(debate)
                 drop: function( event, ui ) {
                   var dragged = ui.draggable[0];
                   if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against'))
-                      || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for'))) {
-                    if (confirm("Do you want to change sides?")) {
-                      var url = "/debates/!{debate.linkableId()}/switch/"+dragged.id;
+                      || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for'))
+                      || (ui.draggable.hasClass('subdebate'))) {
+                    if (confirm("Do you want to move this debate?")) {
+                      var moveTo = $(this).hasClass('for') ? "argumentsFor" : "argumentsAgainst";
+                      var url = "/debates/!{debate.linkableId()}/moveto/"+moveTo+"/"+dragged.id;
                       window.location.href = url;
                       //ui.helper.animate(ui.position, 500);
                       breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();

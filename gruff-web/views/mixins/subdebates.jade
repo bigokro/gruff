@@ -5,8 +5,26 @@ mixin subdebates(debate)
     h3 Sub-debates
     if debate.subdebates
       - each sub in debate.subdebates
-        div.subdebate
+        div.subdebate(id=sub.linkableId())
           h4.title!= sub.titleLink()
     else
       div.none There are no sub-debates related to this debate.
     mixin subdebate_form(debate)
+    if everyauth.loggedIn
+      script(type="text/javascript")
+        $(function() {
+          $( ".subdebate" ).draggable({ revert: true });
+          $( ".subdebates" ).droppable({
+            drop: function( event, ui ) {
+              var dragged = ui.draggable[0];
+              if (ui.draggable.hasClass('argument')) {
+                if (confirm("Do you want to make this argument a sub-debate?")) {
+                  var url = "/debates/!{debate.linkableId()}/moveto/subdebates/"+dragged.id;
+                  window.location.href = url;
+                  //ui.helper.animate(ui.position, 500);
+                  breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();
+                }
+              }
+            }
+          });
+        });

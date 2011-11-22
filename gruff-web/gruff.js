@@ -69,7 +69,6 @@ app.get('/debates/new', routes.getNewDebate);
 app.get('/debates/:id', routes.getDebate);
 app.get('/debates/:id/titles', routes.getDebateTitle);
 app.get('/debates/:id/descriptions', routes.getDebateDescription);
-app.get('/debates/:parentId/switch/:argumentId', routes.switchArgumentSides);
 app.get('/feed', routes.feed);
 app.get('/my/debates', routes.getMyDebates);
 app.get('/references/:id', routes.getReference);
@@ -82,6 +81,10 @@ app.get('/mu-18cba0e3-0a046521-fdcf6513-860a61a9', function(req, res) {
   res.write("42");
   res.end();
 });
+
+// Curation
+app.get('/debates/:parentId/moveto/:destination/:debateId', routes.moveDebate);
+
 // status
 app.get('/404', routes.handle404);
 app.get('/500', routes.handle500);
