@@ -24,6 +24,10 @@ mixin arguments(debate)
           script(type="text/javascript")
             $(function() {
               $( ".argument" ).draggable({ revert: true });
+              $( ".argument" ).width(function(index, width) {
+                var el = $("#"+this.id);
+                return el.find("h4 > a").width();
+              });
               $( ".for, .against" ).droppable({
                 drop: function( event, ui ) {
                   var dragged = ui.draggable[0];

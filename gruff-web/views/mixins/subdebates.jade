@@ -14,6 +14,10 @@ mixin subdebates(debate)
       script(type="text/javascript")
         $(function() {
           $( ".subdebate" ).draggable({ revert: true });
+          $( ".subdebate" ).width(function(index, width) {
+            var el = $("#"+this.id);
+            return el.find("h4 > a").width();
+          });
           $( ".subdebates" ).droppable({
             drop: function( event, ui ) {
               var dragged = ui.draggable[0];
