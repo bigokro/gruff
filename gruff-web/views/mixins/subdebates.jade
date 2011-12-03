@@ -19,6 +19,8 @@ mixin subdebates(debate)
             return el.find("h4 > a").width();
           });
           $( ".subdebates" ).droppable({
+            accept: '.argument',
+            hoverClass: 'over',
             drop: function( event, ui ) {
               var dragged = ui.draggable[0];
               if (ui.draggable.hasClass('argument')) {
@@ -28,6 +30,20 @@ mixin subdebates(debate)
                   //ui.helper.animate(ui.position, 500);
                   breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();
                 }
+              }
+            }
+          });
+          $( ".subdebate" ).droppable({
+            accept: '.subdebate, .argument, .debate',
+            hoverClass: 'over',
+            greedy: true,
+            drop: function( event, ui ) {
+              var dragged = ui.draggable[0];
+              if (confirm("Do you want to make this debate a subdebate of the target?")) {
+                var url = "/debates/"+this.id+"/moveto/subdebates/"+dragged.id;
+                window.location.href = url;
+                //ui.helper.animate(ui.position, 500);
+                breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();
               }
             }
           });

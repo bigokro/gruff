@@ -29,6 +29,7 @@ mixin arguments(debate)
                 return el.find("h4 > a").width();
               });
               $( ".for, .against" ).droppable({
+                accept: '.subdebate, .argument, .debate',
                 drop: function( event, ui ) {
                   var dragged = ui.draggable[0];
                   if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against'))
@@ -40,7 +41,33 @@ mixin arguments(debate)
                       window.location.href = url;
                       //ui.helper.animate(ui.position, 500);
                       breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();
+                    } else {
+                     $(this).removeClass('over');
                     }
+                  }
+                },
+                over: function( event, ui ) {
+                  if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against'))
+                      || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for'))
+                      || (ui.draggable.hasClass('subdebate'))) {
+                    $(this).addClass('over');
+                  }
+                },
+                out: function( event, ui ) {
+                 $(this).removeClass('over');
+                }
+              });
+              $( ".argument" ).droppable({
+                accept: '.subdebate, .argument, .debate',
+                hoverClass: 'over',
+                greedy: true,
+                drop: function( event, ui ) {
+                  var dragged = ui.draggable[0];
+                  if (confirm("Do you want to make this debate a subdebate of the target?")) {
+                    var url = "/debates/"+this.id+"/moveto/subdebates/"+dragged.id;
+                    window.location.href = url;
+                    //ui.helper.animate(ui.position, 500);
+                    breakTheJavascriptOnThisPageJustToStopTheDamnedRevert();
                   }
                 }
               });
