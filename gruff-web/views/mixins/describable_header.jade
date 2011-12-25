@@ -2,10 +2,10 @@ mixin header(type, describable, linkToMe)
   - var parent = type == "reference" ? describable.debate : describable.parent
   if parent && parent != null
     h1
-      a(href="/debates/"+parent.linkableId())= parent.bestTitleText()
+      a(href="/debates/"+parent.linkableId(), id=parent.linkableId())= parent.bestTitleText()
     if linkToMe
       h2
-        a(href="/" + type + "s/"+describable.linkableId())= describable.bestTitleText()
+        a(href="/" + type + "s/"+describable.linkableId(), id=describable.linkableId())= describable.bestTitleText()
     else
       h2= describable.bestTitleText()
         span.vote-link
@@ -14,7 +14,7 @@ mixin header(type, describable, linkToMe)
   else
     if linkToMe
       h1
-        a(href="/" + type + "s/"+describable.linkableId())= describable.bestTitleText()
+        a(href="/" + type + "s/"+describable.linkableId(), id=describable.linkableId())= describable.bestTitleText()
     else
       h1= describable.bestTitleText()
         span.vote-link

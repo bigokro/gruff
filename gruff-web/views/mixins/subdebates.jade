@@ -33,7 +33,7 @@ mixin subdebates(debate)
               }
             }
           });
-          $( ".subdebate" ).droppable({
+          $( ".subdebate, h1 > a" ).droppable({
             accept: '.subdebate, .argument, .debate',
             hoverClass: 'over',
             greedy: true,
