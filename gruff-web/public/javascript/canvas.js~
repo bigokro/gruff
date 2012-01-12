@@ -1,0 +1,3 @@
+(function($) {
+  router = new Gruff.Routers.DebatesRouter({id: '!{id}'});
+})(Gruff.Routers.DebatesRouter);

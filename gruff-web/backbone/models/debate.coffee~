@@ -1,0 +1,10 @@
+class Brandship.Models.Debate extends Backbone.Model
+  paramRoot: 'debate'
+
+  defaults:
+    title: null
+    description: null
+
+class Brandship.Collections.DebatesCollection extends Backbone.Collection
+  model: Brandship.Models.Debate
+  url: '/debates'

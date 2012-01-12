@@ -14,8 +14,7 @@ exports.about = function(req, res) {
 
 exports.canvas = function(req, res) {
   res.render('canvas.jade', { locals: {
-      title: 'Make Your Gruff',
-      id: req.params.id
+      title: 'Make Your Gruff'
   }});
 };
 
@@ -251,24 +250,6 @@ exports.getTagCounts = function(req, res){
     }
     res.json(counts);
   })
-};
-
-exports.getJSONDebate = function(req, res) {
-  debateProvider.findById(req.params.id, function(error, debate) {
-    if (handleError(req, res, error, debate)) {
-      return;
-    }
-    res.json(debate);
-  });
-};
-
-exports.getJSONDebates = function(req, res) {
-  debateProvider.findRecent(10, 0, function(error, docs){
-    if (handleError(req, res, error, true)) {
-      return;
-    }
-    res.json(docs);
-  });
 };
 
 // POST

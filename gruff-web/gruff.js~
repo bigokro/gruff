@@ -22,7 +22,7 @@ var express = require('express')
   , ReferenceProvider = require('./providers/reference_provider').ReferenceProvider
   , UserProvider = require('./providers/user_provider').UserProvider
   , TagProvider = require('./providers/tag_provider').TagProvider
-  , Debate = require('./common/models/debate').Debate
+  , Debate = require('./models/debate').Debate
   , everyauth = require('./everyauth').everyauth
   , fs = require('fs')
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
@@ -48,7 +48,6 @@ app.configure(function(){
   app.use(stylus.middleware({ src: __dirname + '/public' }));
   app.use(everyauth.middleware());
   app.use(express.static(__dirname + '/public'));
-  app.use(express.static(__dirname + '/common'));
   app.use(app.router);
   app.use(express.favicon());
 });
@@ -79,7 +78,7 @@ app.get('/search', routes.getSearch);
 app.get('/tags/:tag', routes.getTaggedItems);
 
 // backbone
-app.get('/canvas/:id', routes.canvas);
+app.get('/canvas', routes.canvas);
 
 // blitz.io
 app.get('/mu-18cba0e3-0a046521-fdcf6513-860a61a9', function(req, res) {
@@ -115,8 +114,6 @@ app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', ro
 // TODO: we need a pattern here for json vs xml
 app.get('/rest/tags', routes.getTagSearch);
 app.get('/rest/tags/counts', routes.getTagCounts);
-app.get('/rest/debates', routes.getJSONDebates);
-app.get('/rest/debates/:id', routes.getJSONDebate);
 
 
 // default

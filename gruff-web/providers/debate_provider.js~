@@ -3,9 +3,9 @@ var Connection = require('mongodb').Connection;
 var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
-var Debate = require('../common/models/debate').Debate;
-var Reference = require('../common/models/reference').Reference;
-var ClassHelper = require('../common/lib/class_helper').ClassHelper;
+var Debate = require('../models/debate').Debate;
+var Reference = require('../models/reference').Reference;
+var ClassHelper = require('../lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
 
 // Utility functions
