@@ -6,7 +6,7 @@
  * Yes/No or True/False debates around a "Dialectic"
  */
 
-    if (isClient || true) {
+    if (isClient) {
 var Identifible = exports.Identifiable;
 var Describable = exports.Describable;
 var ClassHelper = exports.ClassHelper;
@@ -60,4 +60,7 @@ classHelper.augmentClass(Debate, Describable);
 
 exports.Debate = Debate;
 
-})(typeof exports === 'undefined', typeof exports === 'undefined'? this["GruffShared"] = {} : exports);
+})(
+   (typeof window !== 'undefined'),
+   (typeof exports === 'undefined' || typeof exports === 'DOMWindow') ? this["GruffShared"] = {} : exports
+  );
