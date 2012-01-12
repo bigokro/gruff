@@ -1,4 +1,4 @@
-(function(isClient, exports){
+(function(exports){
 
 /*
  * Library of general-use helper functions
@@ -41,4 +41,4 @@ ClassHelper.prototype.augment = function (receivingObj, givingClass) {
 
 exports.ClassHelper = ClassHelper;
 
-})(typeof exports === 'undefined', typeof exports === 'undefined'? this["exports"] = {} : exports);
+})(typeof exports === 'undefined'? this["GruffShared"] = {} : exports);

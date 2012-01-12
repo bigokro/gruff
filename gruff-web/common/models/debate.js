@@ -1,12 +1,20 @@
+(function(isClient, exports){
+
 /* 
  * Provides functions for all main types of debates:
  * Multi-answer "Debates", and
  * Yes/No or True/False debates around a "Dialectic"
  */
 
+    if (isClient || true) {
+var Identifible = exports.Identifiable;
+var Describable = exports.Describable;
+var ClassHelper = exports.ClassHelper;
+    } else {
 var Identifible = require('./identifiable').Identifiable;
 var Describable = require('./describable').Describable;
 var ClassHelper = require('../lib/class_helper').ClassHelper;
+    }
 var classHelper = new ClassHelper();
 
 Debate = function() {
@@ -51,3 +59,5 @@ classHelper.augmentClass(Debate, Describable);
 
 
 exports.Debate = Debate;
+
+})(typeof exports === 'undefined', typeof exports === 'undefined'? this["GruffShared"] = {} : exports);

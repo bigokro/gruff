@@ -1,3 +1,5 @@
+(function(exports){
+
 /* 
  * Provides functions for all domain model classes that can be "described"
  * (that is, they have a title and a description that can be chosen by popular vote)
@@ -93,3 +95,5 @@ Describable.prototype.describableVotesCount = function() {
 };
 
 exports.Describable = Describable;
+
+})(typeof exports === 'undefined'? this["GruffShared"] = {} : exports);

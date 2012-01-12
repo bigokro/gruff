@@ -1,3 +1,5 @@
+(function(exports){
+
 /* 
  * Provides functions for references,
  * which are links to external sources,
@@ -16,3 +18,5 @@ classHelper.augmentClass(Reference, Identifiable);
 classHelper.augmentClass(Reference, Describable);
 
 exports.Reference = Reference;
+
+})(typeof exports === 'undefined'? this["exports"] = {} : exports);
