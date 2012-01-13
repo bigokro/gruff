@@ -1,5 +1,5 @@
 (function() {
-  var _base, _base2, _base3, _base4, _base5,
+  var classHelper, _base, _base2, _base3, _base4, _base5,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -8,7 +8,8 @@
     Models: {},
     Collections: {},
     Routers: {},
-    Views: {}
+    Views: {},
+    Common: {}
   };
 
   Gruff.Models.Debate = (function(_super) {
@@ -26,6 +27,14 @@
     Debate.prototype.defaults = {
       title: null,
       description: null
+    };
+
+    Debate.prototype.fullJSON = function() {
+      var json;
+      json = this.toJSON();
+      json.bestTitle = this.bestTitleText();
+      json.bestDescription = this.bestDescriptionText();
+      return json;
     };
 
     return Debate;
@@ -47,6 +56,10 @@
     return Debates;
 
   })(Backbone.Collection);
+
+  classHelper = new exports.ClassHelper();
+
+  classHelper.augmentClass(Gruff.Models.Debate, exports.Debate);
 
   Gruff.Routers.DebatesRouter = (function(_super) {
 
@@ -143,7 +156,7 @@
     };
 
     DebateView.prototype.render = function() {
-      $(this.el).html(this.template(this.model.toJSON()));
+      $(this.el).html(this.template(this.model.fullJSON()));
       return this;
     };
 
@@ -296,7 +309,7 @@
     };
 
     ShowView.prototype.render = function() {
-      $(this.el).html(this.template(this.model.toJSON()));
+      $(this.el).html(this.template(this.model.fullJSON()));
       return this;
     };
 

@@ -5,5 +5,5 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @template = _.template $('#debate-show-template').text()
 
   render: ->
-    $(@el).html(@template @model.toJSON())
+    $(@el).html(@template @model.fullJSON())
     return this

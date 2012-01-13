@@ -8,14 +8,24 @@
 Describable = function() {
 };
 
-Describable.prototype.bestTitle = function() {
-    if (typeof(this.titles)=="undefined") {
-	return this.title;
+// Needed to provide compatibility between Backbone and simple Node models
+Describable.prototype.safeGet = function(attribute) {
+    if (typeof(this[attribute])==="undefined") {
+	return this.get(attribute);
+    } else {
+	return this["attribute"];
     }
-    var result = this.titles[this.titles.length-1];
+}
+
+Describable.prototype.bestTitle = function() {
+    var titles = this.safeGet("titles");
+    if (typeof(titles)==="undefined") {
+	    return this.safeGet("title");
+    }
+    var result = titles[titles.length-1];
     var votes = result != null && result.votes ? result.votes.length : 0;
-    for (i=0; i < this.titles.length; i++) {
-        var title = this.titles[i];
+    for (i=0; i < titles.length; i++) {
+        var title = titles[i];
         if (title.votes) {
             if (title.votes.length > votes) {
                 result = title;
@@ -36,18 +46,11 @@ Describable.prototype.bestTitleText = function() {
 };
 
 Describable.prototype.bestDescription = function() {
-    if (!this.descs) {
-	      return {
-            // TODO: Remove when we wipe out the database
-            text: this.body,
-            user: this.user,
-            date: this.date
-        }
-    }
-    var result = this.descs[this.descs.length-1];
+    var descs = this.safeGet("descs");
+    var result = descs[descs.length-1];
     var votes = result != null && result.votes ? result.votes.length : 0;
-    for (i=0; i < this.descs.length; i++) {
-        var desc = this.descs[i];
+    for (i=0; i < descs.length; i++) {
+        var desc = descs[i];
         if (desc && desc != null && desc.votes) {
             if (desc.votes.length > votes) {
                 result = desc;
@@ -60,35 +63,36 @@ Describable.prototype.bestDescription = function() {
 
 Describable.prototype.bestDescriptionText = function() {
     var description = this.bestDescription();
-    if (description.text === undefined) {
-	      return this.body;
-    } else {
-	      return description.text;
-    }
+    return description.text;
 };
 
 Describable.prototype.describableContributionsCount = function() {
-  var titleCount = this.titles ? this.titles.length : 0;
-  var descCount = this.descs ? this.descs.length : 0;
-  var commentCount = this.comments ? this.comments.length : 0;
+    var titles = this.safeGet("titles");
+    var descs = this.safeGet("descs");
+    var descs = this.safeGet("comments");
+  var titleCount = titles ? titles.length : 0;
+  var descCount = descs ? descs.length : 0;
+  var commentCount = comments ? comments.length : 0;
   return titleCount + descCount + commentCount;
 };
 
 Describable.prototype.describableVotesCount = function() {
+    var titles = this.safeGet("titles");
+    var descs = this.safeGet("descs");
   var titleVotes = 0;
-  if (this.titles && this.titles != null) {
-    for (i=0; i < this.titles.length; i++) {
-      if (this.titles[i] != null
-          && this.titles[i].votes 
-          && this.titles[i] != null) titleVotes += this.titles[i].votes.length;
+  if (titles && titles != null) {
+    for (i=0; i < titles.length; i++) {
+      if (titles[i] != null
+          && titles[i].votes 
+          && titles[i] != null) titleVotes += titles[i].votes.length;
     }
   }
   var descVotes = 0;
-  if (this.descs && this.descs != null) {
-    for (i=0; i < this.descs.length; i++) {
-      if (this.descs[i] != null 
-          && this.descs[i].votes 
-          && this.descs[i].votes != null) descVotes += this.descs[i].votes.length;
+  if (descs && descs != null) {
+    for (i=0; i < descs.length; i++) {
+      if (descs[i] != null 
+          && descs[i].votes 
+          && descs[i].votes != null) descVotes += descs[i].votes.length;
     }
   }
   return titleVotes + descVotes;
