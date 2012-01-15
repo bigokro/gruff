@@ -13,9 +13,11 @@ exports.about = function(req, res) {
 };
 
 exports.canvas = function(req, res) {
-  res.render('canvas.jade', { locals: {
-      title: 'Make Your Gruff',
-      id: req.params.id
+  res.render('canvas.jade', {
+    layout: 'layout_canvas'
+    , locals: {
+      title: 'Make Your Gruff'
+      , id: req.params.id
   }});
 };
 

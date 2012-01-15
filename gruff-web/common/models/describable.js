@@ -13,7 +13,7 @@ Describable.prototype.safeGet = function(attribute) {
     if (typeof(this[attribute])==="undefined") {
 	return this.get(attribute);
     } else {
-	return this["attribute"];
+	return this[attribute];
     }
 }
 
@@ -38,7 +38,7 @@ Describable.prototype.bestTitle = function() {
 
 Describable.prototype.bestTitleText = function() {
     var title = this.bestTitle();
-    if (title.title === undefined) {
+    if (typeof(title) === 'undefined' || typeof(title.title) === 'undefined') {
 	return title;
     } else {
 	return title.title;
@@ -69,7 +69,7 @@ Describable.prototype.bestDescriptionText = function() {
 Describable.prototype.describableContributionsCount = function() {
     var titles = this.safeGet("titles");
     var descs = this.safeGet("descs");
-    var descs = this.safeGet("comments");
+    var comments = this.safeGet("comments");
   var titleCount = titles ? titles.length : 0;
   var descCount = descs ? descs.length : 0;
   var commentCount = comments ? comments.length : 0;
