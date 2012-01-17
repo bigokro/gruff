@@ -265,8 +265,8 @@ exports.getJSONDebate = function(req, res) {
 };
 
 exports.getJSONDebates = function(req, res) {
-  debateProvider.findRecent(10, 0, function(error, docs){
-    if (handleError(req, res, error, true)) {
+  debateProvider.findAllByIdAndType(req.params.id, req.params.attributetype, function(error, docs){
+    if (handleError(req, res, error, docs)) {
       return;
     }
     res.json(docs);

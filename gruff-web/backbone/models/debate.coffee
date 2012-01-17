@@ -10,6 +10,7 @@ class Gruff.Models.Debate extends Backbone.Model
     json = @toJSON()
     json.bestTitle = @bestTitleText()
     json.bestDescription = @bestDescriptionText()
+    json.linkableId = @linkableId()
     json
 
 

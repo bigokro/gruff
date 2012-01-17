@@ -117,6 +117,7 @@ app.get('/rest/tags', routes.getTagSearch);
 app.get('/rest/tags/counts', routes.getTagCounts);
 app.get('/rest/debates', routes.getJSONDebates);
 app.get('/rest/debates/:id', routes.getJSONDebate);
+app.get('/rest/debates/:id/:attributetype', routes.getJSONDebates);
 
 
 // default

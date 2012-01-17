@@ -276,6 +276,65 @@ DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
 };
 
 
+DebateProvider.prototype.findAllByIdAndType = function(id, attributeType, callback) {
+  try {
+    var objId = this.db.bson_serializer.ObjectID.createFromHexString(id);
+  }
+  catch (error) {
+    if (error == 'Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters in hex format') {
+      // we want a 404 here and not an error
+      return callback(null, null);
+    }
+    else {
+      callback(error);
+    }
+  }
+  this.findAllByObjIDAndType(objId, attributeType, callback);
+};
+
+DebateProvider.prototype.findAllByObjIDAndType = function(objId, attributeType, callback) {
+  var provider = this;
+  this.getCollection(function(error, debate_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      // TODO: no need to load debate - just query for id collection
+      debate_collection.findOne({_id: objId}, function(error, result) {
+        if (error) {
+          callback(error)
+        }
+        else if (!result) {
+          callback(null, null)
+        }
+        else {
+          // Load the debates by attribute
+          if (attributeType == 'answers') {
+            var ids = result.answerIds;
+          } else if (attributeType == 'argumentsFor') {
+            var ids = result.argumentsForIds;
+          } else if (attributeType == 'argumentsAgainst') {
+            var ids = result.argumentsAgainstIds;
+          } else if (attributeType == 'subdebates') {
+            var ids = result.subdebatesIds;
+          } else {
+            // we want a 404 here and not an error
+            return callback(null, null);
+          }
+          provider.findAllByObjID(ids, function(error, docs) {
+            if (error) {
+              callback(error)
+            }
+            else {
+              callback(null, docs || []);
+            }
+          });
+        }
+      });
+    }
+  });
+};
+
 DebateProvider.prototype.findDebatesForUser = function(login, callback) {
     var provider = this;
     this.getUserCollection(function(error, user_collection) {

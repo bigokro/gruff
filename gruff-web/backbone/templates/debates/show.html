@@ -1,14 +1,15 @@
 <script type="text/x-jquery-tmpl" id="debate-show-template">
-<p>
-  <b>Title:</b>
-  <%= bestTitle %>
-</p>
-
-<p>
-  <b>Description:</b>
-  <%= bestDescription %>
-</p>
-
-
-<a href="#/index">Back</a>
+<div class="debate">
+  <div class="date"><%= date %></div>
+  <div class="title"><%= bestTitle %></div>
+  <div class="vote-link">
+    <a href="/debates/<%= linkableId %>/descriptions" title="Improve this description"><img src="/images/checked.png"/></a>
+  </div>
+  <div class="description"><%= bestDescription %></div>
+  <div class="tags"></div>
+  <div class="arguments"></div>
+  <div class="answers"></div>
+  <div class="subdebates"></div>
+  <div class="comments"></div>
+</div>
 </script>

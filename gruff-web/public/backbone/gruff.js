@@ -34,6 +34,7 @@
       json = this.toJSON();
       json.bestTitle = this.bestTitleText();
       json.bestDescription = this.bestDescriptionText();
+      json.linkableId = this.linkableId();
       return json;
     };
 
@@ -305,11 +306,23 @@
     }
 
     ShowView.prototype.initialize = function(options) {
-      return this.template = _.template($('#debate-show-template').text());
+      this.template = _.template($('#debate-show-template').text());
+      return this.tags_template = _.template($('#tags-index-template').text());
     };
 
     ShowView.prototype.render = function() {
-      $(this.el).html(this.template(this.model.fullJSON()));
+      var json, _ref;
+      json = this.model.fullJSON();
+      $(this.el).html(this.template(json));
+      json.objecttype = "debates";
+      json.objectid = json.linkableId;
+      json.attributetype = "";
+      json.attributeid = "";
+      json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
+        "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
+      };
+      json.loggedIn = true;
+      $(this.el).find('.tags').html(this.tags_template(json));
       return this;
     };
 

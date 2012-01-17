@@ -8,8 +8,19 @@
 Identifiable = function() {
 };
 
+// Needed to provide compatibility between Backbone and simple Node models
+Identifiable.prototype.safeGet = function(attribute) {
+    if (typeof(this[attribute])==="undefined") {
+	return this.get(attribute);
+    } else {
+	return this[attribute];
+    }
+}
+
 Identifiable.prototype.linkableId = function() {
-    return this._id.toHexString();
+    var id = this.safeGet("_id");
+    //return this.safeGet("_id").toHexString();
+    return id;
 };
 
 
