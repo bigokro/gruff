@@ -10,10 +10,10 @@ Describable = function() {
 
 // Needed to provide compatibility between Backbone and simple Node models
 Describable.prototype.safeGet = function(attribute) {
-    if (typeof(this[attribute])==="undefined") {
-	return this.get(attribute);
+    if (typeof(this.get)==="undefined") {
+      return this[attribute];
     } else {
-	return this[attribute];
+      return this.get(attribute);
     }
 }
 
@@ -45,8 +45,22 @@ Describable.prototype.bestTitleText = function() {
     }
 };
 
+Describable.prototype.getDescriptions = function() {
+    if (typeof(this.get) === 'undefined' && !this.descs) {
+    	    return [{
+		    // TODO: Remove when we wipe out the database
+		    text: this.body,
+		    user: this.user,
+		    date: this.date,
+		    votes: []
+		    }];
+    } else {
+	return this.safeGet("descs");
+    }
+};
+
 Describable.prototype.bestDescription = function() {
-    var descs = this.safeGet("descs");
+    var descs = this.getDescriptions();
     var result = descs[descs.length-1];
     var votes = result != null && result.votes ? result.votes.length : 0;
     for (i=0; i < descs.length; i++) {
@@ -68,7 +82,7 @@ Describable.prototype.bestDescriptionText = function() {
 
 Describable.prototype.describableContributionsCount = function() {
     var titles = this.safeGet("titles");
-    var descs = this.safeGet("descs");
+    var descs = this.getDescriptions();
     var comments = this.safeGet("comments");
   var titleCount = titles ? titles.length : 0;
   var descCount = descs ? descs.length : 0;
@@ -78,7 +92,7 @@ Describable.prototype.describableContributionsCount = function() {
 
 Describable.prototype.describableVotesCount = function() {
     var titles = this.safeGet("titles");
-    var descs = this.safeGet("descs");
+    var descs = this.getDescriptions();
   var titleVotes = 0;
   if (titles && titles != null) {
     for (i=0; i < titles.length; i++) {
