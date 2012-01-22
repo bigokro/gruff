@@ -57,14 +57,13 @@
          _.each(subdebates, function(subdebate) {
     %>
       <div class="subdebate" id="<%=subdebate.linkableId%>">
-        <h4 class="title"><%= titleLink %></h4>
+        <h4 class="title"><%= subdebate.titleLink %></h4>
       </div>
     <% 
          });
        } else { 
     %>
       <div class="none">There are no sub-debates related to this debate.</div>
-    </div>
     <% } %>
     <div class="bottomForm">
     <% if (loggedIn) { %>

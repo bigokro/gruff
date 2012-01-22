@@ -316,7 +316,7 @@ DebateProvider.prototype.findAllByObjIDAndType = function(objId, attributeType, 
           } else if (attributeType == 'argumentsAgainst') {
             var ids = result.argumentsAgainstIds;
           } else if (attributeType == 'subdebates') {
-            var ids = result.subdebatesIds;
+            var ids = result.subdebateIds;
           } else {
             // we want a 404 here and not an error
             return callback(null, null);
