@@ -359,7 +359,8 @@ exports.postAnswer = function(req, res) {
     return;
   }
   var debate = new Debate();
-  debateProvider.addAnswerToDebate(req.param('_id'), {
+  var parentId = req.params.id ? req.params.id : req.param('_id');
+  debateProvider.addAnswerToDebate(parentId, {
     user: req.user.login,
     type: debate.DebateTypes.DIALECTIC,
     desc: req.param('desc'),
@@ -373,7 +374,11 @@ exports.postAnswer = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/debates/' + req.param('_id'));
+    if (req.xhr) {
+      res.json(docs[0]);
+    } else {
+      res.redirect('/debates/' + req.param('_id'));
+    }
   });
 };
 
@@ -382,7 +387,8 @@ exports.postSubdebate = function(req, res) {
     return;
   }
   var debate = new Debate();
-  debateProvider.addSubdebateToDebate(req.param('_id'), {
+  var parentId = req.params.id ? req.params.id : req.param('_id');
+  debateProvider.addSubdebateToDebate(parentId, {
     user: req.user.login,
     type: req.param('type'),
     desc: req.param('desc'),
@@ -396,7 +402,11 @@ exports.postSubdebate = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/debates/' + req.param('_id'));
+    if (req.xhr) {
+      res.json(docs[0]);
+    } else {
+      res.redirect('/debates/' + req.param('_id'));
+    }
   });
 };
 
@@ -404,7 +414,8 @@ exports.postArgument = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  debateProvider.addArgumentToDebate(req.param('_id'), {
+  var parentId = req.params.id ? req.params.id : req.param('_id');
+  debateProvider.addArgumentToDebate(parentId, {
     user: req.user.login,
     type: debate.DebateTypes.DIALECTIC,
     desc: req.param('desc'),
@@ -420,8 +431,28 @@ exports.postArgument = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/debates/' + req.param('_id'));
+    if (req.xhr) {
+      res.json(docs[0]);
+    } else {
+      res.redirect('/debates/' + req.param('_id'));
+    }
   });
+}
+
+exports.addDebateToDebate = function(req, res) {
+  if (req.params.attributetype === 'subdebates') {
+    exports.postSubdebate(req, res);
+  } else if (req.params.attributetype === 'argumentsFor') {
+    req.param('isFor') = 'true';
+    exports.postArgument(req, res);
+  } else if (req.params.attributetype === 'argumentsAgainst') {
+    req.param('isFor') = 'false';
+    exports.postArgument(req, res);
+  } else if (req.params.attributetype === 'answers') {
+    exports.postAnswer(req, res);
+  } else {
+    exports.handle404(req, res);
+  }
 }
 
 exports.postReference = function(req, res) {

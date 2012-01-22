@@ -484,7 +484,7 @@ DebateProvider.prototype.addSubdebateToDebate = function(debateId, subdebate, ca
 		                {"$push": {subdebateIds: subdebateId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, debate)
+		                    else callback(null, subdebates)
 		                });
             });
         }
