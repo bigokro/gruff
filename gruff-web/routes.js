@@ -288,7 +288,11 @@ exports.postDebate = function(req, res){
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/');
+    if (req.xhr) {
+      res.json(docs[0]);
+    } else {
+      res.redirect('/');
+    }
   });
 };
 
@@ -574,18 +578,25 @@ exports.removeTag = function(req, res) {
 
 exports.handle404 = function(req, res) {
   res.statusCode = 404;
-  res.render('404.jade', { locals: {
-    title: '404 Not Found'
-    , showTwitter: true
- }});
+  if (req.xhr) {
+    res.json([{ "message": "404 Not Found" }]);
+  } else {
+    res.render('404.jade', { locals: {
+      title: '404 Not Found'
+      , showTwitter: true
+    }});
+  }
 };
 
 exports.handle500 = function(req, res) {
   res.statusCode = 500;
-  res.render('500.jade', { locals: {
+  if (req.xhr) {
+    res.json([{ "message": "500 Horrendous Error" }]);
+  } else {
+    res.render('500.jade', { locals: {
       title: '500 Horrendous Error'
     }});
-  
+  }
 }
 
 // Helpers
@@ -593,7 +604,11 @@ exports.handle500 = function(req, res) {
 bounceAnonymous = function (req, res) {
   if (! req.loggedIn) {
     console.log('bouncing anonymous user');
-    res.redirect('/login');
+    if (req.xhr) {
+	res.json([{ "message": "You must be logged in to perform this action." }]);
+    } else {
+      res.redirect('/login');
+    }
     return true;
   }
   else {

@@ -1,13 +1,15 @@
 Gruff.Views.Debates ||= {}
 
 class Gruff.Views.Debates.NewView extends Backbone.View
-  template: $('#debate-new-template')
+  initialize: (options) ->
+    @template = _.template $('#debate-new-template').text()
 
   events:
     "submit #new-debate": "save"
 
   constructor: (options) ->
     super(options)
+    @collection = options.collection
     @model = new @collection.model()
 
     @model.bind("change:errors", () =>
@@ -23,15 +25,22 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     @collection.create(@model.toJSON(),
       success: (debate) =>
         @model = debate
-        window.location.hash = "/#{@model.id}"
+        @close()
 
       error: (debate, jqXHR) =>
         @model.set({errors: $.parseJSON(jqXHR.responseText)})
     )
 
   render: ->
-    $(@el).html(@template(@model.toJSON() ))
+    json = @model.fullJSON()
+    json.attributeType = @attributeType
+    json.DebateTypes = exports.Debate.prototype.DebateTypes
+    $(@el).html(@template( json ))
+    $(@el).show()
+    Backbone.ModelBinding.bind @
+    @
 
-    this.$("form").backboneLink(@model)
-
-    return this
+  close: ->
+    @remove()
+    @unbind()
+    Backbone.ModelBinding.unbind @

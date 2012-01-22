@@ -1,0 +1,29 @@
+<script type="text/x-jquery-tmpl" id="debate-new-template">
+<form id="new-debate" method="post">
+  <input type="hidden" name="_id" value="<%=linkableId%>"/>
+  <fieldset>
+    <legend>Add a New Debate</legend>
+    <div>
+      <label for="title">Debate Title<em>*</em></label>
+      <input type="text" name="title" id="title"/>
+    </div>
+    <div>
+      <label for="description">Debate Description<em>*</em></label>
+      <textarea name="description" rows="5" id="description"></textarea>
+    </div>
+    <div>
+      <label for="type">What kind of debate do you want?</label>
+      <br/>
+      <input type="radio" name="type" value="<%=DebateTypes.DEBATE%>" checked/>
+      A multiple answer debate
+      <br/>
+      <input type="radio" name="type" value="<%=DebateTypes.DIALECTIC%>"/>
+      A debate with for and against arguments
+      <br/>
+    </div>
+    <div id="addDebateSubmit">
+      <input type="submit" value="Send it"/>
+    </div>
+  </fieldset>
+</form>
+</script>

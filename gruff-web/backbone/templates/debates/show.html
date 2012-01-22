@@ -7,9 +7,74 @@
   </div>
   <div class="description"><%= bestDescription %></div>
   <div class="tags"></div>
-  <div class="arguments"></div>
-  <div class="answers"></div>
-  <div class="subdebates"></div>
+  <div class="arguments">
+    <div class="for">
+      <h3>Arguments in Favor</h3>
+      <% if (argumentsFor) {
+           _.each(argumentsFor, function(argument) {
+      %>
+        <div class="argument argumentFor" id="<%=argument.linkableId%>">
+          <h4 class="title"><%= argument.titleLink %></h4>
+          <div class="body"><%= argument.body %></div>
+        </div>
+      <%
+          });
+        }
+      %>
+          mixin argument_form(debate, true)
+    </div>
+    <div class="against">
+      <h3>Arguments Against</h3>
+      <% if (argumentsAgainst) {
+           _.each(argumentsAgainst, function(argument) {
+      %>
+        <div class="argument argumentFor" id="<%=argument.linkableId%>">
+          <h4 class="title"><%= argument.titleLink %></h4>
+          <div class="body"><%= argument.body %></div>
+        </div>
+      <%
+          });
+        }
+      %>
+          mixin argument_form(debate, false)
+    </div>
+    <div class="clear"></div>
+  </div>
+  <% if (answers) { %>
+  <div class="answers">
+    <h3>Proposed Answers</h3>
+    <% _.each(answers, function(answer) { %>
+      <div class="answer" id="<%=answer.linkableId%>">
+        <h4 class="title"><%= answer.titleLink %></h4>
+      </div>
+    <% }); %>
+    mixin answer_form(debate)
+  </div>
+  <% } %>
+  <div class="subdebates">
+    <h3>Sub-debates</h3>
+    <% if (subdebates) {
+         _.each(subdebates, function(subdebate) {
+    %>
+      <div class="subdebate" id="<%=subdebate.linkableId%>">
+        <h4 class="title"><%= titleLink %></h4>
+      </div>
+    <% 
+         });
+       } else { 
+    %>
+      <div class="none">There are no sub-debates related to this debate.</div>
+    </div>
+    <% } %>
+    <div class="bottomForm">
+    <% if (loggedIn) { %>
+      <a id="new-debate-link" debate-type="subdebates">Add a New Sub-debate</a>
+      <div id="new-subdebates-div" style="display:none;"></div>
+    <% } else { %>
+      <a href="/login">Want to contribute? Log in!</a>
+    <% } %>
+    </div>
+  </div>
   <div class="comments"></div>
 </div>
 </script>

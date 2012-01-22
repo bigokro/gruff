@@ -38,7 +38,9 @@ Describable.prototype.bestTitle = function() {
 
 Describable.prototype.bestTitleText = function() {
     var title = this.bestTitle();
-    if (typeof(title) === 'undefined' || typeof(title.title) === 'undefined') {
+    if (title == null
+	|| typeof(title) === 'undefined' 
+	|| typeof(title.title) === 'undefined') {
 	return title;
     } else {
 	return title.title;
@@ -61,6 +63,7 @@ Describable.prototype.getDescriptions = function() {
 
 Describable.prototype.bestDescription = function() {
     var descs = this.getDescriptions();
+    if (descs == null || descs.length == 0) return null;
     var result = descs[descs.length-1];
     var votes = result != null && result.votes ? result.votes.length : 0;
     for (i=0; i < descs.length; i++) {
@@ -77,6 +80,7 @@ Describable.prototype.bestDescription = function() {
 
 Describable.prototype.bestDescriptionText = function() {
     var description = this.bestDescription();
+    if (description == null) return null;
     return description.text;
 };
 

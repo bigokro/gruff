@@ -112,12 +112,12 @@ app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
 
 // json
-// TODO: we need a pattern here for json vs xml
 app.get('/rest/tags', routes.getTagSearch);
 app.get('/rest/tags/counts', routes.getTagCounts);
 app.get('/rest/debates', routes.getJSONDebates);
 app.get('/rest/debates/:id', routes.getJSONDebate);
 app.get('/rest/debates/:id/:attributetype', routes.getJSONDebates);
+app.post('/rest/debates/:id/:attributetype', routes.postDebate);
 
 
 // default
