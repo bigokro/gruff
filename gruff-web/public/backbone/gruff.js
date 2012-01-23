@@ -379,6 +379,7 @@
     NewView.prototype.initialize = function(options) {
       var _this = this;
       this.template = _.template($('#debate-new-template').text());
+      this.attributeType = options.attributeType;
       this.collection = options.collection;
       this.model = new this.collection.model();
       return this.model.bind("change:errors", function() {
@@ -414,6 +415,7 @@
       json = this.model.fullJSON();
       json.attributeType = this.attributeType;
       json.DebateTypes = exports.Debate.prototype.DebateTypes;
+      json.chooseType = this.attributeType === "answers" || this.attributeType === "subdebates";
       $(this.el).html(this.template(json));
       $(this.el).show();
       Backbone.ModelBinding.bind(this);

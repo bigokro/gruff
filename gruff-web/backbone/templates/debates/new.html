@@ -9,8 +9,9 @@
     </div>
     <div>
       <label for="description">Debate Description<em>*</em></label>
-      <textarea name="description" rows="5" id="description"></textarea>
+      <textarea name="desc" rows="5" id="desc"></textarea>
     </div>
+    <% if (chooseType) { %>
     <div>
       <label for="type">What kind of debate do you want?</label>
       <br/>
@@ -21,6 +22,7 @@
       A debate with for and against arguments
       <br/>
     </div>
+    <% } %>
     <div id="addDebateSubmit">
       <input type="submit" value="Send it"/>
       <input type="button" class="cancel_button" value="Cancel"/>

@@ -3,6 +3,7 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.NewView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-new-template').text()
+    @attributeType = options.attributeType
     @collection = options.collection
     @model = new @collection.model()
 
@@ -33,6 +34,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     json = @model.fullJSON()
     json.attributeType = @attributeType
     json.DebateTypes = exports.Debate.prototype.DebateTypes
+    json.chooseType = @attributeType == "answers" || @attributeType == "subdebates"
     $(@el).html(@template( json ))
     $(@el).show()
     Backbone.ModelBinding.bind @
