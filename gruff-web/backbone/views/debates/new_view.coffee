@@ -3,18 +3,15 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.NewView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-new-template').text()
-
-  events:
-    "submit #new-debate": "save"
-
-  constructor: (options) ->
-    super(options)
     @collection = options.collection
     @model = new @collection.model()
 
     @model.bind("change:errors", () =>
       this.render()
     )
+
+  events:
+    "submit #new-debate": "save"
 
   save: (e) ->
     e.preventDefault()
@@ -41,6 +38,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     @
 
   close: ->
-    @remove()
+    $(@el).parent().find('.new-debate-link').show();
+    $(@el).children().remove()
     @unbind()
     Backbone.ModelBinding.unbind @

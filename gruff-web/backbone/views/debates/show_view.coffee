@@ -6,7 +6,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @tags_template = _.template $('#tags-index-template').text()
 
   events:
-    "click #new-debate-link": "showNewDebateForm"
+    "click .new-debate-link": "showNewDebateForm"
 
   render: ->
     @model.answers.fetch 
@@ -18,10 +18,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
                 @model.subdebates.fetch
                   success: (subdebates, response4) =>
                     json = @model.fullJSON()
-                    json.answers = answers.fullJSON()
-                    json.argumentsFor = argumentsFor.fullJSON()
-                    json.argumentsAgainst = argumentsAgainst.fullJSON()
-                    json.subdebates = subdebates.fullJSON()
                     json.loggedIn = true
                     $(@el).html(@template json)
                 
@@ -32,13 +28,35 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
                     json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
                     $(@el).find('.tags').html(@tags_template json)
 
-    return this
+                    if @model.get("type") == @model.DebateTypes.DEBATE
+                      @answersView = new Gruff.Views.Debates.ListView
+                        'el': $(@el).find('.answers .debates-list'),
+                        'debates': answers,
+                        'attributeType': 'answers'
+                      @answersView.render()
+                    if @model.get("type") == @model.DebateTypes.DIALECTIC
+                      @argumentsForView = new Gruff.Views.Debates.ListView
+                        'el': $(@el).find('.arguments .for .debates-list'),
+                        'debates': argumentsFor,
+                        'attributeType': 'argumentsFor'
+                      @argumentsForView.render()
+                      @argumentsAgainstView = new Gruff.Views.Debates.ListView
+                        'el': $(@el).find('.arguments .against .debates-list'),
+                        'debates': argumentsAgainst,
+                        'attributeType': 'argumentsAgainst'
+                      @argumentsAgainstView.render()
+                    @subdebatesView = new Gruff.Views.Debates.ListView
+                      'el': $(@el).find('.subdebates .debates-list'),
+                      'debates': subdebates,
+                      'attributeType': 'subdebates'
+                    @subdebatesView.render()
+    @
 
   showNewDebateForm: (e) ->
     debateType = $(e.target).attr("debate-type")
     collection = @model[debateType]
+    $(e.target).hide()
     formDiv = $('#new-'+debateType+'-div')
-    $(this).hide()
     formDiv.show()
     formView = new Gruff.Views.Debates.NewView
       'el': formDiv, 

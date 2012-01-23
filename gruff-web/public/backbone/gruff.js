@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base2, _base3, _base4, _base5,
+  var classHelper, _base, _base2, _base3, _base4, _base5, _base6, _base7,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -273,27 +273,104 @@
 
   (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
 
+  Gruff.Views.Debates.ListItemView = (function(_super) {
+
+    __extends(ListItemView, _super);
+
+    ListItemView.prototype.initialize = function(options) {
+      return this.template = _.template($('#debate-list-item-template').text());
+    };
+
+    function ListItemView(options) {
+      ListItemView.__super__.constructor.call(this, options);
+      this.parentEl = options.parentEl;
+      this.model = options.model;
+    }
+
+    ListItemView.prototype.events = {
+      "click .title": "showDescription"
+    };
+
+    ListItemView.prototype.render = function() {
+      var json;
+      json = this.model.fullJSON();
+      $(this.parentEl).append(this.template(json));
+      this.el = $('#' + this.model.linkableId());
+      return this;
+    };
+
+    ListItemView.prototype.showDescription = function(e) {
+      return $(this.el).find('.body').show();
+    };
+
+    return ListItemView;
+
+  })(Backbone.View);
+
+  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
+
+  Gruff.Views.Debates.ListView = (function(_super) {
+
+    __extends(ListView, _super);
+
+    function ListView() {
+      ListView.__super__.constructor.apply(this, arguments);
+    }
+
+    ListView.prototype.initialize = function(options) {
+      this.attributeType = options.attributeType;
+      return this.debates = options.debates;
+    };
+
+    ListView.prototype.render = function() {
+      var _this = this;
+      this.views = [];
+      this.debates.each(function(debate) {
+        var itemView;
+        itemView = new Gruff.Views.Debates.ListItemView({
+          'parentEl': _this.el,
+          'model': debate
+        });
+        itemView.render();
+        return _this.views.push(itemView);
+      });
+      return this;
+    };
+
+    ListView.prototype.close = function() {
+      return this.views.each(function(view) {
+        view.remove();
+        return view.unbind();
+      });
+    };
+
+    return ListView;
+
+  })(Backbone.View);
+
+  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
+
   Gruff.Views.Debates.NewView = (function(_super) {
 
     __extends(NewView, _super);
 
+    function NewView() {
+      NewView.__super__.constructor.apply(this, arguments);
+    }
+
     NewView.prototype.initialize = function(options) {
-      return this.template = _.template($('#debate-new-template').text());
+      var _this = this;
+      this.template = _.template($('#debate-new-template').text());
+      this.collection = options.collection;
+      this.model = new this.collection.model();
+      return this.model.bind("change:errors", function() {
+        return _this.render();
+      });
     };
 
     NewView.prototype.events = {
       "submit #new-debate": "save"
     };
-
-    function NewView(options) {
-      var _this = this;
-      NewView.__super__.constructor.call(this, options);
-      this.collection = options.collection;
-      this.model = new this.collection.model();
-      this.model.bind("change:errors", function() {
-        return _this.render();
-      });
-    }
 
     NewView.prototype.save = function(e) {
       var _this = this;
@@ -325,7 +402,8 @@
     };
 
     NewView.prototype.close = function() {
-      this.remove();
+      $(this.el).parent().find('.new-debate-link').show();
+      $(this.el).children().remove();
       this.unbind();
       return Backbone.ModelBinding.unbind(this);
     };
@@ -334,7 +412,7 @@
 
   })(Backbone.View);
 
-  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
+  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -350,7 +428,7 @@
     };
 
     ShowView.prototype.events = {
-      "click #new-debate-link": "showNewDebateForm"
+      "click .new-debate-link": "showNewDebateForm"
     };
 
     ShowView.prototype.render = function() {
@@ -365,10 +443,6 @@
                     success: function(subdebates, response4) {
                       var json, _ref;
                       json = _this.model.fullJSON();
-                      json.answers = answers.fullJSON();
-                      json.argumentsFor = argumentsFor.fullJSON();
-                      json.argumentsAgainst = argumentsAgainst.fullJSON();
-                      json.subdebates = subdebates.fullJSON();
                       json.loggedIn = true;
                       $(_this.el).html(_this.template(json));
                       json.objecttype = "debates";
@@ -378,7 +452,35 @@
                       json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
                         "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
                       };
-                      return $(_this.el).find('.tags').html(_this.tags_template(json));
+                      $(_this.el).find('.tags').html(_this.tags_template(json));
+                      if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
+                        _this.answersView = new Gruff.Views.Debates.ListView({
+                          'el': $(_this.el).find('.answers .debates-list'),
+                          'debates': answers,
+                          'attributeType': 'answers'
+                        });
+                        _this.answersView.render();
+                      }
+                      if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
+                        _this.argumentsForView = new Gruff.Views.Debates.ListView({
+                          'el': $(_this.el).find('.arguments .for .debates-list'),
+                          'debates': argumentsFor,
+                          'attributeType': 'argumentsFor'
+                        });
+                        _this.argumentsForView.render();
+                        _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
+                          'el': $(_this.el).find('.arguments .against .debates-list'),
+                          'debates': argumentsAgainst,
+                          'attributeType': 'argumentsAgainst'
+                        });
+                        _this.argumentsAgainstView.render();
+                      }
+                      _this.subdebatesView = new Gruff.Views.Debates.ListView({
+                        'el': $(_this.el).find('.subdebates .debates-list'),
+                        'debates': subdebates,
+                        'attributeType': 'subdebates'
+                      });
+                      return _this.subdebatesView.render();
                     }
                   });
                 }
@@ -394,8 +496,8 @@
       var collection, debateType, formDiv, formView;
       debateType = $(e.target).attr("debate-type");
       collection = this.model[debateType];
+      $(e.target).hide();
       formDiv = $('#new-' + debateType + '-div');
-      $(this).hide();
       formDiv.show();
       formView = new Gruff.Views.Debates.NewView({
         'el': formDiv,
