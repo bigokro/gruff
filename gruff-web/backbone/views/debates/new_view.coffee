@@ -12,6 +12,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
 
   events:
     "submit #new-debate": "save"
+    "click .cancel_button": "close"
 
   save: (e) ->
     e.preventDefault()
@@ -35,6 +36,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     $(@el).html(@template( json ))
     $(@el).show()
     Backbone.ModelBinding.bind @
+    $(@el).find('#title').focus()
     @
 
   close: ->

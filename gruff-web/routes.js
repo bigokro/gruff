@@ -426,7 +426,7 @@ exports.postArgument = function(req, res) {
     }],
     date: new Date()
   },
-  req.param('isFor') == 'true',
+  (req.param('isFor') == 'true') || (req.params.attributetype === 'argumentsFor'),
   function( error, docs) {
     if (handleError(req, res, error, true)) {
       return;
@@ -443,10 +443,8 @@ exports.addDebateToDebate = function(req, res) {
   if (req.params.attributetype === 'subdebates') {
     exports.postSubdebate(req, res);
   } else if (req.params.attributetype === 'argumentsFor') {
-    req.param('isFor') = 'true';
     exports.postArgument(req, res);
   } else if (req.params.attributetype === 'argumentsAgainst') {
-    req.param('isFor') = 'false';
     exports.postArgument(req, res);
   } else if (req.params.attributetype === 'answers') {
     exports.postAnswer(req, res);

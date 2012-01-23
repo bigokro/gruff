@@ -314,25 +314,23 @@
     __extends(ListView, _super);
 
     function ListView() {
+      this.remove = __bind(this.remove, this);
+      this.add = __bind(this.add, this);
       ListView.__super__.constructor.apply(this, arguments);
     }
 
     ListView.prototype.initialize = function(options) {
       this.attributeType = options.attributeType;
-      return this.debates = options.debates;
+      this.debates = options.debates;
+      this.debates.bind('add', this.add);
+      return this.debates.bind('remove', this.remove);
     };
 
     ListView.prototype.render = function() {
       var _this = this;
       this.views = [];
       this.debates.each(function(debate) {
-        var itemView;
-        itemView = new Gruff.Views.Debates.ListItemView({
-          'parentEl': _this.el,
-          'model': debate
-        });
-        itemView.render();
-        return _this.views.push(itemView);
+        return _this.add(debate);
       });
       return this;
     };
@@ -342,6 +340,26 @@
         view.remove();
         return view.unbind();
       });
+    };
+
+    ListView.prototype.add = function(debate) {
+      var itemView;
+      itemView = new Gruff.Views.Debates.ListItemView({
+        'parentEl': this.el,
+        'model': debate
+      });
+      this.views.push(itemView);
+      return itemView.render();
+    };
+
+    ListView.prototype.remove = function(debate) {
+      var viewToRemove,
+        _this = this;
+      viewToRemove = this.views.select(function(view) {
+        return view.model === model;
+      })[0];
+      this.views = this.views.without(viewToRemove);
+      return $(viewToRemove.el).remove();
     };
 
     return ListView;
@@ -369,7 +387,8 @@
     };
 
     NewView.prototype.events = {
-      "submit #new-debate": "save"
+      "submit #new-debate": "save",
+      "click .cancel_button": "close"
     };
 
     NewView.prototype.save = function(e) {
@@ -398,6 +417,7 @@
       $(this.el).html(this.template(json));
       $(this.el).show();
       Backbone.ModelBinding.bind(this);
+      $(this.el).find('#title').focus();
       return this;
     };
 

@@ -12,12 +12,26 @@
     <div class="for">
       <h3>Arguments in Favor</h3>
       <div class="debates-list"></div>
-          mixin argument_form(debate, true)
+      <div class="bottomForm">
+      <% if (loggedIn) { %>
+        <a class="new-debate-link" debate-type="argumentsFor">Propose Your Own Argument</a>
+        <div id="new-argumentsFor-div" style="display:none;"></div>
+      <% } else { %>
+        <a href="/login">Want to contribute? Log in!</a>
+      <% } %>
+      </div>
     </div>
     <div class="against">
       <h3>Arguments Against</h3>
       <div class="debates-list"></div>
-          mixin argument_form(debate, false)
+      <div class="bottomForm">
+      <% if (loggedIn) { %>
+        <a class="new-debate-link" debate-type="argumentsAgainst">Propose Your Own Argument</a>
+        <div id="new-argumentsAgainst-div" style="display:none;"></div>
+      <% } else { %>
+        <a href="/login">Want to contribute? Log in!</a>
+      <% } %>
+      </div>
     </div>
     <div class="clear"></div>
   </div>
@@ -26,7 +40,14 @@
   <div class="answers">
     <h3>Proposed Answers</h3>
     <div class="debates-list"></div>
-    mixin answer_form(debate)
+    <div class="bottomForm">
+    <% if (loggedIn) { %>
+      <a class="new-debate-link" debate-type="answers">Add a New Answer</a>
+      <div id="new-answers-div" style="display:none;"></div>
+    <% } else { %>
+      <a href="/login">Want to contribute? Log in!</a>
+    <% } %>
+    </div>
   </div>
   <% } %>
   <div class="subdebates">

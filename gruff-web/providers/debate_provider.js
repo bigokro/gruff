@@ -462,7 +462,7 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
 		                {"$push": {answerIds: answerId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, debate)
+		                    else callback(null, answers)
 		                });
             });
         }
@@ -506,7 +506,7 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
 		                {"$push": (isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId})},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, debate)
+		                    else callback(null, arguments)
 		                });
             });
         }
