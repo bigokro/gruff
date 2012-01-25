@@ -277,18 +277,18 @@
 
     __extends(ListItemView, _super);
 
-    ListItemView.prototype.initialize = function(options) {
-      return this.template = _.template($('#debate-list-item-template').text());
-    };
-
-    function ListItemView(options) {
-      ListItemView.__super__.constructor.call(this, options);
-      this.parentEl = options.parentEl;
-      this.model = options.model;
+    function ListItemView() {
+      this.toggleDescription = __bind(this.toggleDescription, this);
+      ListItemView.__super__.constructor.apply(this, arguments);
     }
 
+    ListItemView.prototype.initialize = function(options) {
+      this.template = _.template($('#debate-list-item-template').text());
+      return this.parentEl = options.parentEl;
+    };
+
     ListItemView.prototype.events = {
-      "click .title": "showDescription"
+      "click .title a": "toggleDescription"
     };
 
     ListItemView.prototype.render = function() {
@@ -296,11 +296,14 @@
       json = this.model.fullJSON();
       $(this.parentEl).append(this.template(json));
       this.el = $('#' + this.model.linkableId());
+      this.$("h4.title a").bind("click", this.toggleDescription);
       return this;
     };
 
-    ListItemView.prototype.showDescription = function(e) {
-      return $(this.el).find('.body').show();
+    ListItemView.prototype.toggleDescription = function(e) {
+      e.stopPropagation();
+      this.$('div.body').toggle();
+      return false;
     };
 
     return ListItemView;
@@ -400,12 +403,14 @@
       return this.collection.create(this.model.toJSON(), {
         success: function(debate) {
           _this.model = debate;
-          return _this.close();
+          _this.close();
+          return alert(JSON.stringify(debate.fullJSON()));
         },
         error: function(debate, jqXHR) {
-          return _this.model.set({
+          _this.model.set({
             errors: $.parseJSON(jqXHR.responseText)
           });
+          return alert(jqXHR.responseText);
         }
       });
     };

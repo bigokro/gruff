@@ -25,9 +25,11 @@ class Gruff.Views.Debates.NewView extends Backbone.View
       success: (debate) =>
         @model = debate
         @close()
+        alert JSON.stringify(debate.fullJSON())
 
       error: (debate, jqXHR) =>
         @model.set({errors: $.parseJSON(jqXHR.responseText)})
+        alert jqXHR.responseText
     )
 
   render: ->
