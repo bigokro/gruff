@@ -284,7 +284,8 @@
 
     ListItemView.prototype.initialize = function(options) {
       this.template = _.template($('#debate-list-item-template').text());
-      return this.parentEl = options.parentEl;
+      this.parentEl = options.parentEl;
+      return this.attributeType = options.attributeType;
     };
 
     ListItemView.prototype.events = {
@@ -294,6 +295,14 @@
     ListItemView.prototype.render = function() {
       var json;
       json = this.model.fullJSON();
+      if (this.attributeType === "argumentsFor") {
+        json.divClass = "argument argumentFor";
+      }
+      if (this.attributeType === "argumentsAgainst") {
+        json.divClass = "argument argumentAgainst";
+      }
+      if (this.attributeType === "answers") json.divClass = "answers";
+      if (this.attributeType === "subdebates") json.divClass = "subdebate";
       $(this.parentEl).append(this.template(json));
       this.el = $('#' + this.model.linkableId());
       this.$("h4.title a").bind("click", this.toggleDescription);
@@ -349,7 +358,8 @@
       var itemView;
       itemView = new Gruff.Views.Debates.ListItemView({
         'parentEl': this.el,
-        'model': debate
+        'model': debate,
+        'attributeType': this.attributeType
       });
       this.views.push(itemView);
       return itemView.render();
@@ -446,6 +456,7 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.enableDragDrop = __bind(this.enableDragDrop, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
 
@@ -507,7 +518,8 @@
                         'debates': subdebates,
                         'attributeType': 'subdebates'
                       });
-                      return _this.subdebatesView.render();
+                      _this.subdebatesView.render();
+                      return _this.enableDragDrop();
                     }
                   });
                 }
@@ -532,6 +544,51 @@
         'attributeType': debateType
       });
       return formView.render();
+    };
+
+    ShowView.prototype.enableDragDrop = function() {
+      var _this = this;
+      $(".argument").draggable({
+        revert: false
+      });
+      $(".argument").width(function(index, width) {
+        var el;
+        el = $("#" + this.id);
+        return el.find("h4 > a").width();
+      });
+      $(".for, .against").droppable({
+        accept: '.subdebate, .argument, .debate',
+        drop: function(event, ui) {
+          var dragged, moveTo, url, _ref;
+          dragged = ui.draggable[0];
+          if ((ui.draggable.hasClass('argumentFor') && $(_this).hasClass('against')) || (ui.draggable.hasClass('argumentAgainst') && $(_this).hasClass('for')) || (ui.draggable.hasClass('subdebate'))) {
+            moveTo = (_ref = $(_this).hasClass('for')) != null ? _ref : {
+              "argumentsFor": "argumentsAgainst"
+            };
+            return url = "/debates/" + _this.model.linkableId() + "/moveto/" + moveTo + "/" + dragged.id;
+          } else {
+            return $(_this).removeClass('over');
+          }
+        },
+        over: function(event, ui) {
+          if ((ui.draggable.hasClass('argumentFor') && $(_this).hasClass('against')) || (ui.draggable.hasClass('argumentAgainst') && $(_this).hasClass('for')) || (ui.draggable.hasClass('subdebate'))) {
+            return $(_this).addClass('over');
+          }
+        },
+        out: function(event, ui) {
+          return $(_this).removeClass('over');
+        }
+      });
+      return $(".argument").droppable({
+        accept: '.subdebate, .argument, .debate',
+        hoverClass: 'over',
+        greedy: true,
+        drop: function(event, ui) {
+          var dragged, url;
+          dragged = ui.draggable[0];
+          return url = "/debates/" + _this.id + "/moveto/subdebates/" + dragged.id;
+        }
+      });
     };
 
     return ShowView;

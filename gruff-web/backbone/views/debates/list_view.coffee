@@ -20,8 +20,9 @@ class Gruff.Views.Debates.ListView extends Backbone.View
 
   add: (debate) =>
     itemView = new Gruff.Views.Debates.ListItemView
-      'parentEl': @el,
+      'parentEl': @el
       'model': debate
+      'attributeType': @attributeType
     @views.push itemView
     itemView.render()
 

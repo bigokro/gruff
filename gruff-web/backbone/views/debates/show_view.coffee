@@ -50,6 +50,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
                       'debates': subdebates,
                       'attributeType': 'subdebates'
                     @subdebatesView.render()
+                    @enableDragDrop()
     @
 
   showNewDebateForm: (e) ->
@@ -63,3 +64,38 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'collection': collection, 
       'attributeType': debateType
     formView.render()
+
+  enableDragDrop: =>
+    $( ".argument" ).draggable({ revert: true })
+    $( ".argument" ).width (index, width) ->
+      el = $("#"+this.id)
+      el.find("h4 > a").width()
+
+    $( ".for, .against" ).droppable(
+      accept: '.subdebate, .argument, .debate'
+      drop: ( event, ui ) =>
+        dragged = ui.draggable[0]
+        if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against')) \
+            || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for')) \
+            || (ui.draggable.hasClass('subdebate')))
+          moveTo = $(this).hasClass('for') ? "argumentsFor" : "argumentsAgainst"
+          url = "/debates/"+@model.linkableId()+"/moveto/"+moveTo+"/"+dragged.id
+        else
+          $(this).removeClass('over')
+      over: ( event, ui ) =>
+        if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against')) \
+            || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for')) \
+            || (ui.draggable.hasClass('subdebate')))
+          $(this).addClass('over')
+      out: ( event, ui ) =>
+        $(this).removeClass('over')
+    )
+
+    $( ".argument" ).droppable(
+      accept: '.subdebate, .argument, .debate'
+      hoverClass: 'over'
+      greedy: true
+      drop: ( event, ui ) =>
+        dragged = ui.draggable[0]
+        url = "/debates/"+this.id+"/moveto/subdebates/"+dragged.id
+    )
