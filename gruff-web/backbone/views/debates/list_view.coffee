@@ -3,13 +3,12 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.ListView extends Backbone.View
   initialize: (options) ->
     @attributeType = options.attributeType
-    @debates = options.debates
-    @debates.bind('add', @add);
-    @debates.bind('remove', @remove);
+    @collection.bind('add', @add);
+    @collection.bind('remove', @remove);
 
   render: ->
     @views = []
-    @debates.each (debate) =>
+    @collection.each (debate) =>
       @add debate
     return @
 
@@ -19,6 +18,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
       view.unbind()
 
   add: (debate) =>
+    debate.parentCollection = @collection
     itemView = new Gruff.Views.Debates.ListItemView
       'parentEl': @el
       'model': debate
@@ -27,8 +27,8 @@ class Gruff.Views.Debates.ListView extends Backbone.View
     itemView.render()
 
   remove: (debate) =>
-    viewToRemove = @views.select( (view) =>
-      view.model == model
+    viewToRemove = _.select(@views, (view) =>
+      view.model == debate
     )[0]
-    @views = @views.without viewToRemove
+    @views = _.without(@views, viewToRemove)
     $(viewToRemove.el).remove()

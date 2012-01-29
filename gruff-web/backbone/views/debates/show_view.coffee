@@ -31,23 +31,23 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
                     if @model.get("type") == @model.DebateTypes.DEBATE
                       @answersView = new Gruff.Views.Debates.ListView
                         'el': $(@el).find('.answers .debates-list'),
-                        'debates': answers,
+                        'collection': answers,
                         'attributeType': 'answers'
                       @answersView.render()
                     if @model.get("type") == @model.DebateTypes.DIALECTIC
                       @argumentsForView = new Gruff.Views.Debates.ListView
                         'el': $(@el).find('.arguments .for .debates-list'),
-                        'debates': argumentsFor,
+                        'collection': argumentsFor,
                         'attributeType': 'argumentsFor'
                       @argumentsForView.render()
                       @argumentsAgainstView = new Gruff.Views.Debates.ListView
                         'el': $(@el).find('.arguments .against .debates-list'),
-                        'debates': argumentsAgainst,
+                        'collection': argumentsAgainst,
                         'attributeType': 'argumentsAgainst'
                       @argumentsAgainstView.render()
                     @subdebatesView = new Gruff.Views.Debates.ListView
                       'el': $(@el).find('.subdebates .debates-list'),
-                      'debates': subdebates,
+                      'collection': subdebates,
                       'attributeType': 'subdebates'
                     @subdebatesView.render()
                     @enableDragDrop()
@@ -75,17 +75,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       accept: '.subdebate, .argument, .debate'
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
-        if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against')) \
-            || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for')) \
-            || (ui.draggable.hasClass('subdebate')))
-          moveTo = $(this).hasClass('for') ? "argumentsFor" : "argumentsAgainst"
-          url = "/debates/"+@model.linkableId()+"/moveto/"+moveTo+"/"+dragged.id
+        if true || isTheSameDivThatContainsThisGuy
+          @moveDebate dragged, event.target
         else
           $(this).removeClass('over')
       over: ( event, ui ) =>
-        if ((ui.draggable.hasClass('argumentFor') && $(this).hasClass('against')) \
-            || (ui.draggable.hasClass('argumentAgainst') && $(this).hasClass('for')) \
-            || (ui.draggable.hasClass('subdebate')))
+        if true || isTheSameDivThatContainsThisGuy
           $(this).addClass('over')
       out: ( event, ui ) =>
         $(this).removeClass('over')
@@ -97,5 +92,20 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       greedy: true
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
-        url = "/debates/"+this.id+"/moveto/subdebates/"+dragged.id
+        @moveDebate dragged, event.target
     )
+
+  moveDebate: (dragged, dropped) =>
+    droppedParent = $(dropped).parents('.debate')[0]
+    droppedDebateId = droppedParent.id
+    droppedDebate = @model.findDebate droppedDebateId
+    newCollection = droppedDebate.getCollectionByName dropped.className
+
+    debate = @model.findDebate dragged.id
+    oldCollection = debate.parentCollection
+
+    oldCollection.remove debate
+    newCollection.add debate
+
+    newCollection.save
+    oldCollection.save

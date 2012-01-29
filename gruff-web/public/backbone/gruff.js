@@ -29,11 +29,12 @@
       description: null
     };
 
-    Debate.prototype.initialize = function() {
+    Debate.prototype.initialize = function(options) {
       this.answers = this.initializeDebates("answers");
       this.argumentsFor = this.initializeDebates("argumentsFor");
       this.argumentsAgainst = this.initializeDebates("argumentsAgainst");
-      return this.subdebates = this.initializeDebates("subdebates");
+      this.subdebates = this.initializeDebates("subdebates");
+      return this.parentCollection = options.parentCollection;
     };
 
     Debate.prototype.fullJSON = function() {
@@ -51,6 +52,45 @@
       debates = new Gruff.Collections.Debates;
       debates.url = "/rest/debates/" + this.id + "/" + type;
       return debates;
+    };
+
+    Debate.prototype.findDebate = function(id) {
+      var result;
+      if (this.linkableId() === id) return this;
+      result = null;
+      _.each([this.answers, this.argumentsFor, this.argumentsAgainst, this.subdebates], function(coll) {
+        if (coll !== null && result === null) {
+          return coll.each(function(debate) {
+            if (result === null) return result = debate.findDebate(id);
+          });
+        }
+      });
+      return result;
+    };
+
+    Debate.prototype.getCollectionByName = function(nameStr) {
+      var result,
+        _this = this;
+      result = null;
+      _.each(nameStr.split(" "), function(name) {
+        switch (name) {
+          case "answer":
+          case "answers":
+            return result = _this.answers;
+          case "argumentFor":
+          case "argumentsFor":
+          case "for":
+            return result = _this.argumentsFor;
+          case "argumentAgainst":
+          case "argumentsAgainst":
+          case "against":
+            return result = _this.argumentsAgainst;
+          case "subdebate":
+          case "subdebates":
+            return result = _this.subdebates;
+        }
+      });
+      return result;
     };
 
     return Debate;
@@ -77,6 +117,16 @@
         return json.push(debate.fullJSON());
       });
       return json;
+    };
+
+    Debates.prototype.add = function(debate) {
+      Debates.__super__.add.call(this, debate);
+      return debate.parentCollection = this;
+    };
+
+    Debates.prototype.remove = function(debate) {
+      Debates.__super__.remove.call(this, debate);
+      return debate.parentCollection = null;
     };
 
     return Debates;
@@ -333,15 +383,14 @@
 
     ListView.prototype.initialize = function(options) {
       this.attributeType = options.attributeType;
-      this.debates = options.debates;
-      this.debates.bind('add', this.add);
-      return this.debates.bind('remove', this.remove);
+      this.collection.bind('add', this.add);
+      return this.collection.bind('remove', this.remove);
     };
 
     ListView.prototype.render = function() {
       var _this = this;
       this.views = [];
-      this.debates.each(function(debate) {
+      this.collection.each(function(debate) {
         return _this.add(debate);
       });
       return this;
@@ -356,6 +405,7 @@
 
     ListView.prototype.add = function(debate) {
       var itemView;
+      debate.parentCollection = this.collection;
       itemView = new Gruff.Views.Debates.ListItemView({
         'parentEl': this.el,
         'model': debate,
@@ -368,10 +418,10 @@
     ListView.prototype.remove = function(debate) {
       var viewToRemove,
         _this = this;
-      viewToRemove = this.views.select(function(view) {
-        return view.model === model;
+      viewToRemove = _.select(this.views, function(view) {
+        return view.model === debate;
       })[0];
-      this.views = this.views.without(viewToRemove);
+      this.views = _.without(this.views, viewToRemove);
       return $(viewToRemove.el).remove();
     };
 
@@ -456,6 +506,7 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.moveDebate = __bind(this.moveDebate, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
@@ -494,7 +545,7 @@
                       if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
                         _this.answersView = new Gruff.Views.Debates.ListView({
                           'el': $(_this.el).find('.answers .debates-list'),
-                          'debates': answers,
+                          'collection': answers,
                           'attributeType': 'answers'
                         });
                         _this.answersView.render();
@@ -502,20 +553,20 @@
                       if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
                         _this.argumentsForView = new Gruff.Views.Debates.ListView({
                           'el': $(_this.el).find('.arguments .for .debates-list'),
-                          'debates': argumentsFor,
+                          'collection': argumentsFor,
                           'attributeType': 'argumentsFor'
                         });
                         _this.argumentsForView.render();
                         _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
                           'el': $(_this.el).find('.arguments .against .debates-list'),
-                          'debates': argumentsAgainst,
+                          'collection': argumentsAgainst,
                           'attributeType': 'argumentsAgainst'
                         });
                         _this.argumentsAgainstView.render();
                       }
                       _this.subdebatesView = new Gruff.Views.Debates.ListView({
                         'el': $(_this.el).find('.subdebates .debates-list'),
-                        'debates': subdebates,
+                        'collection': subdebates,
                         'attributeType': 'subdebates'
                       });
                       _this.subdebatesView.render();
@@ -549,7 +600,7 @@
     ShowView.prototype.enableDragDrop = function() {
       var _this = this;
       $(".argument").draggable({
-        revert: false
+        revert: true
       });
       $(".argument").width(function(index, width) {
         var el;
@@ -559,19 +610,16 @@
       $(".for, .against").droppable({
         accept: '.subdebate, .argument, .debate',
         drop: function(event, ui) {
-          var dragged, moveTo, url, _ref;
+          var dragged;
           dragged = ui.draggable[0];
-          if ((ui.draggable.hasClass('argumentFor') && $(_this).hasClass('against')) || (ui.draggable.hasClass('argumentAgainst') && $(_this).hasClass('for')) || (ui.draggable.hasClass('subdebate'))) {
-            moveTo = (_ref = $(_this).hasClass('for')) != null ? _ref : {
-              "argumentsFor": "argumentsAgainst"
-            };
-            return url = "/debates/" + _this.model.linkableId() + "/moveto/" + moveTo + "/" + dragged.id;
+          if (true || isTheSameDivThatContainsThisGuy) {
+            return _this.moveDebate(dragged, event.target);
           } else {
             return $(_this).removeClass('over');
           }
         },
         over: function(event, ui) {
-          if ((ui.draggable.hasClass('argumentFor') && $(_this).hasClass('against')) || (ui.draggable.hasClass('argumentAgainst') && $(_this).hasClass('for')) || (ui.draggable.hasClass('subdebate'))) {
+          if (true || isTheSameDivThatContainsThisGuy) {
             return $(_this).addClass('over');
           }
         },
@@ -584,11 +632,25 @@
         hoverClass: 'over',
         greedy: true,
         drop: function(event, ui) {
-          var dragged, url;
+          var dragged;
           dragged = ui.draggable[0];
-          return url = "/debates/" + _this.id + "/moveto/subdebates/" + dragged.id;
+          return _this.moveDebate(dragged, event.target);
         }
       });
+    };
+
+    ShowView.prototype.moveDebate = function(dragged, dropped) {
+      var debate, droppedDebate, droppedDebateId, droppedParent, newCollection, oldCollection;
+      droppedParent = $(dropped).parents('.debate')[0];
+      droppedDebateId = droppedParent.id;
+      droppedDebate = this.model.findDebate(droppedDebateId);
+      newCollection = droppedDebate.getCollectionByName(dropped.className);
+      debate = this.model.findDebate(dragged.id);
+      oldCollection = debate.parentCollection;
+      oldCollection.remove(debate);
+      newCollection.add(debate);
+      newCollection.save;
+      return oldCollection.save;
     };
 
     return ShowView;
