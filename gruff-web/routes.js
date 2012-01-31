@@ -279,12 +279,17 @@ exports.postDebate = function(req, res){
   if (bounceAnonymous(req, res)) {
     return;
   }
-  debateProvider.save({
-    title: req.param('title'),
-    url: req.param('url'),
-    desc: req.param('desc'),
-    type: req.param('type')
-  }, function( error, docs) {
+  if (req.xhr) {
+    var debate = req.body;
+  } else {
+    var debate = {
+      title: req.param('title'),
+      url: req.param('url'),
+      desc: req.param('desc'),
+      type: req.param('type')
+    };
+  }
+  debateProvider.save(debate, function( error, docs) {
     if (handleError(req, res, error, true)) {
       return;
     }
@@ -602,6 +607,35 @@ exports.removeTag = function(req, res) {
     );
 });
 };
+
+// PUT
+
+exports.putDebate = function(req, res){
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  if (req.xhr) {
+    var debate = req.body;
+  } else {
+    var debate = {
+      title: req.param('title'),
+      url: req.param('url'),
+      desc: req.param('desc'),
+      type: req.param('type')
+    };
+  }
+  debateProvider.update(debate, function( error, doc) {
+    if (handleError(req, res, error, doc)) {
+      return;
+    }
+    if (req.xhr) {
+      res.json(doc);
+    } else {
+      res.redirect('/debates/'+doc._id);
+    }
+  });
+};
+
 
 // Handlers
 

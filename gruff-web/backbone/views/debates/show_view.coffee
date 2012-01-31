@@ -107,5 +107,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     oldCollection.remove debate
     newCollection.add debate
 
-    newCollection.save
-    oldCollection.save
+    debate.save()
+    oldCollection.parent.save()
+    newCollection.parent.save() if oldCollection.parent != newCollection.parent

@@ -24,12 +24,15 @@
 
     Debate.prototype.urlRoot = '/rest/debates';
 
+    Debate.prototype.idAttribute = "_id";
+
     Debate.prototype.defaults = {
       title: null,
       description: null
     };
 
     Debate.prototype.initialize = function(options) {
+      this.normalize();
       this.answers = this.initializeDebates("answers");
       this.argumentsFor = this.initializeDebates("argumentsFor");
       this.argumentsAgainst = this.initializeDebates("argumentsAgainst");
@@ -47,10 +50,37 @@
       return json;
     };
 
+    Debate.prototype.normalize = function() {
+      if (typeof (this.get("answerIds")) === 'undefined' || this.get("answerIds") === null) {
+        this.set({
+          answerIds: []
+        });
+      }
+      if (typeof (this.get("argumentsForIds")) === 'undefined' || this.get("argumentsForIds") === null) {
+        this.set({
+          argumentsForIds: []
+        });
+      }
+      if (typeof (this.get("argumentsAgainstIds")) === 'undefined' || this.get("argumentsAgainstIds") === null) {
+        this.set({
+          argumentsAgainstIds: []
+        });
+      }
+      if (typeof (this.get("subdebateIds")) === 'undefined' || this.get("subdebateIds") === null) {
+        return this.set({
+          subdebateIds: []
+        });
+      }
+    };
+
     Debate.prototype.initializeDebates = function(type) {
       var debates;
       debates = new Gruff.Collections.Debates;
       debates.url = "/rest/debates/" + this.id + "/" + type;
+      debates.parent = this;
+      debates.type = type;
+      debates.bind("add", this.makeAddToCollectionEvent(debates));
+      debates.bind("remove", this.makeRemoveFromCollectionEvent(debates));
       return debates;
     };
 
@@ -93,6 +123,60 @@
       return result;
     };
 
+    Debate.prototype.getIdListName = function(nameStr) {
+      var result,
+        _this = this;
+      result = null;
+      _.each(nameStr.split(" "), function(name) {
+        switch (name) {
+          case "answer":
+          case "answers":
+            return result = "answerIds";
+          case "argumentFor":
+          case "argumentsFor":
+          case "for":
+            return result = "argumentsForIds";
+          case "argumentAgainst":
+          case "argumentsAgainst":
+          case "against":
+            return result = "argumentsAgainstIds";
+          case "subdebate":
+          case "subdebates":
+            return result = "subdebateIds";
+        }
+      });
+      return result;
+    };
+
+    Debate.prototype.makeAddToCollectionEvent = function(coll) {
+      var _this = this;
+      return function(debate) {
+        debate.parentCollection = coll;
+        debate.set({
+          parentId: _this.linkableId()
+        });
+        return _this.updateDebateIds(coll);
+      };
+    };
+
+    Debate.prototype.makeRemoveFromCollectionEvent = function(coll) {
+      var _this = this;
+      return function(debate) {
+        debate.parentCollection = null;
+        debate.set({
+          parentId: null
+        });
+        return _this.updateDebateIds(coll);
+      };
+    };
+
+    Debate.prototype.updateDebateIds = function(debates) {
+      var vals;
+      vals = {};
+      vals[this.getIdListName(debates.type)] = debates.pluck("_id");
+      return this.set(vals);
+    };
+
     return Debate;
 
   })(Backbone.Model);
@@ -119,16 +203,6 @@
       return json;
     };
 
-    Debates.prototype.add = function(debate) {
-      Debates.__super__.add.call(this, debate);
-      return debate.parentCollection = this;
-    };
-
-    Debates.prototype.remove = function(debate) {
-      Debates.__super__.remove.call(this, debate);
-      return debate.parentCollection = null;
-    };
-
     return Debates;
 
   })(Backbone.Collection);
@@ -147,10 +221,8 @@
 
     DebatesRouter.prototype.initialize = function(options) {
       var _this = this;
-      this.debates = new Gruff.Collections.Debates();
-      this.debates.reset(options.debates);
       this.model = new Gruff.Models.Debate({
-        id: options.id
+        "_id": options.id
       });
       return this.model.fetch({
         success: function(model, response) {
@@ -649,8 +721,11 @@
       oldCollection = debate.parentCollection;
       oldCollection.remove(debate);
       newCollection.add(debate);
-      newCollection.save;
-      return oldCollection.save;
+      debate.save();
+      oldCollection.parent.save();
+      if (oldCollection.parent !== newCollection.parent) {
+        return newCollection.parent.save();
+      }
     };
 
     return ShowView;

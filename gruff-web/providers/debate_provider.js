@@ -157,7 +157,7 @@ function buildSearchQueryExpression(tokens) {
 
 DebateProvider.prototype.findById = function(id, callback) {
   try {
-    var objId = this.db.bson_serializer.ObjectID.createFromHexString(id);
+    var objId = this.idToObjId(id);
   }
   catch (error) {
     if (error == 'Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters in hex format') {
@@ -278,7 +278,7 @@ DebateProvider.prototype.findAllByObjID = function(objIds, callback) {
 
 DebateProvider.prototype.findAllByIdAndType = function(id, attributeType, callback) {
   try {
-    var objId = this.db.bson_serializer.ObjectID.createFromHexString(id);
+    var objId = this.idToObjId(id);
   }
   catch (error) {
     if (error == 'Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters in hex format') {
@@ -394,9 +394,9 @@ DebateProvider.prototype.save = function(debates, callback) {
 			                          debate.titles = [];
 		                        }
 		                        debate.titles[debate.titles.length] = { 
-                                user: debate.user,
-			                          title: debate.title,
-			                          date: new Date()
+                                          user: debate.user,
+			                  title: debate.title,
+			                  date: new Date()
 		                        };
 		                        debate.title = null;
 		                    }
@@ -446,6 +446,30 @@ DebateProvider.prototype.save = function(debates, callback) {
 	      }
     });
 };
+
+DebateProvider.prototype.update = function(debate, callback) {
+  var mongoDebate = this.prepareForSave(debate);
+  var provider = this;
+  this.getCollection(function(error, debate_collection) {
+    if( error ) callback(error)
+    else {
+      provider.getUserCollection(function(error, user_collection) {
+        if( error ) callback(error)
+        else {
+          debate_collection.update(
+            {_id: mongoDebate._id},
+            mongoDebate,
+            function(error, result){
+              if( error ) callback(error);
+              else callback(null, debate)
+            }
+          );
+        }
+      });
+    }
+  });
+}
+       
 
 DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback) {
     var provider = this;
@@ -607,8 +631,8 @@ DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId
 
 DebateProvider.prototype.moveTo = function(user, movedId, parentId, moveTo, callback) {
   var provider = this;
-  var movedObjId = this.db.bson_serializer.ObjectID.createFromHexString(movedId);
-  var parentObjId = this.db.bson_serializer.ObjectID.createFromHexString(parentId);
+  var movedObjId = this.idToObjId(movedId);
+  var parentObjId = this.idToObjId(parentId);
   this.getCollection(function(error, debate_collection) {
 	  if( error ) callback( error );
 	  else {
@@ -751,6 +775,42 @@ function augmentDebates(results) {
 		debates[i] = augmentDebate(results[i]);
 	}
   return results;
+}
+
+DebateProvider.prototype.prepareForSave= function(debate) {
+  console.log("preparing for save with id: " + debate._id);
+  debate._id = this.idToObjId(debate._id);
+  debate.parentId = this.idToObjId(debate.parentId);
+  debate.answerIds = this.idsToObjIds(debate.answerIds);
+  debate.answers = [];
+  debate.argumentsForIds = this.idsToObjIds(debate.argumentsForIds);
+  debate.argumentsFor = [];
+  debate.argumentsAgainstIds = this.idsToObjIds(debate.argumentsAgainstIds);
+  debate.argumentsAgainst = [];
+  debate.subdebateIds = this.idsToObjIds(debate.subdebateIds);
+  debate.subdebates = [];
+  debate.referenceIds = this.idsToObjIds(debate.referenceIds);
+  debate.references = [];
+  return debate;
+}
+
+DebateProvider.prototype.idToObjId= function(id) {
+  if (id == null || typeof(id) === 'undefined') return null;
+  if (typeof(id) === 'string') {
+    console.log("id: " + id);
+    return this.db.bson_serializer.ObjectID.createFromHexString(id);
+  }
+  return id;
+}
+
+DebateProvider.prototype.idsToObjIds= function(ids) {
+  console.log("ids: "+JSON.stringify(ids));
+  if (ids == null || typeof(ids) === 'undefined') return [];
+  var objIds = [];
+  for (var i=0; i < ids.length; i++) {
+    objIds.push(this.idToObjId(ids[i]));
+  }
+  return objIds;
 }
 
 DebateProvider.prototype.augment = augmentDebate;

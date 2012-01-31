@@ -117,7 +117,12 @@ app.get('/rest/tags/counts', routes.getTagCounts);
 app.get('/rest/debates', routes.getJSONDebates);
 app.get('/rest/debates/:id', routes.getJSONDebate);
 app.get('/rest/debates/:id/:attributetype', routes.getJSONDebates);
+app.get('/rest/debates/:parentid/:attributetype/:id', routes.getJSONDebate);
+app.post('/rest/debates/:id', routes.postDebate);
+app.post('/rest/debates/:parentid/:attributetype/:id', routes.postDebate);
 app.post('/rest/debates/:id/:attributetype', routes.addDebateToDebate);
+app.put('/rest/debates/:id', routes.putDebate);
+app.put('/rest/debates/:parentid/:attributetype/:id', routes.putDebate);
 
 
 // default

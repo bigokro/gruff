@@ -1,8 +1,6 @@
 class Gruff.Routers.DebatesRouter extends Backbone.Router
   initialize: (options) ->
-    @debates = new Gruff.Collections.Debates()
-    @debates.reset options.debates
-    @model = new Gruff.Models.Debate {id: options.id}
+    @model = new Gruff.Models.Debate {"_id": options.id}
     @model.fetch
       success: (model, response) =>
         @view = new Gruff.Views.Debates.ShowView 'el': $('#main-debate'), 'model': model
