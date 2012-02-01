@@ -674,33 +674,40 @@
       $(".argument").draggable({
         revert: true
       });
+      $(".answer").draggable({
+        revert: true
+      });
+      $(".subdebate").draggable({
+        revert: true
+      });
       $(".argument").width(function(index, width) {
         var el;
         el = $("#" + this.id);
         return el.find("h4 > a").width();
       });
-      $(".for, .against").droppable({
-        accept: '.subdebate, .argument, .debate',
+      $(".for, .against, .subdebates, .answers").droppable({
+        accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
-          if (true || isTheSameDivThatContainsThisGuy) {
+          $(event.target).removeClass('over');
+          if ($(event.target).has(dragged).length === 0) {
             return _this.moveDebate(dragged, event.target);
-          } else {
-            return $(_this).removeClass('over');
           }
         },
         over: function(event, ui) {
-          if (true || isTheSameDivThatContainsThisGuy) {
-            return $(_this).addClass('over');
+          var dragged;
+          dragged = ui.draggable[0];
+          if ($(event.target).has(dragged).length === 0) {
+            return $(event.target).addClass('over');
           }
         },
         out: function(event, ui) {
-          return $(_this).removeClass('over');
+          return $(event.target).removeClass('over');
         }
       });
-      return $(".argument").droppable({
-        accept: '.subdebate, .argument, .debate',
+      return $(".argument, .subdebate, .answer").droppable({
+        accept: '.subdebate, .argument, .debate, .answer',
         hoverClass: 'over',
         greedy: true,
         drop: function(event, ui) {

@@ -778,7 +778,6 @@ function augmentDebates(results) {
 }
 
 DebateProvider.prototype.prepareForSave= function(debate) {
-  console.log("preparing for save with id: " + debate._id);
   debate._id = this.idToObjId(debate._id);
   debate.parentId = this.idToObjId(debate.parentId);
   debate.answerIds = this.idsToObjIds(debate.answerIds);
@@ -797,14 +796,12 @@ DebateProvider.prototype.prepareForSave= function(debate) {
 DebateProvider.prototype.idToObjId= function(id) {
   if (id == null || typeof(id) === 'undefined') return null;
   if (typeof(id) === 'string') {
-    console.log("id: " + id);
     return this.db.bson_serializer.ObjectID.createFromHexString(id);
   }
   return id;
 }
 
 DebateProvider.prototype.idsToObjIds= function(ids) {
-  console.log("ids: "+JSON.stringify(ids));
   if (ids == null || typeof(ids) === 'undefined') return [];
   var objIds = [];
   for (var i=0; i < ids.length; i++) {

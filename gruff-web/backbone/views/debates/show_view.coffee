@@ -67,27 +67,29 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   enableDragDrop: =>
     $( ".argument" ).draggable({ revert: true })
+    $( ".answer" ).draggable({ revert: true })
+    $( ".subdebate" ).draggable({ revert: true })
     $( ".argument" ).width (index, width) ->
       el = $("#"+this.id)
       el.find("h4 > a").width()
 
-    $( ".for, .against" ).droppable(
-      accept: '.subdebate, .argument, .debate'
+    $( ".for, .against, .subdebates, .answers" ).droppable(
+      accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
-        if true || isTheSameDivThatContainsThisGuy
+        $(event.target).removeClass('over')
+        if $(event.target).has(dragged).length == 0
           @moveDebate dragged, event.target
-        else
-          $(this).removeClass('over')
       over: ( event, ui ) =>
-        if true || isTheSameDivThatContainsThisGuy
-          $(this).addClass('over')
+        dragged = ui.draggable[0]
+        if $(event.target).has(dragged).length == 0
+          $(event.target).addClass('over')
       out: ( event, ui ) =>
-        $(this).removeClass('over')
+        $(event.target).removeClass('over')
     )
 
-    $( ".argument" ).droppable(
-      accept: '.subdebate, .argument, .debate'
+    $( ".argument, .subdebate, .answer" ).droppable(
+      accept: '.subdebate, .argument, .debate, .answer'
       hoverClass: 'over'
       greedy: true
       drop: ( event, ui ) =>
