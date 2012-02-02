@@ -7,6 +7,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   events:
     "click .new-debate-link": "showNewDebateForm"
+    "dblclick .debate-list-item .title": "showEditTitleForm"
+    "dblclick .debate-list-item .body": "showEditDescriptionForm"
 
   render: ->
     @model.answers.fetch 
@@ -109,6 +111,31 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     oldCollection.remove debate
     newCollection.add debate
 
-    debate.save()
-    oldCollection.parent.save()
-    newCollection.parent.save() if oldCollection.parent != newCollection.parent
+    oldCollection.parent.save(
+      error: (debate, jqXHR) =>
+        @model.set({errors: $.parseJSON(jqXHR.responseText)})
+        alert jqXHR.responseText
+    )
+    if oldCollection.parent != newCollection.parent
+      debate.save(
+        error: (debate, jqXHR) =>
+          @model.set({errors: $.parseJSON(jqXHR.responseText)})
+          alert jqXHR.responseText
+      )
+      newCollection.parent.save(
+        error: (debate, jqXHR) =>
+          @model.set({errors: $.parseJSON(jqXHR.responseText)})
+          alert jqXHR.responseText
+      )
+
+  showEditTitleForm: (e) ->
+    clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
+    clickedDebate = @model.findDebate clickedDebateId
+    editTitleView = new Gruff.Views.Debates.EditTitleView
+      'el': e.target
+      'model': clickedDebate
+    editTitleView.render()
+
+  showEditDescriptionForm: (e) ->
+    alert("edit description")
+

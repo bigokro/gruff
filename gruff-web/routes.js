@@ -334,7 +334,11 @@ exports.postDebateTitle = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-                                      res.redirect('/debates/' + req.param('_id') + '/titles');
+    if (req.xhr) {
+      res.redirect('/debates/' + req.param('_id') + '/titles');
+    } else {
+      req.json(req.param('title'));
+    }
   });
 };
 

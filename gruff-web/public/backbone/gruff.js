@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base2, _base3, _base4, _base5, _base6, _base7,
+  var classHelper, _base, _base2, _base3, _base4, _base5, _base6, _base7, _base8,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -314,6 +314,94 @@
 
   (_base2 = Gruff.Views).Debates || (_base2.Debates = {});
 
+  Gruff.Views.Debates.EditTitleView = (function(_super) {
+
+    __extends(EditTitleView, _super);
+
+    function EditTitleView() {
+      this.handleKeys = __bind(this.handleKeys, this);
+      EditTitleView.__super__.constructor.apply(this, arguments);
+    }
+
+    EditTitleView.prototype.initialize = function(options) {
+      var _this = this;
+      this.template = _.template($('#debate-edit-title-template').text());
+      this.model.bind("change:errors", function() {
+        return _this.render();
+      });
+      return {
+        "keypress .edit_title_field": "handleKeys"
+      };
+    };
+
+    EditTitleView.prototype.save = function() {
+      var newTitle,
+        _this = this;
+      this.model.unset("errors");
+      newTitle = this.editTitleField.val();
+      this.model.set("title", newTitle);
+      this.model.get("titles").push({
+        title: newTitle,
+        user: "Todo:get user login",
+        date: new Date()
+      });
+      return $.ajax({
+        type: "POST",
+        url: "/debates/titles/new",
+        data: {
+          _id: this.model.linkableId(),
+          title: newTitle
+        },
+        success: function(data) {
+          _this.titleLink.html(newTitle);
+          return _this.close();
+        },
+        error: function(debate, jqXHR) {
+          _this.model.set({
+            errors: $.parseJSON(jqXHR.responseText)
+          });
+          return alert(jqXHR.responseText);
+        }
+      });
+    };
+
+    EditTitleView.prototype.render = function() {
+      var json;
+      json = this.model.fullJSON();
+      if (!$(this.el).hasClass('.title')) {
+        this.el = $(this.el).parents('.title')[0];
+      }
+      $(this.el).append(this.template(json));
+      this.titleLink = $(this.el).find('a');
+      this.titleLink.hide();
+      this.editTitleField = $(this.el).find('#' + this.model.linkableId() + "-title-field");
+      this.editTitleField.bind("keypress", this.handleKeys);
+      this.editTitleField.show();
+      this.editTitleField.focus();
+      return this;
+    };
+
+    EditTitleView.prototype.close = function() {
+      this.titleLink.show();
+      this.editTitleField.remove();
+      return this.unbind();
+    };
+
+    EditTitleView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 13) {
+        this.save();
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    return EditTitleView;
+
+  })(Backbone.View);
+
+  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
+
   Gruff.Views.Debates.EditView = (function(_super) {
 
     __extends(EditView, _super);
@@ -350,7 +438,7 @@
 
   })(Backbone.View);
 
-  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
+  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -393,7 +481,7 @@
 
   })(Backbone.View);
 
-  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
+  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -441,7 +529,7 @@
 
   })(Backbone.View);
 
-  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
+  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -501,7 +589,7 @@
 
   })(Backbone.View);
 
-  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
+  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -535,8 +623,7 @@
       return this.collection.create(this.model.toJSON(), {
         success: function(debate) {
           _this.model = debate;
-          _this.close();
-          return alert(JSON.stringify(debate.fullJSON()));
+          return _this.close();
         },
         error: function(debate, jqXHR) {
           _this.model.set({
@@ -571,7 +658,7 @@
 
   })(Backbone.View);
 
-  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
+  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -589,7 +676,9 @@
     };
 
     ShowView.prototype.events = {
-      "click .new-debate-link": "showNewDebateForm"
+      "click .new-debate-link": "showNewDebateForm",
+      "dblclick .debate-list-item .title": "showEditTitleForm",
+      "dblclick .debate-list-item .body": "showEditDescriptionForm"
     };
 
     ShowView.prototype.render = function() {
@@ -719,7 +808,8 @@
     };
 
     ShowView.prototype.moveDebate = function(dragged, dropped) {
-      var debate, droppedDebate, droppedDebateId, droppedParent, newCollection, oldCollection;
+      var debate, droppedDebate, droppedDebateId, droppedParent, newCollection, oldCollection,
+        _this = this;
       droppedParent = $(dropped).parents('.debate')[0];
       droppedDebateId = droppedParent.id;
       droppedDebate = this.model.findDebate(droppedDebateId);
@@ -728,11 +818,47 @@
       oldCollection = debate.parentCollection;
       oldCollection.remove(debate);
       newCollection.add(debate);
-      debate.save();
-      oldCollection.parent.save();
+      oldCollection.parent.save({
+        error: function(debate, jqXHR) {
+          _this.model.set({
+            errors: $.parseJSON(jqXHR.responseText)
+          });
+          return alert(jqXHR.responseText);
+        }
+      });
       if (oldCollection.parent !== newCollection.parent) {
-        return newCollection.parent.save();
+        debate.save({
+          error: function(debate, jqXHR) {
+            _this.model.set({
+              errors: $.parseJSON(jqXHR.responseText)
+            });
+            return alert(jqXHR.responseText);
+          }
+        });
+        return newCollection.parent.save({
+          error: function(debate, jqXHR) {
+            _this.model.set({
+              errors: $.parseJSON(jqXHR.responseText)
+            });
+            return alert(jqXHR.responseText);
+          }
+        });
       }
+    };
+
+    ShowView.prototype.showEditTitleForm = function(e) {
+      var clickedDebate, clickedDebateId, editTitleView;
+      clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
+      clickedDebate = this.model.findDebate(clickedDebateId);
+      editTitleView = new Gruff.Views.Debates.EditTitleView({
+        'el': e.target,
+        'model': clickedDebate
+      });
+      return editTitleView.render();
+    };
+
+    ShowView.prototype.showEditDescriptionForm = function(e) {
+      return alert("edit description");
     };
 
     return ShowView;
