@@ -143,7 +143,7 @@ Describable.prototype.setTitle = function(newTitle) {
 Describable.prototype.setDescription = function(newDesc) {
     var descs = this.safeGet("descs");
     descs.push({
-      text: newDesc
+      text: newDesc,
       user: "TODO: get user login",
       date: new Date()
     });
