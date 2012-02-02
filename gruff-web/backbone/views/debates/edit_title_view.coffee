@@ -8,17 +8,10 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
       this.render()
     )
 
-    "keypress .edit_title_field": "handleKeys"
-
   save: ->
     @model.unset("errors")
     newTitle = @editTitleField.val()
-    @model.set("title", newTitle)
-    @model.get("titles").push(
-      title: newTitle
-      user: "Todo:get user login"
-      date: new Date()
-    )
+    @model.setTitle(newTitle)
 
     $.ajax(
       type: "POST"
@@ -42,6 +35,7 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     @titleLink.hide()
     @editTitleField = $(@el).find('#'+@model.linkableId()+"-title-field")
     @editTitleField.bind("keypress", @handleKeys)
+    @editTitleField.bind("blur", @close)
     @editTitleField.show()
     @editTitleField.focus()
     @

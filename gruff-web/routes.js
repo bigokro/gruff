@@ -359,7 +359,11 @@ exports.postDebateDescription = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-                                      res.redirect('/debates/' + req.param('_id') + '/descriptions');
+    if (req.xhr) {
+      res.redirect('/debates/' + req.param('_id') + '/descriptions');
+    } else {
+      req.json(req.param('title'));
+    }
   });
 };
 

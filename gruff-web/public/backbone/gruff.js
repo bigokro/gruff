@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base2, _base3, _base4, _base5, _base6, _base7, _base8,
+  var classHelper, _base, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -314,6 +314,87 @@
 
   (_base2 = Gruff.Views).Debates || (_base2.Debates = {});
 
+  Gruff.Views.Debates.EditDescriptionView = (function(_super) {
+
+    __extends(EditDescriptionView, _super);
+
+    function EditDescriptionView() {
+      this.handleKeys = __bind(this.handleKeys, this);
+      EditDescriptionView.__super__.constructor.apply(this, arguments);
+    }
+
+    EditDescriptionView.prototype.initialize = function(options) {
+      var _this = this;
+      this.template = _.template($('#debate-edit-description-template').text());
+      return this.model.bind("change:errors", function() {
+        return _this.render();
+      });
+    };
+
+    EditDescriptionView.prototype.save = function() {
+      var newDescription,
+        _this = this;
+      this.model.unset("errors");
+      newDescription = this.editDescriptionField.val();
+      this.model.setDescription(newDescription);
+      return $.ajax({
+        type: "POST",
+        url: "/debates/descriptions/new",
+        data: {
+          _id: this.model.linkableId(),
+          desc: newDescription
+        },
+        success: function(data) {
+          _this.descriptionEl.html(newDescription);
+          return _this.close();
+        },
+        error: function(debate, jqXHR) {
+          _this.model.set({
+            errors: $.parseJSON(jqXHR.responseText)
+          });
+          return alert(jqXHR.responseText);
+        }
+      });
+    };
+
+    EditDescriptionView.prototype.render = function() {
+      var json;
+      json = this.model.fullJSON();
+      if (!$(this.el).hasClass('.debate-list-item')) {
+        this.el = $(this.el).parents('.debate-list-item')[0];
+      }
+      $(this.el).append(this.template(json));
+      this.descriptionEl = $(this.el).find('.body');
+      this.descriptionEl.hide();
+      this.editDescriptionField = $(this.el).find('#' + this.model.linkableId() + "-description-field");
+      this.editDescriptionField.bind("keypress", this.handleKeys);
+      this.editDescriptionField.bind("blur", this.close);
+      this.editDescriptionField.show();
+      this.editDescriptionField.focus();
+      return this;
+    };
+
+    EditDescriptionView.prototype.close = function() {
+      this.descriptionEl.show();
+      this.editDescriptionField.remove();
+      return this.unbind();
+    };
+
+    EditDescriptionView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 13) {
+        this.save();
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    return EditDescriptionView;
+
+  })(Backbone.View);
+
+  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
+
   Gruff.Views.Debates.EditTitleView = (function(_super) {
 
     __extends(EditTitleView, _super);
@@ -326,12 +407,9 @@
     EditTitleView.prototype.initialize = function(options) {
       var _this = this;
       this.template = _.template($('#debate-edit-title-template').text());
-      this.model.bind("change:errors", function() {
+      return this.model.bind("change:errors", function() {
         return _this.render();
       });
-      return {
-        "keypress .edit_title_field": "handleKeys"
-      };
     };
 
     EditTitleView.prototype.save = function() {
@@ -339,12 +417,7 @@
         _this = this;
       this.model.unset("errors");
       newTitle = this.editTitleField.val();
-      this.model.set("title", newTitle);
-      this.model.get("titles").push({
-        title: newTitle,
-        user: "Todo:get user login",
-        date: new Date()
-      });
+      this.model.setTitle(newTitle);
       return $.ajax({
         type: "POST",
         url: "/debates/titles/new",
@@ -376,6 +449,7 @@
       this.titleLink.hide();
       this.editTitleField = $(this.el).find('#' + this.model.linkableId() + "-title-field");
       this.editTitleField.bind("keypress", this.handleKeys);
+      this.editTitleField.bind("blur", this.close);
       this.editTitleField.show();
       this.editTitleField.focus();
       return this;
@@ -400,7 +474,7 @@
 
   })(Backbone.View);
 
-  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
+  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
 
   Gruff.Views.Debates.EditView = (function(_super) {
 
@@ -438,7 +512,7 @@
 
   })(Backbone.View);
 
-  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
+  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -481,7 +555,7 @@
 
   })(Backbone.View);
 
-  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
+  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -529,7 +603,7 @@
 
   })(Backbone.View);
 
-  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
+  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -589,7 +663,7 @@
 
   })(Backbone.View);
 
-  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
+  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -658,7 +732,7 @@
 
   })(Backbone.View);
 
-  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
+  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -858,7 +932,14 @@
     };
 
     ShowView.prototype.showEditDescriptionForm = function(e) {
-      return alert("edit description");
+      var clickedDebate, clickedDebateId, editDescriptionView;
+      clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
+      clickedDebate = this.model.findDebate(clickedDebateId);
+      editDescriptionView = new Gruff.Views.Debates.EditDescriptionView({
+        'el': e.target,
+        'model': clickedDebate
+      });
+      return editDescriptionView.render();
     };
 
     return ShowView;

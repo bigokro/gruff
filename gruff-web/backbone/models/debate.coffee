@@ -88,8 +88,7 @@ class Gruff.Models.Debate extends Backbone.Model
     vals = {}
     vals[@getIdListName(debates.type)] = debates.pluck("_id")
     @set vals
-    
-        
+
 class Gruff.Collections.Debates extends Backbone.Collection
   model: Gruff.Models.Debate
   url: '/rest/debates'

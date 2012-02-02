@@ -17,6 +17,17 @@ Describable.prototype.safeGet = function(attribute) {
     }
 }
 
+// Needed to provide compatibility between Backbone and simple Node models
+Describable.prototype.safeSet = function(attributes) {
+    if (typeof(this.set)==="undefined") {
+        for (attr in attributes) {
+	    this[attr] = attributes[attr];
+        }
+    } else {
+        return this.set(attributes);
+    }
+}
+
 Describable.prototype.bestTitle = function() {
     var titles = this.safeGet("titles");
     if (typeof(titles)==="undefined") {
@@ -115,6 +126,33 @@ Describable.prototype.describableVotesCount = function() {
   }
   return titleVotes + descVotes;
 };
+
+Describable.prototype.setTitle = function(newTitle) {
+    var titles = this.safeGet("titles");
+    titles.push({
+      title: newTitle,
+      user: "TODO: get user login",
+      date: new Date()
+    });
+    this.safeSet({
+      title: newTitle,
+      titles: titles
+    });
+};
+
+Describable.prototype.setDescription = function(newDesc) {
+    var descs = this.safeGet("descs");
+    descs.push({
+      text: newDesc
+      user: "TODO: get user login",
+      date: new Date()
+    });
+    this.safeSet({
+      desc: newDesc,
+      descs: descs
+    });
+};
+
 
 exports.Describable = Describable;
 

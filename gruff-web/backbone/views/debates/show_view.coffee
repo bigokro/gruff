@@ -137,5 +137,11 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     editTitleView.render()
 
   showEditDescriptionForm: (e) ->
-    alert("edit description")
+    clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
+    clickedDebate = @model.findDebate clickedDebateId
+    editDescriptionView = new Gruff.Views.Debates.EditDescriptionView
+      'el': e.target
+      'model': clickedDebate
+    editDescriptionView.render()
+
 
