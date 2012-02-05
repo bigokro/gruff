@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -320,6 +320,7 @@
 
     function EditDescriptionView() {
       this.handleKeys = __bind(this.handleKeys, this);
+      this.close = __bind(this.close, this);
       EditDescriptionView.__super__.constructor.apply(this, arguments);
     }
 
@@ -401,6 +402,7 @@
 
     function EditTitleView() {
       this.handleKeys = __bind(this.handleKeys, this);
+      this.close = __bind(this.close, this);
       EditTitleView.__super__.constructor.apply(this, arguments);
     }
 
@@ -562,6 +564,8 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.showSubdebates = __bind(this.showSubdebates, this);
+      this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.toggleDescription = __bind(this.toggleDescription, this);
       ListItemView.__super__.constructor.apply(this, arguments);
     }
@@ -594,9 +598,39 @@
     };
 
     ListItemView.prototype.toggleDescription = function(e) {
+      var parent;
       e.stopPropagation();
-      this.$('div.body').toggle();
+      parent = $(e.target).parents('.debate-list-item')[0];
+      if (!$(parent).hasClass('ui-draggable-dragging')) {
+        this.$('div.body').toggle();
+      }
       return false;
+    };
+
+    ListItemView.prototype.enableDragDrop = function() {
+      var _this = this;
+      return $(this.el).droppable({
+        accept: '.subdebate, .argument, .debate, .answer',
+        hoverClass: 'over',
+        greedy: true,
+        over: function(e) {
+          return _this.showSubdebates();
+        },
+        drop: function(event, ui) {
+          var dragged;
+          dragged = ui.draggable[0];
+          return _this.moveDebate(dragged, event.target);
+        }
+      });
+    };
+
+    ListItemView.prototype.showSubdebates = function() {
+      var subdebatesView;
+      subdebatesView = new Gruff.Views.Debates.SubdebatesView({
+        'el': this.el,
+        'model': this.model
+      });
+      return subdebatesView.render();
     };
 
     return ListItemView;
@@ -873,10 +907,13 @@
         accept: '.subdebate, .argument, .debate, .answer',
         hoverClass: 'over',
         greedy: true,
-        drop: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          return _this.moveDebate(dragged, event.target);
+        over: function(e, ui) {
+          return _this.timeout = setTimeout(function() {
+            return _this.showSubdebatesDiv(e);
+          }, 2000);
+        },
+        out: function(e, ui) {
+          return clearTimeout(_this.timeout);
         }
       });
     };
@@ -942,7 +979,87 @@
       return editDescriptionView.render();
     };
 
+    ShowView.prototype.showSubdebatesDiv = function(e) {
+      var overDebate, subdebatesView;
+      overDebate = this.model.findDebate(e.target.id);
+      subdebatesView = new Gruff.Views.Debates.SubdebatesView({
+        'el': e.target,
+        'model': overDebate
+      });
+      return subdebatesView.render();
+    };
+
     return ShowView;
+
+  })(Backbone.View);
+
+  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+
+  Gruff.Views.Debates.SubdebatesView = (function(_super) {
+
+    __extends(SubdebatesView, _super);
+
+    function SubdebatesView() {
+      this.enableDragDrop = __bind(this.enableDragDrop, this);
+      SubdebatesView.__super__.constructor.apply(this, arguments);
+    }
+
+    SubdebatesView.prototype.initialize = function(options) {
+      return this.template = _.template($('#debate-subdebates-template').text());
+    };
+
+    SubdebatesView.prototype.render = function() {
+      var json, newZIndex, offset;
+      json = this.model.fullJSON();
+      $(this.el).append(this.template(json));
+      this.subdebatesDiv = $(this.el).find('.debate-list-item-subdebates');
+      offset = $(this.el).offset();
+      offset.top = offset.top + 20;
+      offset.left = $(window).width() / 10;
+      $(this.subdebatesDiv).offset(offset);
+      $(this.subdebatesDiv).width($(window).width() * .8);
+      newZIndex = 5;
+      if ($(this.el).css('z-index') !== 'auto') {
+        newZIndex = parseInt($(this.el).css('z-index')) + 5;
+      }
+      $(this.subdebatesDiv).css('z-index', newZIndex);
+      this.enableDragDrop();
+      $('.modal-bg').show();
+      $('.modal-bg').css('z-index', newZIndex - 1);
+      $('.modal-bg').width($(document).width());
+      $('.modal-bg').height($(document).height());
+      $('.modal-bg').offset({
+        top: 0,
+        left: 0
+      });
+      return this;
+    };
+
+    SubdebatesView.prototype.enableDragDrop = function() {
+      var _this = this;
+      return $(this.el).find(".for, .against, .subdebates, .answers").droppable({
+        drop: function(event, ui) {
+          var dragged;
+          dragged = ui.draggable[0];
+          $(event.target).removeClass('over');
+          if ($(event.target).has(dragged).length === 0) {
+            return _this.moveDebate(dragged, event.target);
+          }
+        },
+        over: function(event, ui) {
+          var dragged;
+          dragged = ui.draggable[0];
+          if ($(event.target).has(dragged).length === 0) {
+            return $(event.target).addClass('over');
+          }
+        },
+        out: function(event, ui) {
+          return $(event.target).removeClass('over');
+        }
+      });
+    };
+
+    return SubdebatesView;
 
   })(Backbone.View);
 

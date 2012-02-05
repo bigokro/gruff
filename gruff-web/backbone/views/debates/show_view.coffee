@@ -4,6 +4,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-show-template').text()
     @tags_template = _.template $('#tags-index-template').text()
+    
 
   events:
     "click .new-debate-link": "showNewDebateForm"
@@ -32,24 +33,24 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
                     if @model.get("type") == @model.DebateTypes.DEBATE
                       @answersView = new Gruff.Views.Debates.ListView
-                        'el': $(@el).find('.answers .debates-list'),
-                        'collection': answers,
+                        'el': $(@el).find('.answers .debates-list')
+                        'collection': answers
                         'attributeType': 'answers'
                       @answersView.render()
                     if @model.get("type") == @model.DebateTypes.DIALECTIC
                       @argumentsForView = new Gruff.Views.Debates.ListView
-                        'el': $(@el).find('.arguments .for .debates-list'),
-                        'collection': argumentsFor,
+                        'el': $(@el).find('.arguments .for .debates-list')
+                        'collection': argumentsFor
                         'attributeType': 'argumentsFor'
                       @argumentsForView.render()
                       @argumentsAgainstView = new Gruff.Views.Debates.ListView
-                        'el': $(@el).find('.arguments .against .debates-list'),
-                        'collection': argumentsAgainst,
+                        'el': $(@el).find('.arguments .against .debates-list')
+                        'collection': argumentsAgainst
                         'attributeType': 'argumentsAgainst'
                       @argumentsAgainstView.render()
                     @subdebatesView = new Gruff.Views.Debates.ListView
-                      'el': $(@el).find('.subdebates .debates-list'),
-                      'collection': subdebates,
+                      'el': $(@el).find('.subdebates .debates-list')
+                      'collection': subdebates
                       'attributeType': 'subdebates'
                     @subdebatesView.render()
                     @enableDragDrop()
@@ -62,8 +63,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formDiv = $('#new-'+debateType+'-div')
     formDiv.show()
     formView = new Gruff.Views.Debates.NewView
-      'el': formDiv, 
-      'collection': collection, 
+      'el': formDiv
+      'collection': collection
       'attributeType': debateType
     formView.render()
 
@@ -94,9 +95,14 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       accept: '.subdebate, .argument, .debate, .answer'
       hoverClass: 'over'
       greedy: true
-      drop: ( event, ui ) =>
-        dragged = ui.draggable[0]
-        @moveDebate dragged, event.target
+      over: (e, ui) =>
+        @timeout = setTimeout( 
+          () => 
+            @showSubdebatesDiv(e)
+          , 2000
+        )
+      out: (e, ui) =>
+        clearTimeout(@timeout)
     )
 
   moveDebate: (dragged, dropped) =>
@@ -143,5 +149,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'el': e.target
       'model': clickedDebate
     editDescriptionView.render()
+
+  showSubdebatesDiv: (e) ->
+    overDebate = @model.findDebate e.target.id
+    subdebatesView = new Gruff.Views.Debates.SubdebatesView
+      'el': e.target
+      'model': overDebate
+    subdebatesView.render()
 
 

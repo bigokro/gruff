@@ -6,6 +6,7 @@ include mixins/tags
 include mixins/search_form
 
 div.debate
+  a(href="/canvas/" + debate.linkableId()) Canvas it!
   div.date= debate.date
   div.vote-link
     a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 

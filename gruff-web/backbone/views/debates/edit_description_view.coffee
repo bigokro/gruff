@@ -40,7 +40,7 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
     @editDescriptionField.focus()
     @
 
-  close: ->
+  close: =>
     @descriptionEl.show()
     @editDescriptionField.remove()
     @unbind()

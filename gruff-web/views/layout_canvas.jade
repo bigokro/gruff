@@ -18,10 +18,5 @@ html
   body
     include includes/header
     #content
-      div#title
-        if typeof type == 'undefined'
-          h1!= title
-        else
-          mixin header(type, describable, linkToMe)
       #canvas!= body
     include includes/footer

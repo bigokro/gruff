@@ -1,10 +1,7 @@
 <script type="text/x-jquery-tmpl" id="debate-show-template">
 <div class="debate" id="<%= linkableId %>">
   <div class="date"><%= date %></div>
-  <div class="title"><%= bestTitle %></div>
-  <div class="vote-link">
-    <a href="/debates/<%= linkableId %>/descriptions" title="Improve this description"><img src="/images/checked.png"/></a>
-  </div>
+  <div class="title" id="title"><h1><%= bestTitle %></h1></div>
   <div class="description"><%= bestDescription %></div>
   <div class="tags"></div>
   <% if (type === DebateTypes.DIALECTIC) { %>

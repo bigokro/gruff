@@ -129,6 +129,7 @@ Describable.prototype.describableVotesCount = function() {
 
 Describable.prototype.setTitle = function(newTitle) {
     var titles = this.safeGet("titles");
+    if (titles == null || typeof(titles) === "undefined") titles = [];
     titles.push({
       title: newTitle,
       user: "TODO: get user login",
@@ -142,6 +143,7 @@ Describable.prototype.setTitle = function(newTitle) {
 
 Describable.prototype.setDescription = function(newDesc) {
     var descs = this.safeGet("descs");
+    if (descs == null || typeof(descs) === "undefined") descs = [];
     descs.push({
       text: newDesc,
       user: "TODO: get user login",

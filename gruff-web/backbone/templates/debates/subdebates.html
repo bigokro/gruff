@@ -1,0 +1,36 @@
+<script type="text/x-jquery-tmpl" id="debate-subdebates-template">
+<div class="debate-list-item-subdebates" id="<%= linkableId %>-list-item-subdebates">
+  <% if (type === DebateTypes.DIALECTIC) { %>
+  <div class="arguments">
+    <div class="for">
+      <h3>Arguments in Favor</h3>
+      <div class="debates-list">
+        <a class="show-debates-list-link">...</a>
+      </div>
+    </div>
+    <div class="against">
+      <h3>Arguments Against</h3>
+      <div class="debates-list">
+        <a class="show-debates-list-link">...</a>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+  <% } %>
+  <% if (type === DebateTypes.DEBATE) { %>
+  <div class="answers">
+    <h3>Proposed Answers</h3>
+    <div class="debates-list">
+      <a class="show-debates-list-link">...</a>
+    </div>
+  </div>
+  <% } %>
+  <div class="subdebates">
+    <h3>Sub-debates</h3>
+    <div class="debates-list">
+      <a class="show-debates-list-link">...</a>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" style="display: none;"></div>
+</script>

@@ -22,6 +22,25 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   toggleDescription: (e) =>
     e.stopPropagation()
-    @.$('div.body').toggle()
+    parent = $(e.target).parents('.debate-list-item')[0]
+    unless $(parent).hasClass('ui-draggable-dragging')
+      @.$('div.body').toggle()
     false
 
+  enableDragDrop: =>
+    $(@el).droppable(
+      accept: '.subdebate, .argument, .debate, .answer'
+      hoverClass: 'over'
+      greedy: true
+      over: (e) =>
+        @showSubdebates()
+      drop: ( event, ui ) =>
+        dragged = ui.draggable[0]
+        @moveDebate dragged, event.target
+    )
+
+   showSubdebates: =>
+    subdebatesView = new Gruff.Views.Debates.SubdebatesView
+      'el': @el
+      'model': @model
+    subdebatesView.render()

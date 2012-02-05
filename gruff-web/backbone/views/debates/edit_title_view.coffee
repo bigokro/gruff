@@ -40,7 +40,7 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     @editTitleField.focus()
     @
 
-  close: ->
+  close: =>
     @titleLink.show()
     @editTitleField.remove()
     @unbind()

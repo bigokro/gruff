@@ -387,8 +387,26 @@ ul.navigation
     font-size 1.5em
 .over
   background-color #DDD
-  z-index -100
+.ui-draggable-dragging
+  z-index 100
 .new-debate-link
   padding 3px
   background-color #DDD
-  
+.debate-list-item
+  .body
+    margin-top -25px
+  textarea
+    margin-top -25px
+  .debate-list-item-subdebates
+    position absolute
+    width 800px
+    padding 10px
+    background-color white
+    border 1px solid
+    -moz-box-shadow: 10px 10px 5px #888;
+    -webkit-box-shadow: 10px 10px 5px #888;
+    box-shadow: 10px 10px 5px #888
+.modal-bg
+  position absolute
+  background #666 url(/images/modal-bg.png) 50% 50% repeat
+  opacity .50
