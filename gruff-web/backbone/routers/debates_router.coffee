@@ -33,5 +33,3 @@ class Gruff.Routers.DebatesRouter extends Backbone.Router
     @view = new Gruff.Views.Debates.EditView(model: debate)
     $("#debates").html(@view.render().el)
 
-
-

@@ -773,7 +773,6 @@
     __extends(ShowView, _super);
 
     function ShowView() {
-      this.moveDebate = __bind(this.moveDebate, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
@@ -918,45 +917,6 @@
       });
     };
 
-    ShowView.prototype.moveDebate = function(dragged, dropped) {
-      var debate, droppedDebate, droppedDebateId, droppedParent, newCollection, oldCollection,
-        _this = this;
-      droppedParent = $(dropped).parents('.debate')[0];
-      droppedDebateId = droppedParent.id;
-      droppedDebate = this.model.findDebate(droppedDebateId);
-      newCollection = droppedDebate.getCollectionByName(dropped.className);
-      debate = this.model.findDebate(dragged.id);
-      oldCollection = debate.parentCollection;
-      oldCollection.remove(debate);
-      newCollection.add(debate);
-      oldCollection.parent.save({
-        error: function(debate, jqXHR) {
-          _this.model.set({
-            errors: $.parseJSON(jqXHR.responseText)
-          });
-          return alert(jqXHR.responseText);
-        }
-      });
-      if (oldCollection.parent !== newCollection.parent) {
-        debate.save({
-          error: function(debate, jqXHR) {
-            _this.model.set({
-              errors: $.parseJSON(jqXHR.responseText)
-            });
-            return alert(jqXHR.responseText);
-          }
-        });
-        return newCollection.parent.save({
-          error: function(debate, jqXHR) {
-            _this.model.set({
-              errors: $.parseJSON(jqXHR.responseText)
-            });
-            return alert(jqXHR.responseText);
-          }
-        });
-      }
-    };
-
     ShowView.prototype.showEditTitleForm = function(e) {
       var clickedDebate, clickedDebateId, editTitleView;
       clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
@@ -1062,5 +1022,46 @@
     return SubdebatesView;
 
   })(Backbone.View);
+
+  _.extend(Backbone.View.prototype, {
+    moveDebate: function(dragged, dropped, view) {
+      var debate, droppedDebate, droppedDebateId, droppedParent, newCollection, oldCollection,
+        _this = this;
+      droppedParent = $(dropped).parents('.debate')[0];
+      droppedDebateId = droppedParent.id;
+      droppedDebate = this.model.findDebate(droppedDebateId);
+      newCollection = droppedDebate.getCollectionByName(dropped.className);
+      debate = this.model.findDebate(dragged.id);
+      oldCollection = debate.parentCollection;
+      oldCollection.remove(debate);
+      newCollection.add(debate);
+      oldCollection.parent.save({
+        error: function(debate, jqXHR) {
+          _this.model.set({
+            errors: $.parseJSON(jqXHR.responseText)
+          });
+          return alert(jqXHR.responseText);
+        }
+      });
+      if (oldCollection.parent !== newCollection.parent) {
+        debate.save({
+          error: function(debate, jqXHR) {
+            _this.model.set({
+              errors: $.parseJSON(jqXHR.responseText)
+            });
+            return alert(jqXHR.responseText);
+          }
+        });
+        return newCollection.parent.save({
+          error: function(debate, jqXHR) {
+            _this.model.set({
+              errors: $.parseJSON(jqXHR.responseText)
+            });
+            return alert(jqXHR.responseText);
+          }
+        });
+      }
+    }
+  });
 
 }).call(this);
