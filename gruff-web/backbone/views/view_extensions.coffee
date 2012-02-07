@@ -15,19 +15,20 @@ _.extend(Backbone.View.prototype,
 
     oldCollection.parent.save(
       error: (debate, jqXHR) =>
-        @model.set({errors: $.parseJSON(jqXHR.responseText)})
-        alert jqXHR.responseText
+        @handleRemoteError(debate, jqXHR)
     )
     if oldCollection.parent != newCollection.parent
       debate.save(
         error: (debate, jqXHR) =>
-          @model.set({errors: $.parseJSON(jqXHR.responseText)})
-          alert jqXHR.responseText
+          @handleRemoteError(debate, jqXHR)
       )
       newCollection.parent.save(
         error: (debate, jqXHR) =>
-          @model.set({errors: $.parseJSON(jqXHR.responseText)})
-          alert jqXHR.responseText
+          @handleRemoteError(debate, jqXHR)
       )
+
+  handleRemoteError: (data, jqXHR) ->
+    alert jqXHR.responseText
+    @model.set({errors: $.parseJSON(jqXHR.responseText)})
 
 )

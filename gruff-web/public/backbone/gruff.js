@@ -85,13 +85,27 @@
     };
 
     Debate.prototype.findDebate = function(id) {
+      var root;
+      root = this.findRootDebate();
+      return root.findSubdebate(id);
+    };
+
+    Debate.prototype.findRootDebate = function() {
+      if (this.parentCollection !== null && typeof this.parentCollection !== 'undefined') {
+        return this.parentCollection.parent.findRootDebate();
+      } else {
+        return this;
+      }
+    };
+
+    Debate.prototype.findSubdebate = function(id) {
       var result;
       if (this.linkableId() === id) return this;
       result = null;
       _.each([this.answers, this.argumentsFor, this.argumentsAgainst, this.subdebates], function(coll) {
         if (coll !== null && result === null) {
           return coll.each(function(debate) {
-            if (result === null) return result = debate.findDebate(id);
+            if (result === null) return result = debate.findSubdebate(id);
           });
         }
       });
@@ -909,7 +923,7 @@
         over: function(e, ui) {
           return _this.timeout = setTimeout(function() {
             return _this.showSubdebatesDiv(e);
-          }, 2000);
+          }, 1500);
         },
         out: function(e, ui) {
           return clearTimeout(_this.timeout);
@@ -982,6 +996,7 @@
       if ($(this.el).css('z-index') !== 'auto') {
         newZIndex = parseInt($(this.el).css('z-index')) + 5;
       }
+      $(this.el).css('z-index', newZIndex);
       $(this.subdebatesDiv).css('z-index', newZIndex);
       this.enableDragDrop();
       $('.modal-bg').show();
@@ -998,6 +1013,7 @@
     SubdebatesView.prototype.enableDragDrop = function() {
       var _this = this;
       return $(this.el).find(".for, .against, .subdebates, .answers").droppable({
+        accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
@@ -1037,30 +1053,27 @@
       newCollection.add(debate);
       oldCollection.parent.save({
         error: function(debate, jqXHR) {
-          _this.model.set({
-            errors: $.parseJSON(jqXHR.responseText)
-          });
-          return alert(jqXHR.responseText);
+          return _this.handleRemoteError(debate, jqXHR);
         }
       });
       if (oldCollection.parent !== newCollection.parent) {
         debate.save({
           error: function(debate, jqXHR) {
-            _this.model.set({
-              errors: $.parseJSON(jqXHR.responseText)
-            });
-            return alert(jqXHR.responseText);
+            return _this.handleRemoteError(debate, jqXHR);
           }
         });
         return newCollection.parent.save({
           error: function(debate, jqXHR) {
-            _this.model.set({
-              errors: $.parseJSON(jqXHR.responseText)
-            });
-            return alert(jqXHR.responseText);
+            return _this.handleRemoteError(debate, jqXHR);
           }
         });
       }
+    },
+    handleRemoteError: function(data, jqXHR) {
+      alert(jqXHR.responseText);
+      return this.model.set({
+        errors: $.parseJSON(jqXHR.responseText)
+      });
     }
   });
 

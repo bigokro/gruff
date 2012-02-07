@@ -15,6 +15,7 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
     $(@subdebatesDiv).width($(window).width() * .8)
     newZIndex = 5
     newZIndex = parseInt($(@el).css('z-index')) + 5 unless $(@el).css('z-index') == 'auto'
+    $(@el).css('z-index', newZIndex)
     $(@subdebatesDiv).css('z-index', newZIndex)
     @enableDragDrop()
     $('.modal-bg').show()
@@ -26,6 +27,7 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
 
   enableDragDrop: =>
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(
+      accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
         $(event.target).removeClass('over')

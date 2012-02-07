@@ -99,7 +99,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         @timeout = setTimeout( 
           () => 
             @showSubdebatesDiv(e)
-          , 2000
+          , 1500
         )
       out: (e, ui) =>
         clearTimeout(@timeout)

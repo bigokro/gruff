@@ -39,13 +39,23 @@ class Gruff.Models.Debate extends Backbone.Model
     debates
 
   findDebate: (id) ->
+    root = @findRootDebate()
+    root.findSubdebate(id)
+
+  findRootDebate: ->
+    if @parentCollection != null && typeof(@parentCollection) != 'undefined'
+      @parentCollection.parent.findRootDebate()
+    else
+      @
+
+  findSubdebate: (id) ->
     return @ if @linkableId() == id
     result = null
     _.each([@answers, @argumentsFor, @argumentsAgainst, @subdebates], (coll) ->
       if coll != null && result == null
         coll.each( (debate) -> 
           if result == null
-            result = debate.findDebate(id)
+            result = debate.findSubdebate(id)
         )
     )
     result
