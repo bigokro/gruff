@@ -2,6 +2,7 @@ Gruff.Views.Debates ||= {}
 
 class Gruff.Views.Debates.SubdebatesView extends Backbone.View
   initialize: (options) ->
+    @parentView = options.parentView
     @template = _.template $('#debate-subdebates-template').text()
 
   render: ->
@@ -18,6 +19,7 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
     $(@el).css('z-index', newZIndex)
     $(@subdebatesDiv).css('z-index', newZIndex)
     @enableDragDrop()
+    @enableKeys()
     $('.modal-bg').show()
     $('.modal-bg').css('z-index', newZIndex-1)
     $('.modal-bg').width($(document).width())
@@ -41,3 +43,21 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
         $(event.target).removeClass('over')
     )
 
+  enableKeys: ->
+    _.bindAll(@, 'handleKeys');
+    $(document).bind('keydown', @handleKeys);
+
+  handleKeys: (e) =>
+    if e.keyCode == 27
+      @close()
+      false
+    else
+      true
+
+  close: =>
+    $(document).unbind('keypress', 'handleKeys'); 
+    $('.modal-bg').remove()
+    @subdebatesDiv.remove()
+    newZIndex = parseInt($(@el).css('z-index')) - 5 unless $(@el).css('z-index') == 'auto'
+    $(@el).css('z-index', newZIndex)
+    @unbind()

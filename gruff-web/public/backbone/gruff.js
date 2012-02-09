@@ -954,13 +954,15 @@
     };
 
     ShowView.prototype.showSubdebatesDiv = function(e) {
-      var overDebate, subdebatesView;
+      var overDebate, _ref;
       overDebate = this.model.findDebate(e.target.id);
-      subdebatesView = new Gruff.Views.Debates.SubdebatesView({
+      if ((_ref = this.modalView) != null) _ref.close();
+      this.modalView = new Gruff.Views.Debates.SubdebatesView({
         'el': e.target,
-        'model': overDebate
+        'model': overDebate,
+        'parentView': this
       });
-      return subdebatesView.render();
+      return this.modalView.render();
     };
 
     return ShowView;
@@ -974,11 +976,14 @@
     __extends(SubdebatesView, _super);
 
     function SubdebatesView() {
+      this.close = __bind(this.close, this);
+      this.handleKeys = __bind(this.handleKeys, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       SubdebatesView.__super__.constructor.apply(this, arguments);
     }
 
     SubdebatesView.prototype.initialize = function(options) {
+      this.parentView = options.parentView;
       return this.template = _.template($('#debate-subdebates-template').text());
     };
 
@@ -999,6 +1004,7 @@
       $(this.el).css('z-index', newZIndex);
       $(this.subdebatesDiv).css('z-index', newZIndex);
       this.enableDragDrop();
+      this.enableKeys();
       $('.modal-bg').show();
       $('.modal-bg').css('z-index', newZIndex - 1);
       $('.modal-bg').width($(document).width());
@@ -1033,6 +1039,32 @@
           return $(event.target).removeClass('over');
         }
       });
+    };
+
+    SubdebatesView.prototype.enableKeys = function() {
+      _.bindAll(this, 'handleKeys');
+      return $(document).bind('keydown', this.handleKeys);
+    };
+
+    SubdebatesView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 27) {
+        this.close();
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    SubdebatesView.prototype.close = function() {
+      var newZIndex;
+      $(document).unbind('keypress', 'handleKeys');
+      $('.modal-bg').remove();
+      this.subdebatesDiv.remove();
+      if ($(this.el).css('z-index') !== 'auto') {
+        newZIndex = parseInt($(this.el).css('z-index')) - 5;
+      }
+      $(this.el).css('z-index', newZIndex);
+      return this.unbind();
     };
 
     return SubdebatesView;

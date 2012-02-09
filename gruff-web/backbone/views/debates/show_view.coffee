@@ -123,9 +123,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   showSubdebatesDiv: (e) ->
     overDebate = @model.findDebate e.target.id
-    subdebatesView = new Gruff.Views.Debates.SubdebatesView
+    @modalView?.close()
+    @modalView = new Gruff.Views.Debates.SubdebatesView
       'el': e.target
       'model': overDebate
-    subdebatesView.render()
-
+      'parentView': @
+    @modalView.render()
 
