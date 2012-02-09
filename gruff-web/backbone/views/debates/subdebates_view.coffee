@@ -22,6 +22,7 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
     @modal.height($(document).height())
     @modal.offset({ top: 0, left: 0 })
     @raise $(@el)
+    @raise @modal
     @
 
   enableDragDrop: =>
@@ -53,9 +54,10 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
 
   close: =>
     $(document).unbind('keypress', 'handleKeys'); 
-    @modal.remove()
     @subdebatesDiv.remove()
     @lower $(@el)
+    @lower @modal
+    @modal.hide()
     @unbind()
 
   raise: (el) =>

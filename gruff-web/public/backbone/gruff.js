@@ -1010,6 +1010,7 @@
         left: 0
       });
       this.raise($(this.el));
+      this.raise(this.modal);
       return this;
     };
 
@@ -1054,9 +1055,10 @@
 
     SubdebatesView.prototype.close = function() {
       $(document).unbind('keypress', 'handleKeys');
-      this.modal.remove();
       this.subdebatesDiv.remove();
       this.lower($(this.el));
+      this.lower(this.modal);
+      this.modal.hide();
       return this.unbind();
     };
 
