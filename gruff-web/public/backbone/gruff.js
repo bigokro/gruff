@@ -976,6 +976,8 @@
     __extends(SubdebatesView, _super);
 
     function SubdebatesView() {
+      this.lower = __bind(this.lower, this);
+      this.raise = __bind(this.raise, this);
       this.close = __bind(this.close, this);
       this.handleKeys = __bind(this.handleKeys, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
@@ -988,7 +990,7 @@
     };
 
     SubdebatesView.prototype.render = function() {
-      var json, newZIndex, offset;
+      var json, offset;
       json = this.model.fullJSON();
       $(this.el).append(this.template(json));
       this.subdebatesDiv = $(this.el).find('.debate-list-item-subdebates');
@@ -997,22 +999,17 @@
       offset.left = $(window).width() / 10;
       $(this.subdebatesDiv).offset(offset);
       $(this.subdebatesDiv).width($(window).width() * .8);
-      newZIndex = 5;
-      if ($(this.el).css('z-index') !== 'auto') {
-        newZIndex = parseInt($(this.el).css('z-index')) + 5;
-      }
-      $(this.el).css('z-index', newZIndex);
-      $(this.subdebatesDiv).css('z-index', newZIndex);
       this.enableDragDrop();
       this.enableKeys();
-      $('.modal-bg').show();
-      $('.modal-bg').css('z-index', newZIndex - 1);
-      $('.modal-bg').width($(document).width());
-      $('.modal-bg').height($(document).height());
-      $('.modal-bg').offset({
+      this.modal = $('.modal-bg');
+      this.modal.show();
+      this.modal.width($(document).width());
+      this.modal.height($(document).height());
+      this.modal.offset({
         top: 0,
         left: 0
       });
+      this.raise($(this.el));
       return this;
     };
 
@@ -1056,15 +1053,29 @@
     };
 
     SubdebatesView.prototype.close = function() {
-      var newZIndex;
       $(document).unbind('keypress', 'handleKeys');
-      $('.modal-bg').remove();
+      this.modal.remove();
       this.subdebatesDiv.remove();
-      if ($(this.el).css('z-index') !== 'auto') {
-        newZIndex = parseInt($(this.el).css('z-index')) - 5;
-      }
-      $(this.el).css('z-index', newZIndex);
+      this.lower($(this.el));
       return this.unbind();
+    };
+
+    SubdebatesView.prototype.raise = function(el) {
+      var newIndex, newZIndex;
+      newIndex = 'auto';
+      if ($(el).css('z-index') !== 'auto') {
+        newZIndex = parseInt($(el).css('z-index')) + 5;
+      }
+      return $(el).css('z-index', newZIndex);
+    };
+
+    SubdebatesView.prototype.lower = function(el) {
+      var newIndex, newZIndex;
+      newIndex = 'auto';
+      if ($(el).css('z-index') !== 'auto') {
+        newZIndex = parseInt($(el).css('z-index')) - 5;
+      }
+      return $(el).css('z-index', newZIndex);
     };
 
     return SubdebatesView;

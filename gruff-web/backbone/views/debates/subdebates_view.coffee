@@ -14,17 +14,14 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
     offset.left = $(window).width() / 10
     $(@subdebatesDiv).offset(offset)
     $(@subdebatesDiv).width($(window).width() * .8)
-    newZIndex = 5
-    newZIndex = parseInt($(@el).css('z-index')) + 5 unless $(@el).css('z-index') == 'auto'
-    $(@el).css('z-index', newZIndex)
-    $(@subdebatesDiv).css('z-index', newZIndex)
     @enableDragDrop()
     @enableKeys()
-    $('.modal-bg').show()
-    $('.modal-bg').css('z-index', newZIndex-1)
-    $('.modal-bg').width($(document).width())
-    $('.modal-bg').height($(document).height())
-    $('.modal-bg').offset({ top: 0, left: 0 })
+    @modal = $('.modal-bg')
+    @modal.show()
+    @modal.width($(document).width())
+    @modal.height($(document).height())
+    @modal.offset({ top: 0, left: 0 })
+    @raise $(@el)
     @
 
   enableDragDrop: =>
@@ -56,8 +53,17 @@ class Gruff.Views.Debates.SubdebatesView extends Backbone.View
 
   close: =>
     $(document).unbind('keypress', 'handleKeys'); 
-    $('.modal-bg').remove()
+    @modal.remove()
     @subdebatesDiv.remove()
-    newZIndex = parseInt($(@el).css('z-index')) - 5 unless $(@el).css('z-index') == 'auto'
-    $(@el).css('z-index', newZIndex)
+    @lower $(@el)
     @unbind()
+
+  raise: (el) =>
+    newIndex = 'auto'
+    newZIndex = parseInt($(el).css('z-index')) + 5 unless $(el).css('z-index') == 'auto'
+    $(el).css('z-index', newZIndex)
+
+  lower: (el) =>
+    newIndex = 'auto'
+    newZIndex = parseInt($(el).css('z-index')) - 5 unless $(el).css('z-index') == 'auto'
+    $(el).css('z-index', newZIndex)

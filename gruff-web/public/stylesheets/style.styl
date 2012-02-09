@@ -144,6 +144,7 @@ a img
   padding 10px
   float right
   width 46%
+  z-index 5
 .bottomForm
   clear both
   margin-top 20px
@@ -191,6 +192,7 @@ a img
         background-color #fff
         border none
 .debate
+  z-index 0
   .date
     display none
   .vote-link
@@ -257,6 +259,7 @@ a img
   float left
   width 46%
   text-align right
+  z-index 5
   div.argument
     text-align right
     margin-left auto
@@ -294,6 +297,7 @@ a img
   -webkit-box-shadow: 10px 10px 5px #888;
   box-shadow: 10px 10px 5px #888;
   padding 10px
+  z-index 5
 .tags
   margin 5px 0px 5px 30px
   span.tag
@@ -389,18 +393,18 @@ ul.navigation
     font-size 1.5em
 .over
   background-color #DDD
-.ui-draggable-dragging
-  z-index 100
 .new-debate-link
   padding 3px
   background-color #DDD
 .debate-list-item
+  z-index 10
   .body
     margin-top -25px
   textarea
     margin-top -25px
   .debate-list-item-subdebates
     position absolute
+    z-index 10
     width 800px
     padding 10px
     background-color white
@@ -412,3 +416,6 @@ ul.navigation
   position absolute
   background #666 url(/images/modal-bg.png) 50% 50% repeat
   opacity .50
+  z-index -1
+.ui-draggable-dragging
+  z-index 100
