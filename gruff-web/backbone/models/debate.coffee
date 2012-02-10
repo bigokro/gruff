@@ -29,7 +29,7 @@ class Gruff.Models.Debate extends Backbone.Model
     @set({argumentsAgainstIds: []}) if (typeof(@get("argumentsAgainstIds")) == 'undefined' || @get("argumentsAgainstIds") == null)
     @set({subdebateIds: []}) if (typeof(@get("subdebateIds")) == 'undefined' || @get("subdebateIds") == null)
 
-  initializeDebates: (type) ->
+  initializeDebates: (type) =>
     debates = new Gruff.Collections.Debates
     debates.url = "/rest/debates/" + @id + "/" + type
     debates.parent = @

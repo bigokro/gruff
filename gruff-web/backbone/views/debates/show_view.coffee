@@ -53,7 +53,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
                       'collection': subdebates
                       'attributeType': 'subdebates'
                     @subdebatesView.render()
-                    @enableDragDrop()
+                    @setUpDragDrop()
     @
 
   showNewDebateForm: (e) ->
@@ -68,15 +68,15 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'attributeType': debateType
     formView.render()
 
-  enableDragDrop: =>
-    $( ".argument" ).draggable({ revert: true })
-    $( ".answer" ).draggable({ revert: true })
-    $( ".subdebate" ).draggable({ revert: true })
-    $( ".argument" ).width (index, width) ->
+  setUpDragDrop: =>
+    $(@el).find( ".argument" ).draggable({ revert: true, refreshPositions: true })
+    $(@el).find( ".answer" ).draggable({ revert: true, refreshPositions: true })
+    $(@el).find( ".subdebate" ).draggable({ revert: true, refreshPositions: true })
+    $(@el).find( ".argument" ).width (index, width) ->
       el = $("#"+this.id)
       el.find("h4 > a").width()
 
-    $( ".for, .against, .subdebates, .answers" ).droppable(
+    $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
@@ -91,19 +91,29 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         $(event.target).removeClass('over')
     )
 
-    $( ".argument, .subdebate, .answer" ).droppable(
+    $(@el).find( ".argument, .subdebate, .answer" ).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       hoverClass: 'over'
       greedy: true
       over: (e, ui) =>
         @timeout = setTimeout( 
           () => 
-            @showSubdebateDiv(e)
+            @showSubdebateDiv(e, ui)
           , 1500
         )
       out: (e, ui) =>
         clearTimeout(@timeout)
     )
+
+  disableDragDrop: =>
+    $(@el).find( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", true )
+    $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", true )
+    $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", true )
+
+  enableDragDrop: =>
+    $(@el).find( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", false )
+    $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
+    $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
 
   showEditTitleForm: (e) ->
     clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
@@ -121,11 +131,14 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': clickedDebate
     editDescriptionView.render()
 
-  showSubdebateDiv: (e) ->
+  showSubdebateDiv: (e, ui) ->
+    dragged = ui.draggable[0]
+    $(dragged).draggable( "option", "disabled", false )
     overDebate = @model.findDebate e.target.id
+    @disableDragDrop()
     @modalView?.close()
     @modalView = new Gruff.Views.Debates.SubdebateView
-      'el': $(e.target).find('.subdebate')
+      'el': $(e.target).find('.subdebate-show')
       'model': overDebate
       'parentView': @
     @modalView.render()

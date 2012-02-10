@@ -17,6 +17,7 @@ h1
   font-size 2.5em
   .vote-link
     margin-left 15px
+
 h2
   font-size 1.75em
   text-align center
@@ -402,7 +403,7 @@ ul.navigation
     margin-top -25px
   textarea
     margin-top -25px
-  .subdebate
+  .subdebate-show
     position absolute
     z-index 10
     width 800px
@@ -419,3 +420,8 @@ ul.navigation
   z-index 9
 .ui-draggable-dragging
   z-index 100
+.argument.ui-state-disabled, .answer.ui-state-disabled, .subdebate.ui-state-disabled,
+.for.ui-state-disabled, .against.ui-state-disabled, .subdebates.ui-state-disabled, .answers.ui-state-disabled
+  opacity 1
+.subdebate-title
+  width 100%

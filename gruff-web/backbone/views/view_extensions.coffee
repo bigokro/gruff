@@ -1,11 +1,11 @@
 
 _.extend(Backbone.View.prototype, 
 
-  moveDebate: (dragged, dropped, view) ->
-    droppedParent = $(dropped).parents('.debate')[0]
-    droppedDebateId = droppedParent.id
-    droppedDebate = @model.findDebate droppedDebateId
-    newCollection = droppedDebate.getCollectionByName dropped.className
+  moveDebate: (dragged, target, view) ->
+    targetParent = $(target).parents('.debate-list-item, .debate')[0]
+    targetDebateId = targetParent.id
+    targetDebate = @model.findDebate targetDebateId
+    newCollection = targetDebate.getCollectionByName target.className
 
     debate = @model.findDebate dragged.id
     oldCollection = debate.parentCollection
@@ -29,6 +29,7 @@ _.extend(Backbone.View.prototype,
 
   handleRemoteError: (data, jqXHR) ->
     alert jqXHR.responseText
+    dkfjasd()
     @model.set({errors: $.parseJSON(jqXHR.responseText)})
 
 )
