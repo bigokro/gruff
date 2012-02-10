@@ -98,7 +98,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       over: (e, ui) =>
         @timeout = setTimeout( 
           () => 
-            @showSubdebatesDiv(e)
+            @showSubdebateDiv(e)
           , 1500
         )
       out: (e, ui) =>
@@ -121,11 +121,11 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': clickedDebate
     editDescriptionView.render()
 
-  showSubdebatesDiv: (e) ->
+  showSubdebateDiv: (e) ->
     overDebate = @model.findDebate e.target.id
     @modalView?.close()
-    @modalView = new Gruff.Views.Debates.SubdebatesView
-      'el': e.target
+    @modalView = new Gruff.Views.Debates.SubdebateView
+      'el': $(e.target).find('.subdebate')
       'model': overDebate
       'parentView': @
     @modalView.render()

@@ -922,7 +922,7 @@
         greedy: true,
         over: function(e, ui) {
           return _this.timeout = setTimeout(function() {
-            return _this.showSubdebatesDiv(e);
+            return _this.showSubdebateDiv(e);
           }, 1500);
         },
         out: function(e, ui) {
@@ -953,12 +953,12 @@
       return editDescriptionView.render();
     };
 
-    ShowView.prototype.showSubdebatesDiv = function(e) {
+    ShowView.prototype.showSubdebateDiv = function(e) {
       var overDebate, _ref;
       overDebate = this.model.findDebate(e.target.id);
       if ((_ref = this.modalView) != null) _ref.close();
-      this.modalView = new Gruff.Views.Debates.SubdebatesView({
-        'el': e.target,
+      this.modalView = new Gruff.Views.Debates.SubdebateView({
+        'el': $(e.target).find('.subdebate'),
         'model': overDebate,
         'parentView': this
       });
@@ -971,35 +971,33 @@
 
   (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
-  Gruff.Views.Debates.SubdebatesView = (function(_super) {
+  Gruff.Views.Debates.SubdebateView = (function(_super) {
 
-    __extends(SubdebatesView, _super);
+    __extends(SubdebateView, _super);
 
-    function SubdebatesView() {
+    function SubdebateView() {
       this.lower = __bind(this.lower, this);
       this.raise = __bind(this.raise, this);
       this.close = __bind(this.close, this);
       this.handleKeys = __bind(this.handleKeys, this);
-      this.enableDragDrop = __bind(this.enableDragDrop, this);
-      SubdebatesView.__super__.constructor.apply(this, arguments);
+      SubdebateView.__super__.constructor.apply(this, arguments);
     }
 
-    SubdebatesView.prototype.initialize = function(options) {
-      this.parentView = options.parentView;
-      return this.template = _.template($('#debate-subdebates-template').text());
+    SubdebateView.prototype.initialize = function(options) {
+      SubdebateView.__super__.initialize.call(this, options);
+      return this.parentView = options.parentView;
     };
 
-    SubdebatesView.prototype.render = function() {
-      var json, offset;
-      json = this.model.fullJSON();
-      $(this.el).append(this.template(json));
-      this.subdebatesDiv = $(this.el).find('.debate-list-item-subdebates');
+    SubdebateView.prototype.render = function() {
+      var offset;
+      SubdebateView.__super__.render.apply(this, arguments);
+      $(this.el).show();
       offset = $(this.el).offset();
-      offset.top = offset.top + 20;
+      offset.top = offset.top - 20;
       offset.left = $(window).width() / 10;
-      $(this.subdebatesDiv).offset(offset);
-      $(this.subdebatesDiv).width($(window).width() * .8);
-      this.enableDragDrop();
+      $(this.el).css('position', 'absolute');
+      $(this.el).offset(offset);
+      $(this.el).width($(window).width() * .8);
       this.enableKeys();
       this.modal = $('.modal-bg');
       this.modal.show();
@@ -1009,42 +1007,17 @@
         top: 0,
         left: 0
       });
-      this.raise($(this.el));
+      this.raise($(this.el).parent());
       this.raise(this.modal);
       return this;
     };
 
-    SubdebatesView.prototype.enableDragDrop = function() {
-      var _this = this;
-      return $(this.el).find(".for, .against, .subdebates, .answers").droppable({
-        accept: '.subdebate, .argument, .debate, .answer',
-        drop: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          $(event.target).removeClass('over');
-          if ($(event.target).has(dragged).length === 0) {
-            return _this.moveDebate(dragged, event.target);
-          }
-        },
-        over: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          if ($(event.target).has(dragged).length === 0) {
-            return $(event.target).addClass('over');
-          }
-        },
-        out: function(event, ui) {
-          return $(event.target).removeClass('over');
-        }
-      });
-    };
-
-    SubdebatesView.prototype.enableKeys = function() {
+    SubdebateView.prototype.enableKeys = function() {
       _.bindAll(this, 'handleKeys');
       return $(document).bind('keydown', this.handleKeys);
     };
 
-    SubdebatesView.prototype.handleKeys = function(e) {
+    SubdebateView.prototype.handleKeys = function(e) {
       if (e.keyCode === 27) {
         this.close();
         return false;
@@ -1053,16 +1026,17 @@
       }
     };
 
-    SubdebatesView.prototype.close = function() {
+    SubdebateView.prototype.close = function() {
       $(document).unbind('keypress', 'handleKeys');
-      this.subdebatesDiv.remove();
-      this.lower($(this.el));
+      this.lower($(this.el).parent());
       this.lower(this.modal);
+      $(this.el).html("");
+      $(this.el).hide();
       this.modal.hide();
       return this.unbind();
     };
 
-    SubdebatesView.prototype.raise = function(el) {
+    SubdebateView.prototype.raise = function(el) {
       var newIndex, newZIndex;
       newIndex = 'auto';
       if ($(el).css('z-index') !== 'auto') {
@@ -1071,7 +1045,7 @@
       return $(el).css('z-index', newZIndex);
     };
 
-    SubdebatesView.prototype.lower = function(el) {
+    SubdebateView.prototype.lower = function(el) {
       var newIndex, newZIndex;
       newIndex = 'auto';
       if ($(el).css('z-index') !== 'auto') {
@@ -1080,9 +1054,9 @@
       return $(el).css('z-index', newZIndex);
     };
 
-    return SubdebatesView;
+    return SubdebateView;
 
-  })(Backbone.View);
+  })(Gruff.Views.Debates.ShowView);
 
   _.extend(Backbone.View.prototype, {
     moveDebate: function(dragged, dropped, view) {
