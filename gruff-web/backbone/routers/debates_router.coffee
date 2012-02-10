@@ -3,7 +3,7 @@ class Gruff.Routers.DebatesRouter extends Backbone.Router
     @model = new Gruff.Models.Debate {"_id": options.id}
     @model.fetch
       success: (model, response) =>
-        @view = new Gruff.Views.Debates.ShowView 'el': $('#main-debate'), 'model': model
+        @view = new Gruff.Views.Debates.ShowView 'el': $('#'+model.linkableId()), 'model': model
         @view.render()
 
   routes:

@@ -241,7 +241,7 @@
       return this.model.fetch({
         success: function(model, response) {
           _this.view = new Gruff.Views.Debates.ShowView({
-            'el': $('#main-debate'),
+            'el': $('#' + model.linkableId()),
             'model': model
           });
           return _this.view.render();
