@@ -31,6 +31,8 @@ h4.title, h4.title a
   font-weight bold
   color #A3181E
   background-color white
+h4.title
+  padding 2px
 div
   text-align left
 fieldset
@@ -392,8 +394,11 @@ ul.navigation
     font-size 1.2em
   .large
     font-size 1.5em
-.over
+.over, .over h4.title, .over h4.title a
   background-color #DDD
+.over > h4.title
+  border 2px dashed #A3181E
+  padding 0px
 .new-debate-link
   padding 3px
   background-color #DDD
@@ -406,7 +411,6 @@ ul.navigation
   .subdebate-show
     position absolute
     z-index 10
-    width 800px
     padding 10px
     background-color white
     border 1px solid
@@ -420,6 +424,8 @@ ul.navigation
   z-index 9
 .ui-draggable-dragging
   z-index 100
+.ui-draggable-dragging h4.title
+  padding 0px
 .argument.ui-state-disabled, .answer.ui-state-disabled, .subdebate.ui-state-disabled,
 .for.ui-state-disabled, .against.ui-state-disabled, .subdebates.ui-state-disabled, .answers.ui-state-disabled
   opacity 1

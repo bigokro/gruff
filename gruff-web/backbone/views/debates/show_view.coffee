@@ -36,22 +36,26 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
                         'el': $(@el).find('.answers .debates-list')
                         'collection': answers
                         'attributeType': 'answers'
+                        'parentView': @
                       @answersView.render()
                     if @model.get("type") == @model.DebateTypes.DIALECTIC
                       @argumentsForView = new Gruff.Views.Debates.ListView
                         'el': $(@el).find('.arguments .for .debates-list')
                         'collection': argumentsFor
                         'attributeType': 'argumentsFor'
+                        'parentView': @
                       @argumentsForView.render()
                       @argumentsAgainstView = new Gruff.Views.Debates.ListView
                         'el': $(@el).find('.arguments .against .debates-list')
                         'collection': argumentsAgainst
                         'attributeType': 'argumentsAgainst'
+                        'parentView': @
                       @argumentsAgainstView.render()
                     @subdebatesView = new Gruff.Views.Debates.ListView
                       'el': $(@el).find('.subdebates .debates-list')
                       'collection': subdebates
                       'attributeType': 'subdebates'
+                      'parentView': @
                     @subdebatesView.render()
                     @setUpDragDrop()
     @
@@ -69,12 +73,14 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
 
   setUpDragDrop: =>
-    $(@el).find( ".argument" ).draggable({ revert: true, refreshPositions: true })
-    $(@el).find( ".answer" ).draggable({ revert: true, refreshPositions: true })
-    $(@el).find( ".subdebate" ).draggable({ revert: true, refreshPositions: true })
-    $(@el).find( ".argument" ).width (index, width) ->
-      el = $("#"+this.id)
-      el.find("h4 > a").width()
+    $(@el).find( ".argument, .answer, .subdebate" ).draggable(
+      revert: true
+      refreshPositions: true
+      start: (e, ui) ->
+        $(e.target).width($(e.target).find("h4 > a").width())
+      stop: (e, ui) ->
+        $(e.target).width("100%")
+    )
 
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
@@ -98,8 +104,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       over: (e, ui) =>
         @timeout = setTimeout( 
           () => 
-            @showSubdebateDiv(e, ui)
-          , 1500
+            @toggleSubdebateDiv(e, ui)
+          , 1000
         )
       out: (e, ui) =>
         clearTimeout(@timeout)
@@ -131,15 +137,23 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': clickedDebate
     editDescriptionView.render()
 
-  showSubdebateDiv: (e, ui) ->
-    dragged = ui.draggable[0]
-    $(dragged).draggable( "option", "disabled", false )
-    overDebate = @model.findDebate e.target.id
-    @disableDragDrop()
-    @modalView?.close()
-    @modalView = new Gruff.Views.Debates.SubdebateView
-      'el': $(e.target).find('.subdebate-show')
-      'model': overDebate
-      'parentView': @
-    @modalView.render()
+  toggleSubdebateDiv: (e, ui) ->
+    if @modalView?
+      @modalView.close()
+      @modalView = null
+      @enableDragDrop()
+    else
+      subdebateDiv = e.target
+      subdebateDiv = $(e.target).parents('.debate-list-item')[0] unless $(e.target).hasClass('.debate-list-item')
+      @disableDragDrop()
+      if ui?
+        dragged = ui.draggable[0]
+        $(dragged).draggable( "option", "disabled", false )
+      $(subdebateDiv).droppable( "option", "disabled", false )
+      overDebate = @model.findDebate subdebateDiv.id
+      @modalView = new Gruff.Views.Debates.SubdebateView
+        'el': $(subdebateDiv).find('.subdebate-show')
+        'model': overDebate
+        'parentView': @
+      @modalView.render()
 

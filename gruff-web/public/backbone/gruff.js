@@ -45,6 +45,7 @@
       var json;
       json = this.toJSON();
       json.bestTitle = this.bestTitleText();
+      if (json.bestTitle == null) json.bestTitle = "(no title)";
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
       json.titleLink = this.titleLink();
@@ -581,6 +582,7 @@
     function ListItemView() {
       this.showSubdebates = __bind(this.showSubdebates, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
+      this.showDetails = __bind(this.showDetails, this);
       this.toggleDescription = __bind(this.toggleDescription, this);
       ListItemView.__super__.constructor.apply(this, arguments);
     }
@@ -588,11 +590,8 @@
     ListItemView.prototype.initialize = function(options) {
       this.template = _.template($('#debate-list-item-template').text());
       this.parentEl = options.parentEl;
+      this.parentView = options.parentView;
       return this.attributeType = options.attributeType;
-    };
-
-    ListItemView.prototype.events = {
-      "click .title a": "toggleDescription"
     };
 
     ListItemView.prototype.render = function() {
@@ -608,7 +607,7 @@
       if (this.attributeType === "subdebates") json.divClass = "subdebate";
       $(this.parentEl).append(this.template(json));
       this.el = $('#' + this.model.linkableId());
-      this.$("h4.title a").bind("click", this.toggleDescription);
+      this.$("h4.title a").bind("click", this.showDetails);
       return this;
     };
 
@@ -620,6 +619,10 @@
         this.$('div.body').toggle();
       }
       return false;
+    };
+
+    ListItemView.prototype.showDetails = function(e) {
+      return this.parentView.parentView.toggleSubdebateDiv(e);
     };
 
     ListItemView.prototype.enableDragDrop = function() {
@@ -667,7 +670,8 @@
     ListView.prototype.initialize = function(options) {
       this.attributeType = options.attributeType;
       this.collection.bind('add', this.add);
-      return this.collection.bind('remove', this.remove);
+      this.collection.bind('remove', this.remove);
+      return this.parentView = options.parentView;
     };
 
     ListView.prototype.render = function() {
@@ -692,7 +696,8 @@
       itemView = new Gruff.Views.Debates.ListItemView({
         'parentEl': this.el,
         'model': debate,
-        'attributeType': this.attributeType
+        'attributeType': this.attributeType,
+        'parentView': this
       });
       this.views.push(itemView);
       return itemView.render();
@@ -831,7 +836,8 @@
                         _this.answersView = new Gruff.Views.Debates.ListView({
                           'el': $(_this.el).find('.answers .debates-list'),
                           'collection': answers,
-                          'attributeType': 'answers'
+                          'attributeType': 'answers',
+                          'parentView': _this
                         });
                         _this.answersView.render();
                       }
@@ -839,20 +845,23 @@
                         _this.argumentsForView = new Gruff.Views.Debates.ListView({
                           'el': $(_this.el).find('.arguments .for .debates-list'),
                           'collection': argumentsFor,
-                          'attributeType': 'argumentsFor'
+                          'attributeType': 'argumentsFor',
+                          'parentView': _this
                         });
                         _this.argumentsForView.render();
                         _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
                           'el': $(_this.el).find('.arguments .against .debates-list'),
                           'collection': argumentsAgainst,
-                          'attributeType': 'argumentsAgainst'
+                          'attributeType': 'argumentsAgainst',
+                          'parentView': _this
                         });
                         _this.argumentsAgainstView.render();
                       }
                       _this.subdebatesView = new Gruff.Views.Debates.ListView({
                         'el': $(_this.el).find('.subdebates .debates-list'),
                         'collection': subdebates,
-                        'attributeType': 'subdebates'
+                        'attributeType': 'subdebates',
+                        'parentView': _this
                       });
                       _this.subdebatesView.render();
                       return _this.setUpDragDrop();
@@ -884,22 +893,15 @@
 
     ShowView.prototype.setUpDragDrop = function() {
       var _this = this;
-      $(this.el).find(".argument").draggable({
+      $(this.el).find(".argument, .answer, .subdebate").draggable({
         revert: true,
-        refreshPositions: true
-      });
-      $(this.el).find(".answer").draggable({
-        revert: true,
-        refreshPositions: true
-      });
-      $(this.el).find(".subdebate").draggable({
-        revert: true,
-        refreshPositions: true
-      });
-      $(this.el).find(".argument").width(function(index, width) {
-        var el;
-        el = $("#" + this.id);
-        return el.find("h4 > a").width();
+        refreshPositions: true,
+        start: function(e, ui) {
+          return $(e.target).width($(e.target).find("h4 > a").width());
+        },
+        stop: function(e, ui) {
+          return $(e.target).width("100%");
+        }
       });
       $(this.el).find(".for, .against, .subdebates, .answers").droppable({
         accept: '.subdebate, .argument, .debate, .answer',
@@ -928,8 +930,8 @@
         greedy: true,
         over: function(e, ui) {
           return _this.timeout = setTimeout(function() {
-            return _this.showSubdebateDiv(e, ui);
-          }, 1500);
+            return _this.toggleSubdebateDiv(e, ui);
+          }, 1000);
         },
         out: function(e, ui) {
           return clearTimeout(_this.timeout);
@@ -971,19 +973,31 @@
       return editDescriptionView.render();
     };
 
-    ShowView.prototype.showSubdebateDiv = function(e, ui) {
-      var dragged, overDebate, _ref;
-      dragged = ui.draggable[0];
-      $(dragged).draggable("option", "disabled", false);
-      overDebate = this.model.findDebate(e.target.id);
-      this.disableDragDrop();
-      if ((_ref = this.modalView) != null) _ref.close();
-      this.modalView = new Gruff.Views.Debates.SubdebateView({
-        'el': $(e.target).find('.subdebate-show'),
-        'model': overDebate,
-        'parentView': this
-      });
-      return this.modalView.render();
+    ShowView.prototype.toggleSubdebateDiv = function(e, ui) {
+      var dragged, overDebate, subdebateDiv;
+      if (this.modalView != null) {
+        this.modalView.close();
+        this.modalView = null;
+        return this.enableDragDrop();
+      } else {
+        subdebateDiv = e.target;
+        if (!$(e.target).hasClass('.debate-list-item')) {
+          subdebateDiv = $(e.target).parents('.debate-list-item')[0];
+        }
+        this.disableDragDrop();
+        if (ui != null) {
+          dragged = ui.draggable[0];
+          $(dragged).draggable("option", "disabled", false);
+        }
+        $(subdebateDiv).droppable("option", "disabled", false);
+        overDebate = this.model.findDebate(subdebateDiv.id);
+        this.modalView = new Gruff.Views.Debates.SubdebateView({
+          'el': $(subdebateDiv).find('.subdebate-show'),
+          'model': overDebate,
+          'parentView': this
+        });
+        return this.modalView.render();
+      }
     };
 
     return ShowView;

@@ -5,6 +5,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
     @attributeType = options.attributeType
     @collection.bind('add', @add);
     @collection.bind('remove', @remove);
+    @parentView = options.parentView
 
   render: ->
     @views = []
@@ -23,6 +24,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
       'parentEl': @el
       'model': debate
       'attributeType': @attributeType
+      'parentView': @
     @views.push itemView
     itemView.render()
 

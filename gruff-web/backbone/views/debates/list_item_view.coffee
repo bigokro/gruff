@@ -4,10 +4,8 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-list-item-template').text()
     @parentEl = options.parentEl
+    @parentView = options.parentView
     @attributeType = options.attributeType
-
-  events:
-    "click .title a": "toggleDescription"
 
   render: ->
     json = @model.fullJSON()
@@ -17,7 +15,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     if @attributeType == "subdebates" then json.divClass = "subdebate"
     $(@parentEl).append(@template json)
     @el = $('#'+@model.linkableId())
-    @.$("h4.title a").bind("click", @.toggleDescription)
+    @.$("h4.title a").bind("click", @showDetails)
     @
 
   toggleDescription: (e) =>
@@ -26,6 +24,9 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     unless $(parent).hasClass('ui-draggable-dragging')
       @.$('div.body').toggle()
     false
+
+  showDetails: (e) =>
+    @parentView.parentView.toggleSubdebateDiv(e)
 
   enableDragDrop: =>
     $(@el).droppable(

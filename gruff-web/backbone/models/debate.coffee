@@ -18,6 +18,7 @@ class Gruff.Models.Debate extends Backbone.Model
   fullJSON: () ->
     json = @toJSON()
     json.bestTitle = @bestTitleText()
+    json.bestTitle = "(no title)" unless json.bestTitle?
     json.bestDescription = @bestDescriptionText()
     json.linkableId = @linkableId()
     json.titleLink = @titleLink()

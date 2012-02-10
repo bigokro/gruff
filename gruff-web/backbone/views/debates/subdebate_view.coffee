@@ -36,7 +36,7 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
       true
 
   close: =>
-    $(document).unbind('keypress', 'handleKeys'); 
+    $(document).unbind('keypress', 'handleKeys');
     @parentView.enableDragDrop()
     @lower $(@el).parent()
     @lower @modal
