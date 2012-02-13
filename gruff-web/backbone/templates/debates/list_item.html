@@ -1,7 +1,29 @@
 <script type="text/x-jquery-tmpl" id="debate-list-item-template">
   <div class="debate-list-item <%=divClass%>" id="<%=linkableId%>">
-    <h4 class="title"><a href="#"><%= bestTitle %></a></h4>
+    <h4 class="title">
+      <a href="#" class="title-link"><%= bestTitle %></a>
+      <a href="#" class="zoom-link"><span class="ui-icon ui-icon-zoomin list-item-icon"> </span></a>
+    </h4>
     <div class="body description" style="display:none;"><%= bestDescription %></div>
+  <% if (type === DebateTypes.DIALECTIC) { %>
+  <div class="arguments" style="display:none; font-size:80%;">
+    <div class="for">
+      <h3>Arguments in Favor</h3>
+      <div class="debates-list"></div>
+    </div>
+    <div class="against">
+      <h3>Arguments Against</h3>
+      <div class="debates-list"></div>
+    </div>
+    <div class="clear"></div>
+  </div>
+  <% } %>
+  <% if (type === DebateTypes.DEBATE) { %>
+  <div class="answers" style="display:none; font-size:80%;">
+    <h3>Proposed Answers</h3>
+    <div class="debates-list"></div>
+  </div>
+  <% } %>
     <div class="subdebate-show" id="<%=linkableId%>-subdebate-show" style="display:none;"></div>
   </div>
 </script>

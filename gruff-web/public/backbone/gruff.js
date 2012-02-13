@@ -86,6 +86,27 @@
       return debates;
     };
 
+    Debate.prototype.fetchSubdebates = function(options) {
+      var _this = this;
+      return this.answers.fetch({
+        success: function(answers, response1) {
+          return _this.argumentsFor.fetch({
+            success: function(argumentsFor, response2) {
+              return _this.argumentsAgainst.fetch({
+                success: function(argumentsAgainst, response3) {
+                  return _this.subdebates.fetch({
+                    success: function(subdebates, response4) {
+                      return options != null ? typeof options.success === "function" ? options.success(subdebates, response4) : void 0 : void 0;
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    };
+
     Debate.prototype.findDebate = function(id) {
       var root;
       root = this.findRootDebate();
@@ -583,6 +604,7 @@
       this.showSubdebates = __bind(this.showSubdebates, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.showDetails = __bind(this.showDetails, this);
+      this.toggleSubdebates = __bind(this.toggleSubdebates, this);
       this.toggleDescription = __bind(this.toggleDescription, this);
       ListItemView.__super__.constructor.apply(this, arguments);
     }
@@ -607,7 +629,9 @@
       if (this.attributeType === "subdebates") json.divClass = "subdebate";
       $(this.parentEl).append(this.template(json));
       this.el = $('#' + this.model.linkableId());
-      this.$("h4.title a").bind("click", this.showDetails);
+      this.$("h4.title a.title-link").bind("click", this.toggleDescription);
+      this.$("h4.title a.title-link").bind("click", this.toggleSubdebates);
+      this.$("h4.title a.zoom-link").bind("click", this.showDetails);
       return this;
     };
 
@@ -621,8 +645,71 @@
       return false;
     };
 
+    ListItemView.prototype.toggleSubdebates = function(e) {
+      var containerEl, parent, _ref, _ref2, _ref3,
+        _this = this;
+      e.stopPropagation();
+      parent = $(e.target).parents('.debate-list-item')[0];
+      if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
+        containerEl = this.$('> div.arguments');
+      } else {
+        containerEl = this.$('> div.answers');
+      }
+      if ($(containerEl).css("display") === "none") {
+        containerEl.show();
+        this.model.fetchSubdebates({
+          success: function(subdebates, response4) {
+            var againstEl, answersEl, forEl, json;
+            json = _this.model.fullJSON();
+            json.loggedIn = true;
+            if (!$(parent).hasClass('ui-draggable-dragging')) {
+              if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
+                _this.$('div.arguments').show();
+                forEl = _this.$('> div.arguments > .for .debates-list').first();
+                againstEl = _this.$('> div.arguments > .against .debates-list').first();
+                _this.argumentsForView = new Gruff.Views.Debates.ListView({
+                  'el': forEl,
+                  'collection': _this.model.argumentsFor,
+                  'attributeType': 'argumentsFor',
+                  'parentView': _this
+                });
+                _this.argumentsForView.render();
+                _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
+                  'el': againstEl,
+                  'collection': _this.model.argumentsAgainst,
+                  'attributeType': 'argumentsAgainst',
+                  'parentView': _this
+                });
+                return _this.argumentsAgainstView.render();
+              } else {
+                answersEl = _this.$('> div.answers > .debates-list').first();
+                answersEl.show();
+                _this.answersView = new Gruff.Views.Debates.ListView({
+                  'el': answersEl,
+                  'collection': _this.model.answers,
+                  'attributeType': 'answers',
+                  'parentView': _this
+                });
+                return _this.answersView.render();
+              }
+            }
+          }
+        });
+      } else {
+        if ((_ref = this.argumentsForView) != null) _ref.close();
+        this.argumentsForView = null;
+        if ((_ref2 = this.argumentsAgainstView) != null) _ref2.close();
+        this.argumentsAgainstView = null;
+        if ((_ref3 = this.answersView) != null) _ref3.close();
+        this.answersView = null;
+        containerEl.hide();
+      }
+      return false;
+    };
+
     ListItemView.prototype.showDetails = function(e) {
-      return this.parentView.parentView.toggleSubdebateDiv(e);
+      this.parentView.parentView.toggleSubdebateDiv(e);
+      return false;
     };
 
     ListItemView.prototype.enableDragDrop = function() {
@@ -684,7 +771,7 @@
     };
 
     ListView.prototype.close = function() {
-      return this.views.each(function(view) {
+      return _.each(this.views, function(view) {
         view.remove();
         return view.unbind();
       });
@@ -812,65 +899,53 @@
 
     ShowView.prototype.render = function() {
       var _this = this;
-      this.model.answers.fetch({
-        success: function(answers, response1) {
-          return _this.model.argumentsFor.fetch({
-            success: function(argumentsFor, response2) {
-              return _this.model.argumentsAgainst.fetch({
-                success: function(argumentsAgainst, response3) {
-                  return _this.model.subdebates.fetch({
-                    success: function(subdebates, response4) {
-                      var json, _ref;
-                      json = _this.model.fullJSON();
-                      json.loggedIn = true;
-                      $(_this.el).html(_this.template(json));
-                      json.objecttype = "debates";
-                      json.objectid = json.linkableId;
-                      json.attributetype = "";
-                      json.attributeid = "";
-                      json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
-                        "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
-                      };
-                      $(_this.el).find('.tags').html(_this.tags_template(json));
-                      if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
-                        _this.answersView = new Gruff.Views.Debates.ListView({
-                          'el': $(_this.el).find('.answers .debates-list'),
-                          'collection': answers,
-                          'attributeType': 'answers',
-                          'parentView': _this
-                        });
-                        _this.answersView.render();
-                      }
-                      if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
-                        _this.argumentsForView = new Gruff.Views.Debates.ListView({
-                          'el': $(_this.el).find('.arguments .for .debates-list'),
-                          'collection': argumentsFor,
-                          'attributeType': 'argumentsFor',
-                          'parentView': _this
-                        });
-                        _this.argumentsForView.render();
-                        _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
-                          'el': $(_this.el).find('.arguments .against .debates-list'),
-                          'collection': argumentsAgainst,
-                          'attributeType': 'argumentsAgainst',
-                          'parentView': _this
-                        });
-                        _this.argumentsAgainstView.render();
-                      }
-                      _this.subdebatesView = new Gruff.Views.Debates.ListView({
-                        'el': $(_this.el).find('.subdebates .debates-list'),
-                        'collection': subdebates,
-                        'attributeType': 'subdebates',
-                        'parentView': _this
-                      });
-                      _this.subdebatesView.render();
-                      return _this.setUpDragDrop();
-                    }
-                  });
-                }
-              });
-            }
+      this.model.fetchSubdebates({
+        success: function(subdebates, response4) {
+          var json, _ref;
+          json = _this.model.fullJSON();
+          json.loggedIn = true;
+          $(_this.el).html(_this.template(json));
+          json.objecttype = "debates";
+          json.objectid = json.linkableId;
+          json.attributetype = "";
+          json.attributeid = "";
+          json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
+            "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
+          };
+          $(_this.el).find('.tags').html(_this.tags_template(json));
+          if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
+            _this.answersView = new Gruff.Views.Debates.ListView({
+              'el': $(_this.el).find('.answers .debates-list').first(),
+              'collection': _this.model.answers,
+              'attributeType': 'answers',
+              'parentView': _this
+            });
+            _this.answersView.render();
+          }
+          if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
+            _this.argumentsForView = new Gruff.Views.Debates.ListView({
+              'el': $(_this.el).find('> .arguments > .for .debates-list').first(),
+              'collection': _this.model.argumentsFor,
+              'attributeType': 'argumentsFor',
+              'parentView': _this
+            });
+            _this.argumentsForView.render();
+            _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
+              'el': $(_this.el).find('> .arguments > .against .debates-list').first(),
+              'collection': _this.model.argumentsAgainst,
+              'attributeType': 'argumentsAgainst',
+              'parentView': _this
+            });
+            _this.argumentsAgainstView.render();
+          }
+          _this.subdebatesView = new Gruff.Views.Debates.ListView({
+            'el': $(_this.el).find('> .subdebates .debates-list').first(),
+            'collection': _this.model.subdebates,
+            'attributeType': 'subdebates',
+            'parentView': _this
           });
+          _this.subdebatesView.render();
+          return _this.setUpDragDrop();
         }
       });
       return this;
@@ -897,7 +972,7 @@
         revert: true,
         refreshPositions: true,
         start: function(e, ui) {
-          return $(e.target).width($(e.target).find("h4 > a").width());
+          return $(e.target).width($(e.target).find("h4 > a.title-link").width());
         },
         stop: function(e, ui) {
           return $(e.target).width("100%");
@@ -981,7 +1056,7 @@
         return this.enableDragDrop();
       } else {
         subdebateDiv = e.target;
-        if (!$(e.target).hasClass('.debate-list-item')) {
+        if (!$(e.target).hasClass('debate-list-item')) {
           subdebateDiv = $(e.target).parents('.debate-list-item')[0];
         }
         this.disableDragDrop();
@@ -1028,7 +1103,6 @@
       SubdebateView.__super__.render.apply(this, arguments);
       $(this.el).show();
       offset = $(this.el).offset();
-      offset.top = offset.top - 20;
       offset.left = $(window).width() / 10;
       $(this.el).css('position', 'absolute');
       $(this.el).offset(offset);
@@ -1048,7 +1122,6 @@
     };
 
     SubdebateView.prototype.enableKeys = function() {
-      _.bindAll(this, 'handleKeys');
       return $(document).bind('keydown', this.handleKeys);
     };
 
@@ -1062,7 +1135,8 @@
     };
 
     SubdebateView.prototype.close = function() {
-      $(document).unbind('keypress', 'handleKeys');
+      $(document).unbind('keydown');
+      this.parentView.modalView = null;
       this.parentView.enableDragDrop();
       this.lower($(this.el).parent());
       this.lower(this.modal);

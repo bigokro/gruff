@@ -14,7 +14,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
     return @
 
   close: ->
-    @views.each (view) ->
+    _.each @views, (view) ->
       view.remove()
       view.unbind()
 

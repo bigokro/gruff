@@ -12,52 +12,47 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     "dblclick .debate-list-item .body": "showEditDescriptionForm"
 
   render: ->
-    @model.answers.fetch 
-      success: (answers, response1) =>
-        @model.argumentsFor.fetch
-          success: (argumentsFor, response2) =>
-            @model.argumentsAgainst.fetch
-              success: (argumentsAgainst, response3) =>
-                @model.subdebates.fetch
-                  success: (subdebates, response4) =>
-                    json = @model.fullJSON()
-                    json.loggedIn = true
-                    $(@el).html(@template json)
-                
-                    json.objecttype = "debates"
-                    json.objectid = json.linkableId
-                    json.attributetype = ""
-                    json.attributeid = ""
-                    json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
-                    $(@el).find('.tags').html(@tags_template json)
+    @model.fetchSubdebates(
+      success: (subdebates, response4) =>
+        json = @model.fullJSON()
+        json.loggedIn = true
+        $(@el).html(@template json)
+    
+        json.objecttype = "debates"
+        json.objectid = json.linkableId
+        json.attributetype = ""
+        json.attributeid = ""
+        json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
 
-                    if @model.get("type") == @model.DebateTypes.DEBATE
-                      @answersView = new Gruff.Views.Debates.ListView
-                        'el': $(@el).find('.answers .debates-list')
-                        'collection': answers
-                        'attributeType': 'answers'
-                        'parentView': @
-                      @answersView.render()
-                    if @model.get("type") == @model.DebateTypes.DIALECTIC
-                      @argumentsForView = new Gruff.Views.Debates.ListView
-                        'el': $(@el).find('.arguments .for .debates-list')
-                        'collection': argumentsFor
-                        'attributeType': 'argumentsFor'
-                        'parentView': @
-                      @argumentsForView.render()
-                      @argumentsAgainstView = new Gruff.Views.Debates.ListView
-                        'el': $(@el).find('.arguments .against .debates-list')
-                        'collection': argumentsAgainst
-                        'attributeType': 'argumentsAgainst'
-                        'parentView': @
-                      @argumentsAgainstView.render()
-                    @subdebatesView = new Gruff.Views.Debates.ListView
-                      'el': $(@el).find('.subdebates .debates-list')
-                      'collection': subdebates
-                      'attributeType': 'subdebates'
-                      'parentView': @
-                    @subdebatesView.render()
-                    @setUpDragDrop()
+        $(@el).find('.tags').html(@tags_template json)
+        if @model.get("type") == @model.DebateTypes.DEBATE
+          @answersView = new Gruff.Views.Debates.ListView
+            'el': $(@el).find('.answers .debates-list').first()
+            'collection': @model.answers
+            'attributeType': 'answers'
+            'parentView': @
+          @answersView.render()
+        if @model.get("type") == @model.DebateTypes.DIALECTIC
+          @argumentsForView = new Gruff.Views.Debates.ListView
+            'el': $(@el).find('> .arguments > .for .debates-list').first()
+            'collection': @model.argumentsFor
+            'attributeType': 'argumentsFor'
+            'parentView': @
+          @argumentsForView.render()
+          @argumentsAgainstView = new Gruff.Views.Debates.ListView
+            'el': $(@el).find('> .arguments > .against .debates-list').first()
+            'collection': @model.argumentsAgainst
+            'attributeType': 'argumentsAgainst'
+            'parentView': @
+          @argumentsAgainstView.render()
+        @subdebatesView = new Gruff.Views.Debates.ListView
+          'el': $(@el).find('> .subdebates .debates-list').first()
+          'collection': @model.subdebates
+          'attributeType': 'subdebates'
+          'parentView': @
+        @subdebatesView.render()
+        @setUpDragDrop()
+    )
     @
 
   showNewDebateForm: (e) ->
@@ -77,7 +72,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       revert: true
       refreshPositions: true
       start: (e, ui) ->
-        $(e.target).width($(e.target).find("h4 > a").width())
+        $(e.target).width($(e.target).find("h4 > a.title-link").width())
       stop: (e, ui) ->
         $(e.target).width("100%")
     )
@@ -144,7 +139,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @enableDragDrop()
     else
       subdebateDiv = e.target
-      subdebateDiv = $(e.target).parents('.debate-list-item')[0] unless $(e.target).hasClass('.debate-list-item')
+      subdebateDiv = $(e.target).parents('.debate-list-item')[0] unless $(e.target).hasClass('debate-list-item')
       @disableDragDrop()
       if ui?
         dragged = ui.draggable[0]

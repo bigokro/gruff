@@ -9,7 +9,6 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     super
     $(@el).show()
     offset = $(@el).offset()
-    offset.top = offset.top - 20
     offset.left = $(window).width() / 10
     $(@el).css('position', 'absolute')
     $(@el).offset(offset)
@@ -25,7 +24,6 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @
 
   enableKeys: ->
-    _.bindAll(@, 'handleKeys');
     $(document).bind('keydown', @handleKeys);
 
   handleKeys: (e) =>
@@ -36,7 +34,8 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
       true
 
   close: =>
-    $(document).unbind('keypress', 'handleKeys');
+    $(document).unbind('keydown')
+    @parentView.modalView = null
     @parentView.enableDragDrop()
     @lower $(@el).parent()
     @lower @modal

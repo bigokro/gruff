@@ -15,7 +15,9 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     if @attributeType == "subdebates" then json.divClass = "subdebate"
     $(@parentEl).append(@template json)
     @el = $('#'+@model.linkableId())
-    @.$("h4.title a").bind("click", @showDetails)
+    @.$("h4.title a.title-link").bind("click", @toggleDescription)
+    @.$("h4.title a.title-link").bind("click", @toggleSubdebates)
+    @.$("h4.title a.zoom-link").bind("click", @showDetails)
     @
 
   toggleDescription: (e) =>
@@ -25,8 +27,59 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       @.$('div.body').toggle()
     false
 
+  toggleSubdebates: (e) =>
+    e.stopPropagation()
+    parent = $(e.target).parents('.debate-list-item')[0]
+    if @model.get("type") == @model.DebateTypes.DIALECTIC
+      containerEl = @.$('> div.arguments')
+    else
+      containerEl = @.$('> div.answers')
+    if ($(containerEl).css("display") == "none")
+      containerEl.show()
+      @model.fetchSubdebates(
+        success: (subdebates, response4) =>
+          json = @model.fullJSON()
+          json.loggedIn = true
+          unless $(parent).hasClass('ui-draggable-dragging')
+            if @model.get("type") == @model.DebateTypes.DIALECTIC
+              @.$('div.arguments').show()
+              forEl = @.$('> div.arguments > .for .debates-list').first()
+              againstEl = @.$('> div.arguments > .against .debates-list').first()
+              @argumentsForView = new Gruff.Views.Debates.ListView
+                'el': forEl
+                'collection': @model.argumentsFor
+                'attributeType': 'argumentsFor'
+                'parentView': @
+              @argumentsForView.render()
+              @argumentsAgainstView = new Gruff.Views.Debates.ListView
+                'el': againstEl
+                'collection': @model.argumentsAgainst
+                'attributeType': 'argumentsAgainst'
+                'parentView': @
+              @argumentsAgainstView.render()
+            else
+              answersEl = @.$('> div.answers > .debates-list').first()
+              answersEl.show()
+              @answersView = new Gruff.Views.Debates.ListView
+                'el': answersEl
+                'collection': @model.answers
+                'attributeType': 'answers'
+                'parentView': @
+              @answersView.render()
+      )
+    else
+      @argumentsForView?.close()
+      @argumentsForView = null
+      @argumentsAgainstView?.close()
+      @argumentsAgainstView = null
+      @answersView?.close()
+      @answersView = null
+      containerEl.hide()
+    false
+
   showDetails: (e) =>
     @parentView.parentView.toggleSubdebateDiv(e)
+    false
 
   enableDragDrop: =>
     $(@el).droppable(

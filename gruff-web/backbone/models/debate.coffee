@@ -39,6 +39,17 @@ class Gruff.Models.Debate extends Backbone.Model
     debates.bind("remove", @makeRemoveFromCollectionEvent(debates))
     debates
 
+  fetchSubdebates: (options) ->
+    @answers.fetch 
+      success: (answers, response1) =>
+        @argumentsFor.fetch
+          success: (argumentsFor, response2) =>
+            @argumentsAgainst.fetch
+              success: (argumentsAgainst, response3) =>
+                @subdebates.fetch
+                  success: (subdebates, response4) =>
+                    options?.success? subdebates, response4
+
   findDebate: (id) ->
     root = @findRootDebate()
     root.findSubdebate(id)
