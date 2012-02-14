@@ -5,6 +5,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @template = _.template $('#debate-list-item-template').text()
     @parentEl = options.parentEl
     @parentView = options.parentView
+    @showView = options.showView
     @attributeType = options.attributeType
 
   render: ->
@@ -50,12 +51,14 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
                 'collection': @model.argumentsFor
                 'attributeType': 'argumentsFor'
                 'parentView': @
+                'showView': @showView
               @argumentsForView.render()
               @argumentsAgainstView = new Gruff.Views.Debates.ListView
                 'el': againstEl
                 'collection': @model.argumentsAgainst
                 'attributeType': 'argumentsAgainst'
                 'parentView': @
+                'showView': @showView
               @argumentsAgainstView.render()
             else
               answersEl = @.$('> div.answers > .debates-list').first()
@@ -65,6 +68,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
                 'collection': @model.answers
                 'attributeType': 'answers'
                 'parentView': @
+                'showView': @showView
               @answersView.render()
       )
     else
@@ -78,7 +82,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     false
 
   showDetails: (e) =>
-    @parentView.parentView.toggleSubdebateDiv(e)
+    @showView.toggleSubdebateDiv(e)
     false
 
   enableDragDrop: =>
@@ -98,3 +102,4 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       'el': @el
       'model': @model
     subdebatesView.render()
+

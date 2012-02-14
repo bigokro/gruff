@@ -31,6 +31,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             'collection': @model.answers
             'attributeType': 'answers'
             'parentView': @
+            'showView': @
           @answersView.render()
         if @model.get("type") == @model.DebateTypes.DIALECTIC
           @argumentsForView = new Gruff.Views.Debates.ListView
@@ -38,18 +39,21 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             'collection': @model.argumentsFor
             'attributeType': 'argumentsFor'
             'parentView': @
+            'showView': @
           @argumentsForView.render()
           @argumentsAgainstView = new Gruff.Views.Debates.ListView
             'el': $(@el).find('> .arguments > .against .debates-list').first()
             'collection': @model.argumentsAgainst
             'attributeType': 'argumentsAgainst'
             'parentView': @
+            'showView': @
           @argumentsAgainstView.render()
         @subdebatesView = new Gruff.Views.Debates.ListView
           'el': $(@el).find('> .subdebates .debates-list').first()
           'collection': @model.subdebates
           'attributeType': 'subdebates'
           'parentView': @
+          'showView': @
         @subdebatesView.render()
         @setUpDragDrop()
     )

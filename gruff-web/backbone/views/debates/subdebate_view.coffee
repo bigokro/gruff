@@ -19,8 +19,7 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @modal.width($(document).width())
     @modal.height($(document).height())
     @modal.offset({ top: 0, left: 0 })
-    @raise $(@el).parent()
-    @raise @modal
+    @raise()
     @
 
   enableKeys: ->
@@ -37,19 +36,26 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     $(document).unbind('keydown')
     @parentView.modalView = null
     @parentView.enableDragDrop()
-    @lower $(@el).parent()
-    @lower @modal
+    @lower()
     $(@el).html("")
     $(@el).hide()
     @modal.hide()
     @unbind()
 
-  raise: (el) =>
-    newIndex = 'auto'
-    newZIndex = parseInt($(el).css('z-index')) + 5 unless $(el).css('z-index') == 'auto'
-    $(el).css('z-index', newZIndex)
+  raise: =>
+    target = $(@el).parent()
+    newZIndex = $(target).parents('.debate-list-item').css('z-index')
+    newZIndex = $(target).css('z-index') unless newZIndex?
+    newZIndex = parseInt(newZIndex) + 5
+    alert("z-index: " + newZIndex)
+    $(target).css('z-index', newZIndex)
+    $(@el).css('z-index', newZIndex)
+    $(@el).find('.debate-list-item').css('z-index', newZIndex)
+    $(@modal).css('z-index', newZIndex-1)
 
-  lower: (el) =>
+  lower: =>
+    target = $(@el).parent()
     newIndex = 'auto'
-    newZIndex = parseInt($(el).css('z-index')) - 5 unless $(el).css('z-index') == 'auto'
-    $(el).css('z-index', newZIndex)
+    newZIndex = parseInt($(target).css('z-index')) - 5 unless $(target).css('z-index') == 'auto'
+    $(target).css('z-index', newZIndex)
+    $(@modal).css('z-index', -1)

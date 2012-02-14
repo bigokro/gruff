@@ -49,5 +49,8 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
     if e.keyCode == 13
       @save()
       false
+    else if e.keyCode == 27
+      @close()
+      false
     else
       true

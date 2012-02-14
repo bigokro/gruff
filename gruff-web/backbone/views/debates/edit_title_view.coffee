@@ -31,7 +31,7 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     json = @model.fullJSON()
     @el = $(@el).parents('.title')[0] unless $(@el).hasClass('.title')
     $(@el).append(@template( json ))
-    @titleLink = $(@el).find('a')
+    @titleLink = $(@el).find('a.title-link')
     @titleLink.hide()
     @editTitleField = $(@el).find('#'+@model.linkableId()+"-title-field")
     @editTitleField.bind("keypress", @handleKeys)
@@ -49,5 +49,9 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     if e.keyCode == 13
       @save()
       false
+    else if e.keyCode == 27
+      @close()
+      false
     else
+      alert(e.keyCode)
       true

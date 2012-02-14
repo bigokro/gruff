@@ -422,6 +422,9 @@
       if (e.keyCode === 13) {
         this.save();
         return false;
+      } else if (e.keyCode === 27) {
+        this.close();
+        return false;
       } else {
         return true;
       }
@@ -484,7 +487,7 @@
         this.el = $(this.el).parents('.title')[0];
       }
       $(this.el).append(this.template(json));
-      this.titleLink = $(this.el).find('a');
+      this.titleLink = $(this.el).find('a.title-link');
       this.titleLink.hide();
       this.editTitleField = $(this.el).find('#' + this.model.linkableId() + "-title-field");
       this.editTitleField.bind("keypress", this.handleKeys);
@@ -504,7 +507,11 @@
       if (e.keyCode === 13) {
         this.save();
         return false;
+      } else if (e.keyCode === 27) {
+        this.close();
+        return false;
       } else {
+        alert(e.keyCode);
         return true;
       }
     };
@@ -613,6 +620,7 @@
       this.template = _.template($('#debate-list-item-template').text());
       this.parentEl = options.parentEl;
       this.parentView = options.parentView;
+      this.showView = options.showView;
       return this.attributeType = options.attributeType;
     };
 
@@ -671,14 +679,16 @@
                   'el': forEl,
                   'collection': _this.model.argumentsFor,
                   'attributeType': 'argumentsFor',
-                  'parentView': _this
+                  'parentView': _this,
+                  'showView': _this.showView
                 });
                 _this.argumentsForView.render();
                 _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
                   'el': againstEl,
                   'collection': _this.model.argumentsAgainst,
                   'attributeType': 'argumentsAgainst',
-                  'parentView': _this
+                  'parentView': _this,
+                  'showView': _this.showView
                 });
                 return _this.argumentsAgainstView.render();
               } else {
@@ -688,7 +698,8 @@
                   'el': answersEl,
                   'collection': _this.model.answers,
                   'attributeType': 'answers',
-                  'parentView': _this
+                  'parentView': _this,
+                  'showView': _this.showView
                 });
                 return _this.answersView.render();
               }
@@ -708,7 +719,7 @@
     };
 
     ListItemView.prototype.showDetails = function(e) {
-      this.parentView.parentView.toggleSubdebateDiv(e);
+      this.showView.toggleSubdebateDiv(e);
       return false;
     };
 
@@ -758,7 +769,8 @@
       this.attributeType = options.attributeType;
       this.collection.bind('add', this.add);
       this.collection.bind('remove', this.remove);
-      return this.parentView = options.parentView;
+      this.parentView = options.parentView;
+      return this.showView = options.showView;
     };
 
     ListView.prototype.render = function() {
@@ -784,7 +796,8 @@
         'parentEl': this.el,
         'model': debate,
         'attributeType': this.attributeType,
-        'parentView': this
+        'parentView': this,
+        'showView': this.showView
       });
       this.views.push(itemView);
       return itemView.render();
@@ -918,7 +931,8 @@
               'el': $(_this.el).find('.answers .debates-list').first(),
               'collection': _this.model.answers,
               'attributeType': 'answers',
-              'parentView': _this
+              'parentView': _this,
+              'showView': _this
             });
             _this.answersView.render();
           }
@@ -927,14 +941,16 @@
               'el': $(_this.el).find('> .arguments > .for .debates-list').first(),
               'collection': _this.model.argumentsFor,
               'attributeType': 'argumentsFor',
-              'parentView': _this
+              'parentView': _this,
+              'showView': _this
             });
             _this.argumentsForView.render();
             _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
               'el': $(_this.el).find('> .arguments > .against .debates-list').first(),
               'collection': _this.model.argumentsAgainst,
               'attributeType': 'argumentsAgainst',
-              'parentView': _this
+              'parentView': _this,
+              'showView': _this
             });
             _this.argumentsAgainstView.render();
           }
@@ -942,7 +958,8 @@
             'el': $(_this.el).find('> .subdebates .debates-list').first(),
             'collection': _this.model.subdebates,
             'attributeType': 'subdebates',
-            'parentView': _this
+            'parentView': _this,
+            'showView': _this
           });
           _this.subdebatesView.render();
           return _this.setUpDragDrop();
@@ -1116,8 +1133,7 @@
         top: 0,
         left: 0
       });
-      this.raise($(this.el).parent());
-      this.raise(this.modal);
+      this.raise();
       return this;
     };
 
@@ -1138,30 +1154,35 @@
       $(document).unbind('keydown');
       this.parentView.modalView = null;
       this.parentView.enableDragDrop();
-      this.lower($(this.el).parent());
-      this.lower(this.modal);
+      this.lower();
       $(this.el).html("");
       $(this.el).hide();
       this.modal.hide();
       return this.unbind();
     };
 
-    SubdebateView.prototype.raise = function(el) {
-      var newIndex, newZIndex;
-      newIndex = 'auto';
-      if ($(el).css('z-index') !== 'auto') {
-        newZIndex = parseInt($(el).css('z-index')) + 5;
-      }
-      return $(el).css('z-index', newZIndex);
+    SubdebateView.prototype.raise = function() {
+      var newZIndex, target;
+      target = $(this.el).parent();
+      newZIndex = $(target).parents('.debate-list-item').css('z-index');
+      if (newZIndex == null) newZIndex = $(target).css('z-index');
+      newZIndex = parseInt(newZIndex) + 5;
+      alert("z-index: " + newZIndex);
+      $(target).css('z-index', newZIndex);
+      $(this.el).css('z-index', newZIndex);
+      $(this.el).find('.debate-list-item').css('z-index', newZIndex);
+      return $(this.modal).css('z-index', newZIndex - 1);
     };
 
-    SubdebateView.prototype.lower = function(el) {
-      var newIndex, newZIndex;
+    SubdebateView.prototype.lower = function() {
+      var newIndex, newZIndex, target;
+      target = $(this.el).parent();
       newIndex = 'auto';
-      if ($(el).css('z-index') !== 'auto') {
-        newZIndex = parseInt($(el).css('z-index')) - 5;
+      if ($(target).css('z-index') !== 'auto') {
+        newZIndex = parseInt($(target).css('z-index')) - 5;
       }
-      return $(el).css('z-index', newZIndex);
+      $(target).css('z-index', newZIndex);
+      return $(this.modal).css('z-index', -1);
     };
 
     return SubdebateView;
