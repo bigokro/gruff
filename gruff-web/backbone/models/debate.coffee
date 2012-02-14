@@ -49,6 +49,7 @@ class Gruff.Models.Debate extends Backbone.Model
                 @subdebates.fetch
                   success: (subdebates, response4) =>
                     options?.success? subdebates, response4
+                    @trigger "fetched-subdebates"
 
   findDebate: (id) ->
     root = @findRootDebate()

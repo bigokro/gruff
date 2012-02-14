@@ -96,7 +96,12 @@
                 success: function(argumentsAgainst, response3) {
                   return _this.subdebates.fetch({
                     success: function(subdebates, response4) {
-                      return options != null ? typeof options.success === "function" ? options.success(subdebates, response4) : void 0 : void 0;
+                      if (options != null) {
+                        if (typeof options.success === "function") {
+                          options.success(subdebates, response4);
+                        }
+                      }
+                      return _this.trigger("fetched-subdebates");
                     }
                   });
                 }
@@ -1116,24 +1121,20 @@
     };
 
     SubdebateView.prototype.render = function() {
-      var offset;
-      SubdebateView.__super__.render.apply(this, arguments);
-      $(this.el).show();
-      offset = $(this.el).offset();
-      offset.left = $(window).width() / 10;
-      $(this.el).css('position', 'absolute');
-      $(this.el).offset(offset);
-      $(this.el).width($(window).width() * .8);
-      this.enableKeys();
-      this.modal = $('.modal-bg');
-      this.modal.show();
-      this.modal.width($(document).width());
-      this.modal.height($(document).height());
-      this.modal.offset({
-        top: 0,
-        left: 0
+      var _this = this;
+      this.model.bind("fetched-subdebates", function() {
+        var offset;
+        $(_this.el).show();
+        offset = $(_this.el).offset();
+        offset.left = $(window).width() / 10;
+        $(_this.el).css('position', 'absolute');
+        $(_this.el).offset(offset);
+        $(_this.el).width($(window).width() * .8);
+        _this.enableKeys();
+        _this.addModal();
+        return _this.raise();
       });
-      this.raise();
+      SubdebateView.__super__.render.apply(this, arguments);
       return this;
     };
 
@@ -1150,6 +1151,17 @@
       }
     };
 
+    SubdebateView.prototype.addModal = function() {
+      $(this.el).parents('.debates-list').first().append('<div class="modal-bg"></div>');
+      this.modal = $(this.el).parents('.debates-list').first().find('.modal-bg');
+      this.modal.width($(document).width());
+      this.modal.height($(document).height());
+      return this.modal.offset({
+        top: 0,
+        left: 0
+      });
+    };
+
     SubdebateView.prototype.close = function() {
       $(document).unbind('keydown');
       this.parentView.modalView = null;
@@ -1162,12 +1174,13 @@
     };
 
     SubdebateView.prototype.raise = function() {
-      var newZIndex, target;
+      var newZIndex, oldZIndex, target;
       target = $(this.el).parent();
-      newZIndex = $(target).parents('.debate-list-item').css('z-index');
-      if (newZIndex == null) newZIndex = $(target).css('z-index');
-      newZIndex = parseInt(newZIndex) + 5;
-      alert("z-index: " + newZIndex);
+      oldZIndex = $(target).parents('.debate-list-item').css('z-index');
+      if (typeof newZIndex === "undefined" || newZIndex === null) {
+        oldZIndex = $(target).css('z-index');
+      }
+      newZIndex = parseInt(oldZIndex) + 5;
       $(target).css('z-index', newZIndex);
       $(this.el).css('z-index', newZIndex);
       $(this.el).find('.debate-list-item').css('z-index', newZIndex);

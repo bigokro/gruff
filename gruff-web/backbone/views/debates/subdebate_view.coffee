@@ -6,20 +6,18 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @parentView = options.parentView
 
   render: ->
+    @model.bind("fetched-subdebates", () =>
+      $(@el).show()
+      offset = $(@el).offset()
+      offset.left = $(window).width() / 10
+      $(@el).css('position', 'absolute')
+      $(@el).offset(offset)
+      $(@el).width($(window).width() * .8)
+      @enableKeys()
+      @addModal()
+      @raise()
+    )
     super
-    $(@el).show()
-    offset = $(@el).offset()
-    offset.left = $(window).width() / 10
-    $(@el).css('position', 'absolute')
-    $(@el).offset(offset)
-    $(@el).width($(window).width() * .8)
-    @enableKeys()
-    @modal = $('.modal-bg')
-    @modal.show()
-    @modal.width($(document).width())
-    @modal.height($(document).height())
-    @modal.offset({ top: 0, left: 0 })
-    @raise()
     @
 
   enableKeys: ->
@@ -31,6 +29,14 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
       false
     else
       true
+
+  addModal: ->
+    $(@el).parents('.debates-list').first().append('<div class="modal-bg"></div>')
+    @modal = $(@el).parents('.debates-list').first().find('.modal-bg')
+    @modal.width($(document).width())
+    @modal.height($(document).height())
+    @modal.offset({ top: 0, left: 0 })
+
 
   close: =>
     $(document).unbind('keydown')
@@ -44,10 +50,9 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
 
   raise: =>
     target = $(@el).parent()
-    newZIndex = $(target).parents('.debate-list-item').css('z-index')
-    newZIndex = $(target).css('z-index') unless newZIndex?
-    newZIndex = parseInt(newZIndex) + 5
-    alert("z-index: " + newZIndex)
+    oldZIndex = $(target).parents('.debate-list-item').css('z-index')
+    oldZIndex = $(target).css('z-index') unless newZIndex?
+    newZIndex = parseInt(oldZIndex) + 5
     $(target).css('z-index', newZIndex)
     $(@el).css('z-index', newZIndex)
     $(@el).find('.debate-list-item').css('z-index', newZIndex)
