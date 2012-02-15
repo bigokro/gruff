@@ -22,9 +22,8 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
       success: (data) =>
         @titleLink.html newTitle
         @close()
-      error: (debate, jqXHR) =>
-        @model.set({errors: $.parseJSON(jqXHR.responseText)})
-        alert jqXHR.responseText
+      error: (jqXHR, type) =>
+        @handleRemoteError jqXHR
     )
 
   render: ->
@@ -53,5 +52,4 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
       @close()
       false
     else
-      alert(e.keyCode)
       true

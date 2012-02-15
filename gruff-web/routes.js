@@ -676,7 +676,8 @@ bounceAnonymous = function (req, res) {
   if (! req.loggedIn) {
     console.log('bouncing anonymous user');
     if (req.xhr) {
-	res.json([{ "message": "You must be logged in to perform this action." }]);
+      res.statusCode = 401;
+      res.json([{ "message": "You must be logged in to perform this action." }]);
     } else {
       res.redirect('/login');
     }

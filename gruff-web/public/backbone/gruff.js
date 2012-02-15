@@ -476,11 +476,8 @@
           _this.titleLink.html(newTitle);
           return _this.close();
         },
-        error: function(debate, jqXHR) {
-          _this.model.set({
-            errors: $.parseJSON(jqXHR.responseText)
-          });
-          return alert(jqXHR.responseText);
+        error: function(jqXHR, type) {
+          return _this.handleRemoteError(jqXHR);
         }
       });
     };
@@ -516,7 +513,6 @@
         this.close();
         return false;
       } else {
-        alert(e.keyCode);
         return true;
       }
     };
@@ -1214,27 +1210,38 @@
       oldCollection = debate.parentCollection;
       oldCollection.remove(debate);
       newCollection.add(debate);
-      oldCollection.parent.save({
+      return oldCollection.parent.save(null, {
+        wait: true,
         error: function(debate, jqXHR) {
-          return _this.handleRemoteError(debate, jqXHR);
+          return _this.handleRemoteError(jqXHR);
+        },
+        success: function() {
+          if (oldCollection.parent !== newCollection.parent) {
+            return debate.save(null, {
+              wait: true,
+              error: function(debate, jqXHR) {
+                return _this.handleRemoteError(jqXHR);
+              },
+              success: function() {
+                return newCollection.parent.save(null, {
+                  wait: true,
+                  error: function(debate, jqXHR) {
+                    return _this.handleRemoteError(jqXHR);
+                  }
+                });
+              }
+            });
+          }
         }
       });
-      if (oldCollection.parent !== newCollection.parent) {
-        debate.save({
-          error: function(debate, jqXHR) {
-            return _this.handleRemoteError(debate, jqXHR);
-          }
-        });
-        return newCollection.parent.save({
-          error: function(debate, jqXHR) {
-            return _this.handleRemoteError(debate, jqXHR);
-          }
-        });
-      }
     },
-    handleRemoteError: function(data, jqXHR) {
-      alert(jqXHR.responseText);
-      dkfjasd();
+    handleRemoteError: function(jqXHR, data) {
+      var message, _ref;
+      message = $.parseJSON(jqXHR.responseText);
+      if (((_ref = message[0]) != null ? _ref.message : void 0) != null) {
+        message = message[0].message;
+      }
+      alert(message);
       return this.model.set({
         errors: $.parseJSON(jqXHR.responseText)
       });

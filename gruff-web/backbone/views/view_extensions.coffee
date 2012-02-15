@@ -13,23 +13,29 @@ _.extend(Backbone.View.prototype,
     oldCollection.remove debate
     newCollection.add debate
 
-    oldCollection.parent.save(
+    oldCollection.parent.save(null,
+      wait: true
       error: (debate, jqXHR) =>
-        @handleRemoteError(debate, jqXHR)
+        @handleRemoteError(jqXHR)
+      success: =>
+        if oldCollection.parent != newCollection.parent
+          debate.save(null,
+            wait: true
+            error: (debate, jqXHR) =>
+              @handleRemoteError(jqXHR)
+            success: =>
+              newCollection.parent.save(null,
+                wait: true
+                error: (debate, jqXHR) =>
+                  @handleRemoteError(jqXHR)
+              )
+          )
     )
-    if oldCollection.parent != newCollection.parent
-      debate.save(
-        error: (debate, jqXHR) =>
-          @handleRemoteError(debate, jqXHR)
-      )
-      newCollection.parent.save(
-        error: (debate, jqXHR) =>
-          @handleRemoteError(debate, jqXHR)
-      )
 
-  handleRemoteError: (data, jqXHR) ->
-    alert jqXHR.responseText
-    dkfjasd()
+  handleRemoteError: (jqXHR, data) ->
+    message = $.parseJSON(jqXHR.responseText)
+    message = message[0].message if message[0]?.message?
+    alert message
     @model.set({errors: $.parseJSON(jqXHR.responseText)})
 
 )
