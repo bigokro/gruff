@@ -21,8 +21,6 @@ class Gruff.Views.ModalView extends Backbone.View
     @bg.width($(document).width())
     @bg.height($(document).height())
     @bg.offset({ top: 0, left: 0 })
-    zIndex = $(@el).css('z-index')
-    $(@bg).css('z-index', zIndex-1)
 
   close: =>
     @bg.remove()

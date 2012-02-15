@@ -123,6 +123,7 @@ app.post('/rest/debates/:parentid/:attributetype/:id', routes.postDebate);
 app.post('/rest/debates/:id/:attributetype', routes.addDebateToDebate);
 app.put('/rest/debates/:id', routes.putDebate);
 app.put('/rest/debates/:parentid/:attributetype/:id', routes.putDebate);
+app.post('/rest/login', routes.postJSONLogin);
 
 
 // default

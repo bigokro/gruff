@@ -263,7 +263,7 @@
 
     Login.prototype.paramRoot = 'login';
 
-    Login.prototype.urlRoot = '/rest/login';
+    Login.prototype.urlRoot = '/login';
 
     Login.prototype.defaults = {
       login: null,
@@ -372,17 +372,14 @@
     };
 
     ModalView.prototype.addBg = function() {
-      var zIndex;
       $("body").append('<div class="modal-bg" id="modal-bg"></div>');
       this.bg = $("#modal-bg");
       this.bg.width($(document).width());
       this.bg.height($(document).height());
-      this.bg.offset({
+      return this.bg.offset({
         top: 0,
         left: 0
       });
-      zIndex = $(this.el).css('z-index');
-      return $(this.bg).css('z-index', zIndex - 1);
     };
 
     ModalView.prototype.close = function() {
@@ -1295,6 +1292,7 @@
     __extends(LoginView, _super);
 
     function LoginView() {
+      this.submit = __bind(this.submit, this);
       LoginView.__super__.constructor.apply(this, arguments);
     }
 
@@ -1308,11 +1306,6 @@
       });
     };
 
-    LoginView.prototype.events = {
-      "submit #login": "submit",
-      "click #login-cancel": "close"
-    };
-
     LoginView.prototype.render = function() {
       var json;
       LoginView.__super__.render.apply(this, arguments);
@@ -1321,16 +1314,21 @@
       Backbone.ModelBinding.bind(this);
       $(this.el).find('#login').focus();
       this.center();
+      $('#login-form').bind('submit', this.submit);
+      $('#login-cancel').bind('click', this.cancel);
       return this;
     };
 
-    LoginView.prototype.submit = function() {
+    LoginView.prototype.submit = function(e) {
+      var _this = this;
+      e.preventDefault();
+      e.stopPropagation();
       return this.model.save(null, {
         success: function() {
-          return this.close();
+          return _this.close();
         },
-        error: function(jqXHR) {
-          return this.handleRemoteError(jqXHR);
+        error: function(data, jqXHR) {
+          return _this.handleRemoteError(jqXHR);
         }
       });
     };

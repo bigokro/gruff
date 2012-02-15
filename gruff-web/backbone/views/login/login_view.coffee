@@ -10,10 +10,6 @@ class Gruff.Views.Login.LoginView extends Gruff.Views.ModalView
       this.render()
     )
 
-  events:
-    "submit #login": "submit"
-    "click #login-cancel": "close"
-
   render: ->
     super
     json = @model.toJSON()
@@ -21,12 +17,16 @@ class Gruff.Views.Login.LoginView extends Gruff.Views.ModalView
     Backbone.ModelBinding.bind @
     $(@el).find('#login').focus()
     @center()
+    $('#login-form').bind('submit', @submit)
+    $('#login-cancel').bind('click', @cancel)
     @
 
-  submit: ->
+  submit: (e) =>
+    e.preventDefault()
+    e.stopPropagation()
     @model.save(null,
-      success: ->
+      success: =>
         @close()
-      error: (jqXHR) ->
+      error: (data, jqXHR) =>
         @handleRemoteError jqXHR
     )
