@@ -35,7 +35,14 @@ _.extend(Backbone.View.prototype,
   handleRemoteError: (jqXHR, data) ->
     message = $.parseJSON(jqXHR.responseText)
     message = message[0].message if message[0]?.message?
-    alert message
-    @model.set({errors: $.parseJSON(jqXHR.responseText)})
+    if jqXHR.status == 401
+      alert message
+      @showLoginForm()
+    else
+      alert message
+      @model.set({errors: $.parseJSON(jqXHR.responseText)})
 
+  showLoginForm: ->
+    form = new Gruff.Views.Login.LoginView
+    form.render()
 )

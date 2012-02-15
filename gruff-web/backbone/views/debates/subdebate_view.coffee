@@ -37,7 +37,6 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @modal.height($(document).height())
     @modal.offset({ top: 0, left: 0 })
 
-
   close: =>
     $(document).unbind('keydown')
     @parentView.modalView = null
@@ -45,13 +44,13 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @lower()
     $(@el).html("")
     $(@el).hide()
-    @modal.hide()
+    @modal.remove()
     @unbind()
 
   raise: =>
     target = $(@el).parent()
     oldZIndex = $(target).parents('.debate-list-item').css('z-index')
-    oldZIndex = $(target).css('z-index') unless newZIndex?
+    oldZIndex = $(target).css('z-index') unless oldZIndex?
     newZIndex = parseInt(oldZIndex) + 5
     $(target).css('z-index', newZIndex)
     $(@el).css('z-index', newZIndex)
@@ -63,4 +62,3 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     newIndex = 'auto'
     newZIndex = parseInt($(target).css('z-index')) - 5 unless $(target).css('z-index') == 'auto'
     $(target).css('z-index', newZIndex)
-    $(@modal).css('z-index', -1)

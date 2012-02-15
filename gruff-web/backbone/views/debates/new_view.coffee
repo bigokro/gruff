@@ -4,7 +4,6 @@ class Gruff.Views.Debates.NewView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-new-template').text()
     @attributeType = options.attributeType
-    @collection = options.collection
     @model = new @collection.model()
 
     @model.bind("change:errors", () =>
@@ -25,10 +24,8 @@ class Gruff.Views.Debates.NewView extends Backbone.View
       success: (debate) =>
         @model = debate
         @close()
-
       error: (debate, jqXHR) =>
-        @model.set({errors: $.parseJSON(jqXHR.responseText)})
-        alert jqXHR.responseText
+        @handleRemoteError jqXHR, debate
     )
 
   render: ->

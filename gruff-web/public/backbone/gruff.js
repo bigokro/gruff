@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -253,6 +253,27 @@
 
   classHelper.augmentClass(Gruff.Models.Debate, exports.Debate);
 
+  Gruff.Models.Login = (function(_super) {
+
+    __extends(Login, _super);
+
+    function Login() {
+      Login.__super__.constructor.apply(this, arguments);
+    }
+
+    Login.prototype.paramRoot = 'login';
+
+    Login.prototype.urlRoot = '/rest/login';
+
+    Login.prototype.defaults = {
+      login: null,
+      password: null
+    };
+
+    return Login;
+
+  })(Backbone.Model);
+
   Gruff.Routers.DebatesRouter = (function(_super) {
 
     __extends(DebatesRouter, _super);
@@ -294,7 +315,7 @@
 
     DebatesRouter.prototype.index = function() {
       this.view = new Gruff.Views.Debates.IndexView({
-        debates: this.debates
+        collection: this.debates
       });
       return $("#debates").html(this.view.render().el);
     };
@@ -320,6 +341,82 @@
     return DebatesRouter;
 
   })(Backbone.Router);
+
+  Gruff.Views || (Gruff.Views = {});
+
+  Gruff.Views.ModalView = (function(_super) {
+
+    __extends(ModalView, _super);
+
+    function ModalView() {
+      this.handleCloseOnEscape = __bind(this.handleCloseOnEscape, this);
+      this.close = __bind(this.close, this);
+      ModalView.__super__.constructor.apply(this, arguments);
+    }
+
+    ModalView.prototype.initialize = function(options) {
+      return ModalView.__super__.initialize.call(this, options);
+    };
+
+    ModalView.prototype.render = function() {
+      ModalView.__super__.render.apply(this, arguments);
+      this.addDialog();
+      this.addBg();
+      this.enableCloseOnEscape();
+      return this;
+    };
+
+    ModalView.prototype.addDialog = function() {
+      $("body").append('<div class="modal-dialog card" id="modal-dialog"></div>');
+      return this.el = $('#modal-dialog');
+    };
+
+    ModalView.prototype.addBg = function() {
+      var zIndex;
+      $("body").append('<div class="modal-bg" id="modal-bg"></div>');
+      this.bg = $("#modal-bg");
+      this.bg.width($(document).width());
+      this.bg.height($(document).height());
+      this.bg.offset({
+        top: 0,
+        left: 0
+      });
+      zIndex = $(this.el).css('z-index');
+      return $(this.bg).css('z-index', zIndex - 1);
+    };
+
+    ModalView.prototype.close = function() {
+      this.bg.remove();
+      $(document).unbind('keydown', this.handleCloseOnEscape);
+      return this.el.remove();
+    };
+
+    ModalView.prototype.enableCloseOnEscape = function() {
+      return $(document).bind('keydown', this.handleCloseOnEscape);
+    };
+
+    ModalView.prototype.handleCloseOnEscape = function(e) {
+      if (e.keyCode === 27) {
+        this.close();
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    ModalView.prototype.center = function() {
+      var left, top;
+      left = (($(window).width() - $(this.el).width()) / 2) + $(window).scrollLeft();
+      top = (($(window).height() - $(this.el).height()) / 2) + $(window).scrollTop();
+      return $(this.el).offset({
+        top: top,
+        left: left
+      });
+    };
+
+    return ModalView;
+
+  })(Backbone.View);
 
   (_base = Gruff.Views).Debates || (_base.Debates = {});
 
@@ -832,7 +929,6 @@
       var _this = this;
       this.template = _.template($('#debate-new-template').text());
       this.attributeType = options.attributeType;
-      this.collection = options.collection;
       this.model = new this.collection.model();
       return this.model.bind("change:errors", function() {
         return _this.render();
@@ -855,10 +951,7 @@
           return _this.close();
         },
         error: function(debate, jqXHR) {
-          _this.model.set({
-            errors: $.parseJSON(jqXHR.responseText)
-          });
-          return alert(jqXHR.responseText);
+          return _this.handleRemoteError(jqXHR, debate);
         }
       });
     };
@@ -1165,7 +1258,7 @@
       this.lower();
       $(this.el).html("");
       $(this.el).hide();
-      this.modal.hide();
+      this.modal.remove();
       return this.unbind();
     };
 
@@ -1173,9 +1266,7 @@
       var newZIndex, oldZIndex, target;
       target = $(this.el).parent();
       oldZIndex = $(target).parents('.debate-list-item').css('z-index');
-      if (typeof newZIndex === "undefined" || newZIndex === null) {
-        oldZIndex = $(target).css('z-index');
-      }
+      if (oldZIndex == null) oldZIndex = $(target).css('z-index');
       newZIndex = parseInt(oldZIndex) + 5;
       $(target).css('z-index', newZIndex);
       $(this.el).css('z-index', newZIndex);
@@ -1190,13 +1281,63 @@
       if ($(target).css('z-index') !== 'auto') {
         newZIndex = parseInt($(target).css('z-index')) - 5;
       }
-      $(target).css('z-index', newZIndex);
-      return $(this.modal).css('z-index', -1);
+      return $(target).css('z-index', newZIndex);
     };
 
     return SubdebateView;
 
   })(Gruff.Views.Debates.ShowView);
+
+  (_base11 = Gruff.Views).Login || (_base11.Login = {});
+
+  Gruff.Views.Login.LoginView = (function(_super) {
+
+    __extends(LoginView, _super);
+
+    function LoginView() {
+      LoginView.__super__.constructor.apply(this, arguments);
+    }
+
+    LoginView.prototype.initialize = function(options) {
+      var _this = this;
+      LoginView.__super__.initialize.call(this, options);
+      this.template = _.template($('#login-template').text());
+      this.model = new Gruff.Models.Login;
+      return this.model.bind("change:errors", function() {
+        return _this.render();
+      });
+    };
+
+    LoginView.prototype.events = {
+      "submit #login": "submit",
+      "click #login-cancel": "close"
+    };
+
+    LoginView.prototype.render = function() {
+      var json;
+      LoginView.__super__.render.apply(this, arguments);
+      json = this.model.toJSON();
+      $(this.el).append(this.template(json));
+      Backbone.ModelBinding.bind(this);
+      $(this.el).find('#login').focus();
+      this.center();
+      return this;
+    };
+
+    LoginView.prototype.submit = function() {
+      return this.model.save(null, {
+        success: function() {
+          return this.close();
+        },
+        error: function(jqXHR) {
+          return this.handleRemoteError(jqXHR);
+        }
+      });
+    };
+
+    return LoginView;
+
+  })(Gruff.Views.ModalView);
 
   _.extend(Backbone.View.prototype, {
     moveDebate: function(dragged, target, view) {
@@ -1241,10 +1382,20 @@
       if (((_ref = message[0]) != null ? _ref.message : void 0) != null) {
         message = message[0].message;
       }
-      alert(message);
-      return this.model.set({
-        errors: $.parseJSON(jqXHR.responseText)
-      });
+      if (jqXHR.status === 401) {
+        alert(message);
+        return this.showLoginForm();
+      } else {
+        alert(message);
+        return this.model.set({
+          errors: $.parseJSON(jqXHR.responseText)
+        });
+      }
+    },
+    showLoginForm: function() {
+      var form;
+      form = new Gruff.Views.Login.LoginView;
+      return form.render();
     }
   });
 

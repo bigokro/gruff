@@ -18,7 +18,7 @@ class Gruff.Routers.DebatesRouter extends Backbone.Router
     $("#debates").html(@view.render().el)
 
   index: ->
-    @view = new Gruff.Views.Debates.IndexView(debates: @debates)
+    @view = new Gruff.Views.Debates.IndexView(collection: @debates)
     $("#debates").html(@view.render().el)
 
   show: (id) ->
