@@ -15,10 +15,10 @@ class Gruff.Views.Login.LoginView extends Gruff.Views.ModalView
     json = @model.toJSON()
     $(@el).append(@template( json ))
     Backbone.ModelBinding.bind @
-    $(@el).find('#login').focus()
     @center()
     $('#login-form').bind('submit', @submit)
     $('#login-cancel').bind('click', @cancel)
+    $(@el).find('#login').focus()
     @
 
   submit: (e) =>
@@ -28,5 +28,8 @@ class Gruff.Views.Login.LoginView extends Gruff.Views.ModalView
       success: =>
         @close()
       error: (data, jqXHR) =>
-        @handleRemoteError jqXHR
+        if jqXHR.responseText.indexOf('Login failed') > 0
+          alert "Login failed. Please try again."
+        else
+          @close()
     )

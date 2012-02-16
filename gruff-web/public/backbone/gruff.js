@@ -1312,10 +1312,10 @@
       json = this.model.toJSON();
       $(this.el).append(this.template(json));
       Backbone.ModelBinding.bind(this);
-      $(this.el).find('#login').focus();
       this.center();
       $('#login-form').bind('submit', this.submit);
       $('#login-cancel').bind('click', this.cancel);
+      $(this.el).find('#login').focus();
       return this;
     };
 
@@ -1328,7 +1328,11 @@
           return _this.close();
         },
         error: function(data, jqXHR) {
-          return _this.handleRemoteError(jqXHR);
+          if (jqXHR.responseText.indexOf('Login failed') > 0) {
+            return alert("Login failed. Please try again.");
+          } else {
+            return _this.close();
+          }
         }
       });
     };
