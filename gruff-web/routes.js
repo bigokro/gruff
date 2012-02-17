@@ -440,12 +440,12 @@ exports.postArgument = function(req, res) {
     date: new Date()
   },
   (req.param('isFor') == 'true') || (req.params.attributetype === 'argumentsFor'),
-  function( error, docs) {
+  function( error, doc) {
     if (handleError(req, res, error, true)) {
       return;
     }
     if (req.xhr) {
-      res.json(docs[0]);
+      res.json(doc);
     } else {
       res.redirect('/debates/' + req.param('_id'));
     }

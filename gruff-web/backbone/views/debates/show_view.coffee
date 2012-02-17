@@ -63,7 +63,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     debateType = $(e.target).attr("debate-type")
     collection = @model[debateType]
     $(e.target).hide()
-    formDiv = $('#new-'+debateType+'-div')
+    formDiv = $('#'+@model.id+'-new-'+debateType+'-div')
     formDiv.show()
     formView = new Gruff.Views.Debates.NewView
       'el': formDiv

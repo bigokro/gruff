@@ -32,6 +32,8 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     $(@el).append(@template( json ))
     @titleLink = $(@el).find('a.title-link')
     @titleLink.hide()
+    @zoomLink = $(@el).find('a.zoom-link')
+    @zoomLink.hide()
     @editTitleField = $(@el).find('#'+@model.linkableId()+"-title-field")
     @editTitleField.bind("keypress", @handleKeys)
     @editTitleField.bind("blur", @close)
@@ -41,6 +43,7 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
 
   close: =>
     @titleLink.show()
+    @zoomLink.show()
     @editTitleField.remove()
     @unbind()
 

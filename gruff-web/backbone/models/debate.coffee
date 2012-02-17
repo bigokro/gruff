@@ -22,6 +22,7 @@ class Gruff.Models.Debate extends Backbone.Model
     json.bestDescription = @bestDescriptionText()
     json.linkableId = @linkableId()
     json.titleLink = @titleLink()
+    json.DebateTypes = @DebateTypes
     json
 
   normalize: ->

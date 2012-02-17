@@ -49,6 +49,7 @@
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
       json.titleLink = this.titleLink();
+      json.DebateTypes = this.DebateTypes;
       return json;
     };
 
@@ -500,8 +501,8 @@
       if (!$(this.el).hasClass('.debate-list-item')) {
         this.el = $(this.el).parents('.debate-list-item')[0];
       }
-      $(this.el).append(this.template(json));
       this.descriptionEl = $(this.el).find('.body');
+      $(this.descriptionEl).after(this.template(json));
       this.descriptionEl.hide();
       this.editDescriptionField = $(this.el).find('#' + this.model.linkableId() + "-description-field");
       this.editDescriptionField.bind("keypress", this.handleKeys);
@@ -585,6 +586,8 @@
       $(this.el).append(this.template(json));
       this.titleLink = $(this.el).find('a.title-link');
       this.titleLink.hide();
+      this.zoomLink = $(this.el).find('a.zoom-link');
+      this.zoomLink.hide();
       this.editTitleField = $(this.el).find('#' + this.model.linkableId() + "-title-field");
       this.editTitleField.bind("keypress", this.handleKeys);
       this.editTitleField.bind("blur", this.close);
@@ -595,6 +598,7 @@
 
     EditTitleView.prototype.close = function() {
       this.titleLink.show();
+      this.zoomLink.show();
       this.editTitleField.remove();
       return this.unbind();
     };
@@ -1081,7 +1085,7 @@
       debateType = $(e.target).attr("debate-type");
       collection = this.model[debateType];
       $(e.target).hide();
-      formDiv = $('#new-' + debateType + '-div');
+      formDiv = $('#' + this.model.id + '-new-' + debateType + '-div');
       formDiv.show();
       formView = new Gruff.Views.Debates.NewView({
         'el': formDiv,

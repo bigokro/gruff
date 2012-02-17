@@ -480,13 +480,14 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
             answer.parentId = parentId;
             provider.save(answer, function(error, answers) {
                 // Add the answer as a new debate
-                var answerId = answers[0]._id;
+                var doc = answers[0];
+                var answerId = doc._id;
 	              debate_collection.update(
 		                {_id: parentId},
 		                {"$push": {answerIds: answerId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, answers)
+		                    else callback(null, doc)
 		                });
             });
         }
@@ -502,13 +503,14 @@ DebateProvider.prototype.addSubdebateToDebate = function(debateId, subdebate, ca
             subdebate.parentId = parentId;
             provider.save(subdebate, function(error, subdebates) {
                 // Add the subdebate as a new debate
-                var subdebateId = subdebates[0]._id;
+                var doc = subdebates[0];
+                var subdebateId = doc._id;
 	              debate_collection.update(
 		                {_id: parentId},
 		                {"$push": {subdebateIds: subdebateId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, subdebates)
+		                    else callback(null, doc)
 		                });
             });
         }
@@ -523,14 +525,17 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
             var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
             argument.parentId = parentId;
             provider.save(argument, function(error, arguments) {
+                var doc = arguments[0];
                 // Add the answer as a new debate
-                var argumentId = arguments[0]._id;
+                var argumentId = doc._id;
 	              debate_collection.update(
 		                {_id: parentId},
 		                {"$push": (isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId})},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, arguments)
+		                    else {
+                                      callback(null, doc)
+}
 		                });
             });
         }

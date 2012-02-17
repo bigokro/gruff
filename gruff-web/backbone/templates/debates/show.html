@@ -11,7 +11,7 @@
       <div class="bottomForm">
       <% if (loggedIn) { %>
         <a class="new-debate-link" debate-type="argumentsFor">Propose Your Own Argument</a>
-        <div id="new-argumentsFor-div" style="display:none;"></div>
+        <div id="<%= linkableId %>-new-argumentsFor-div" style="display:none;"></div>
       <% } else { %>
         <a href="/login">Want to contribute? Log in!</a>
       <% } %>
@@ -23,7 +23,7 @@
       <div class="bottomForm">
       <% if (loggedIn) { %>
         <a class="new-debate-link" debate-type="argumentsAgainst">Propose Your Own Argument</a>
-        <div id="new-argumentsAgainst-div" style="display:none;"></div>
+        <div id="<%= linkableId %>-new-argumentsAgainst-div" style="display:none;"></div>
       <% } else { %>
         <a href="/login">Want to contribute? Log in!</a>
       <% } %>
@@ -39,7 +39,7 @@
     <div class="bottomForm">
     <% if (loggedIn) { %>
       <a class="new-debate-link" debate-type="answers">Add a New Answer</a>
-      <div id="new-answers-div" style="display:none;"></div>
+      <div id="<%= linkableId %>-new-answers-div" style="display:none;"></div>
     <% } else { %>
       <a href="/login">Want to contribute? Log in!</a>
     <% } %>
@@ -52,7 +52,7 @@
     <div class="bottomForm">
     <% if (loggedIn) { %>
       <a class="new-debate-link" debate-type="subdebates">Add a New Sub-debate</a>
-      <div id="new-subdebates-div" style="display:none;"></div>
+      <div id="<%= linkableId %>-new-subdebates-div" style="display:none;"></div>
     <% } else { %>
       <a href="/login">Want to contribute? Log in!</a>
     <% } %>
