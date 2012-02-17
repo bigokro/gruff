@@ -72,15 +72,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
 
   setUpDragDrop: =>
-    $(@el).find( ".argument, .answer, .subdebate" ).draggable(
-      revert: true
-      refreshPositions: true
-      start: (e, ui) ->
-        $(e.target).width($(e.target).find("h4 > a.title-link").width())
-      stop: (e, ui) ->
-        $(e.target).width("100%")
-    )
-
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) =>
@@ -94,20 +85,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
           $(event.target).addClass('over')
       out: ( event, ui ) =>
         $(event.target).removeClass('over')
-    )
-
-    $(@el).find( ".argument, .subdebate, .answer" ).droppable(
-      accept: '.subdebate, .argument, .debate, .answer'
-      hoverClass: 'over'
-      greedy: true
-      over: (e, ui) =>
-        @timeout = setTimeout( 
-          () => 
-            @toggleSubdebateDiv(e, ui)
-          , 1000
-        )
-      out: (e, ui) =>
-        clearTimeout(@timeout)
     )
 
   disableDragDrop: =>

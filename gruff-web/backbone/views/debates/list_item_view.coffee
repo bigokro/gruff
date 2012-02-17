@@ -16,27 +16,33 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     if @attributeType == "subdebates" then json.divClass = "subdebate"
     $(@parentEl).append(@template json)
     @el = $('#'+@model.linkableId())
-    @.$("h4.title a.title-link").bind("click", @toggleDescription)
-    @.$("h4.title a.title-link").bind("click", @toggleSubdebates)
-    @.$("h4.title a.zoom-link").bind("click", @showDetails)
+    @.$("h4.title a.title-link").bind("click", @toggleInfo)
+    @.$("h4.title a.zoom-link").bind("click", @openModalView)
+    @enableDragDrop()
     @
 
+  toggleInfo: (e) =>
+    @toggleDescription(e)
+    @toggleSubdebates(e)
+
+  hideInfo: =>
+    @.$('div.body').hide()
+    @.$('div.answers').hide()
+    @.$('div.arguments').hide()
+
   toggleDescription: (e) =>
-    e.stopPropagation()
     parent = $(e.target).parents('.debate-list-item')[0]
     unless $(parent).hasClass('ui-draggable-dragging')
       @.$('div.body').toggle()
     false
 
   toggleSubdebates: (e) =>
-    e.stopPropagation()
     parent = $(e.target).parents('.debate-list-item')[0]
     if @model.get("type") == @model.DebateTypes.DIALECTIC
       containerEl = @.$('> div.arguments')
     else
       containerEl = @.$('> div.answers')
     if ($(containerEl).css("display") == "none")
-      containerEl.show()
       @model.fetchSubdebates(
         success: (subdebates, response4) =>
           json = @model.fullJSON()
@@ -70,6 +76,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
                 'parentView': @
                 'showView': @showView
               @answersView.render()
+            containerEl.show()
       )
     else
       @argumentsForView?.close()
@@ -81,8 +88,9 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       containerEl.hide()
     false
 
-  showDetails: (e) =>
-    @showView.toggleSubdebateDiv(e)
+  openModalView: (e, ui) =>
+    @hideInfo()
+    @showView.toggleSubdebateDiv(e, ui)
     false
 
   enableDragDrop: =>
@@ -90,16 +98,25 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       accept: '.subdebate, .argument, .debate, .answer'
       hoverClass: 'over'
       greedy: true
-      over: (e) =>
-        @showSubdebates()
+      over: (e, ui) =>
+        @timeout = setTimeout( 
+          () => 
+            @openModalView(e, ui)
+          , 1000
+        )
+      out: (e, ui) =>
+        clearTimeout(@timeout)
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
         @moveDebate dragged, event.target
     )
 
-   showSubdebates: =>
-    subdebatesView = new Gruff.Views.Debates.SubdebatesView
-      'el': @el
-      'model': @model
-    subdebatesView.render()
+    $(@el).draggable(
+      revert: true
+      refreshPositions: true
+      start: (e, ui) ->
+        $(e.target).width($(e.target).find("h4 > a.title-link").width())
+      stop: (e, ui) ->
+        $(e.target).width("100%")
+    )
 

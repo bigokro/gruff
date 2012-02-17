@@ -8,7 +8,9 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
   render: ->
     @model.bind("fetched-subdebates", () =>
       $(@el).show()
-      offset = $(@el).offset()
+      @linkDiv = $(@el).parents('.debate-list-item')[0]
+      offset = $(@linkDiv).offset()
+      offset.top = offset.top + $(@linkDiv).height()
       offset.left = $(window).width() / 10
       $(@el).css('position', 'absolute')
       $(@el).offset(offset)
@@ -39,17 +41,18 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
 
   close: =>
     $(document).unbind('keydown')
+    @model.unbind "fetched-subdebates"
+    @modal.remove()
     @parentView.modalView = null
     @parentView.enableDragDrop()
     @lower()
     $(@el).html("")
     $(@el).hide()
-    @modal.remove()
     @unbind()
 
   raise: =>
     target = $(@el).parent()
-    oldZIndex = $(target).parents('.debate-list-item').css('z-index')
+    oldZIndex = $(@linkDiv).css('z-index')
     oldZIndex = $(target).css('z-index') unless oldZIndex?
     newZIndex = parseInt(oldZIndex) + 5
     $(target).css('z-index', newZIndex)
