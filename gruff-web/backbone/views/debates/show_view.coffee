@@ -5,12 +5,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @template = _.template $('#debate-show-template').text()
     @tags_template = _.template $('#tags-index-template').text()
     
-
-  events:
-    "click .new-debate-link": "showNewDebateForm"
-    "dblclick .debate-list-item .title": "showEditTitleForm"
-    "dblclick .debate-list-item .body": "showEditDescriptionForm"
-
   render: ->
     @model.fetchSubdebates(
       success: (subdebates, response4) =>
@@ -56,10 +50,11 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
           'showView': @
         @subdebatesView.render()
         @setUpDragDrop()
+        @setUpEvents()
     )
     @
 
-  showNewDebateForm: (e) ->
+  showNewDebateForm: (e) =>
     debateType = $(e.target).attr("debate-type")
     collection = @model[debateType]
     $(e.target).hide()
@@ -70,6 +65,11 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'collection': collection
       'attributeType': debateType
     formView.render()
+
+  setUpEvents: =>
+    $(@el).find(".new-debate-link").bind "click", @showNewDebateForm
+    $(@el).find(".debate-list-item .title").bind "dblclick", @showEditTitle
+    $(@el).find(".debate-list-item .body").bind "dblclick", @showEditDescriptionForm
 
   setUpDragDrop: =>
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(

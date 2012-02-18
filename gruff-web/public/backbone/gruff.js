@@ -1008,18 +1008,14 @@
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.disableDragDrop = __bind(this.disableDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
+      this.setUpEvents = __bind(this.setUpEvents, this);
+      this.showNewDebateForm = __bind(this.showNewDebateForm, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
 
     ShowView.prototype.initialize = function(options) {
       this.template = _.template($('#debate-show-template').text());
       return this.tags_template = _.template($('#tags-index-template').text());
-    };
-
-    ShowView.prototype.events = {
-      "click .new-debate-link": "showNewDebateForm",
-      "dblclick .debate-list-item .title": "showEditTitleForm",
-      "dblclick .debate-list-item .body": "showEditDescriptionForm"
     };
 
     ShowView.prototype.render = function() {
@@ -1074,7 +1070,8 @@
             'showView': _this
           });
           _this.subdebatesView.render();
-          return _this.setUpDragDrop();
+          _this.setUpDragDrop();
+          return _this.setUpEvents();
         }
       });
       return this;
@@ -1093,6 +1090,12 @@
         'attributeType': debateType
       });
       return formView.render();
+    };
+
+    ShowView.prototype.setUpEvents = function() {
+      $(this.el).find(".new-debate-link").bind("click", this.showNewDebateForm);
+      $(this.el).find(".debate-list-item .title").bind("dblclick", this.showEditTitle);
+      return $(this.el).find(".debate-list-item .body").bind("dblclick", this.showEditDescriptionForm);
     };
 
     ShowView.prototype.setUpDragDrop = function() {
