@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -783,7 +783,7 @@
                 _this.$('div.arguments').show();
                 forEl = _this.$('> div.arguments > .for .debates-list').first();
                 againstEl = _this.$('> div.arguments > .against .debates-list').first();
-                _this.argumentsForView = new Gruff.Views.Debates.ListView({
+                _this.argumentsForView = new Gruff.Views.Debates.MiniListView({
                   'el': forEl,
                   'collection': _this.model.argumentsFor,
                   'attributeType': 'argumentsFor',
@@ -791,7 +791,7 @@
                   'showView': _this.showView
                 });
                 _this.argumentsForView.render();
-                _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
+                _this.argumentsAgainstView = new Gruff.Views.Debates.MiniListView({
                   'el': againstEl,
                   'collection': _this.model.argumentsAgainst,
                   'attributeType': 'argumentsAgainst',
@@ -802,7 +802,7 @@
               } else {
                 answersEl = _this.$('> div.answers > .debates-list').first();
                 answersEl.show();
-                _this.answersView = new Gruff.Views.Debates.ListView({
+                _this.answersView = new Gruff.Views.Debates.MiniListView({
                   'el': answersEl,
                   'collection': _this.model.answers,
                   'attributeType': 'answers',
@@ -935,11 +935,46 @@
 
   (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
 
+  Gruff.Views.Debates.MiniListView = (function(_super) {
+
+    __extends(MiniListView, _super);
+
+    function MiniListView() {
+      this.showNewDebateForm = __bind(this.showNewDebateForm, this);
+      MiniListView.__super__.constructor.apply(this, arguments);
+    }
+
+    MiniListView.prototype.render = function() {
+      MiniListView.__super__.render.apply(this, arguments);
+      $(this.el).bind("dblclick", this.showNewDebateForm);
+      return this;
+    };
+
+    MiniListView.prototype.close = function() {
+      return MiniListView.__super__.close.apply(this, arguments);
+    };
+
+    MiniListView.prototype.showNewDebateForm = function(e) {
+      this.newView = new Gruff.Views.Debates.SimpleNewView({
+        'el': this.el,
+        'collection': this.collection,
+        'attributeType': this.attributeType
+      });
+      return this.newView.render();
+    };
+
+    return MiniListView;
+
+  })(Gruff.Views.Debates.ListView);
+
+  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
+
   Gruff.Views.Debates.NewView = (function(_super) {
 
     __extends(NewView, _super);
 
     function NewView() {
+      this.save = __bind(this.save, this);
       NewView.__super__.constructor.apply(this, arguments);
     }
 
@@ -998,7 +1033,7 @@
 
   })(Backbone.View);
 
-  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
+  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -1188,7 +1223,63 @@
 
   })(Backbone.View);
 
-  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
+
+  Gruff.Views.Debates.SimpleNewView = (function(_super) {
+
+    __extends(SimpleNewView, _super);
+
+    function SimpleNewView() {
+      this.handleKeys = __bind(this.handleKeys, this);
+      SimpleNewView.__super__.constructor.apply(this, arguments);
+    }
+
+    SimpleNewView.prototype.initialize = function(options) {
+      SimpleNewView.__super__.initialize.call(this, options);
+      return this.template = _.template($('#debate-simple-new-template').text());
+    };
+
+    SimpleNewView.prototype.save = function(e) {
+      return SimpleNewView.__super__.save.call(this, e);
+    };
+
+    SimpleNewView.prototype.render = function() {
+      var json;
+      json = this.model.fullJSON();
+      json.attributeType = this.attributeType;
+      $(this.el).append(this.template(json));
+      Backbone.ModelBinding.bind(this);
+      this.formEl = $(this.el).find('> #simple-new-debate');
+      this.titleEl = $(this.formEl).find('> #title');
+      this.formEl.bind("submit", this.save);
+      this.formEl.bind("blur", this.close);
+      this.titleEl.focus();
+      return this;
+    };
+
+    SimpleNewView.prototype.close = function() {
+      $(this.formEl).remove();
+      this.unbind();
+      return Backbone.ModelBinding.unbind(this);
+    };
+
+    SimpleNewView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 13) {
+        this.save(e);
+        return false;
+      } else if (e.keyCode === 27) {
+        this.close(e);
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    return SimpleNewView;
+
+  })(Gruff.Views.Debates.NewView);
+
+  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -1289,7 +1380,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base11 = Gruff.Views).Login || (_base11.Login = {});
+  (_base13 = Gruff.Views).Login || (_base13.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 

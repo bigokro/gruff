@@ -14,7 +14,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     "submit #new-debate": "save"
     "click .cancel_button": "close"
 
-  save: (e) ->
+  save: (e) =>
     e.preventDefault()
     e.stopPropagation()
 

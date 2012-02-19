@@ -52,14 +52,14 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
               @.$('div.arguments').show()
               forEl = @.$('> div.arguments > .for .debates-list').first()
               againstEl = @.$('> div.arguments > .against .debates-list').first()
-              @argumentsForView = new Gruff.Views.Debates.ListView
+              @argumentsForView = new Gruff.Views.Debates.MiniListView
                 'el': forEl
                 'collection': @model.argumentsFor
                 'attributeType': 'argumentsFor'
                 'parentView': @
                 'showView': @showView
               @argumentsForView.render()
-              @argumentsAgainstView = new Gruff.Views.Debates.ListView
+              @argumentsAgainstView = new Gruff.Views.Debates.MiniListView
                 'el': againstEl
                 'collection': @model.argumentsAgainst
                 'attributeType': 'argumentsAgainst'
@@ -69,7 +69,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
             else
               answersEl = @.$('> div.answers > .debates-list').first()
               answersEl.show()
-              @answersView = new Gruff.Views.Debates.ListView
+              @answersView = new Gruff.Views.Debates.MiniListView
                 'el': answersEl
                 'collection': @model.answers
                 'attributeType': 'answers'

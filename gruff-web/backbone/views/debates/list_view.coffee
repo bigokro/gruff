@@ -12,7 +12,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
     @views = []
     @collection.each (debate) =>
       @add debate
-    return @
+    @
 
   close: ->
     _.each @views, (view) ->
