@@ -97,7 +97,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
 
-  showEditTitleForm: (e) ->
+  showEditTitleForm: (e) =>
     clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
     clickedDebate = @model.findDebate clickedDebateId
     editTitleView = new Gruff.Views.Debates.EditTitleView
@@ -105,7 +105,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': clickedDebate
     editTitleView.render()
 
-  showEditDescriptionForm: (e) ->
+  showEditDescriptionForm: (e) =>
     clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
     clickedDebate = @model.findDebate clickedDebateId
     editDescriptionView = new Gruff.Views.Debates.EditDescriptionView

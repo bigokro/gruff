@@ -511,7 +511,7 @@
       if (!$(this.el).hasClass('.debate-list-item')) {
         this.el = $(this.el).parents('.debate-list-item')[0];
       }
-      this.descriptionEl = $(this.el).find('.body');
+      this.descriptionEl = $(this.el).find('> .body');
       $(this.descriptionEl).after(this.template(json));
       this.descriptionEl.hide();
       this.editDescriptionField = $(this.el).find('#' + this.model.linkableId() + "-description-field");
@@ -1060,6 +1060,8 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
+      this.showEditTitleForm = __bind(this.showEditTitleForm, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.disableDragDrop = __bind(this.disableDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);

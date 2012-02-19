@@ -30,7 +30,7 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
   render: ->
     json = @model.fullJSON()
     @el = $(@el).parents('.debate-list-item')[0] unless $(@el).hasClass('.debate-list-item')
-    @descriptionEl = $(@el).find('.body')
+    @descriptionEl = $(@el).find('> .body')
     $(@descriptionEl).after(@template( json ))
     @descriptionEl.hide()
     @editDescriptionField = $(@el).find('#'+@model.linkableId()+"-description-field")
