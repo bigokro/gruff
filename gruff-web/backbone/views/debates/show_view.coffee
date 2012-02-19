@@ -67,7 +67,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
 
   setUpEvents: =>
-    $(@el).find(".new-debate-link").bind "click", @showNewDebateForm
+    $(@el).find(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
     $(@el).find(".debate-list-item .title").bind "dblclick", @showEditTitle
     $(@el).find(".debate-list-item .body").bind "dblclick", @showEditDescriptionForm
 

@@ -3,6 +3,7 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.SimpleNewView extends Gruff.Views.Debates.NewView
   initialize: (options) ->
     super options
+    @parentView = options.parentView
     @model.set
       type: @model.DebateTypes.DIALECTIC
     @template = _.template $('#debate-simple-new-template').text()
@@ -24,6 +25,7 @@ class Gruff.Views.Debates.SimpleNewView extends Gruff.Views.Debates.NewView
 
   close: ->
     $(@formEl).remove()
+    @parentView.linkEl.show()
     @unbind()
     Backbone.ModelBinding.unbind @
 

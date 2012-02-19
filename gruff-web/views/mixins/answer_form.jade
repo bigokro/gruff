@@ -1,5 +1,5 @@
 mixin answer_form(debate)
-    div.bottomForm
+    div.bottom-form
       if everyauth.loggedIn
           form(method="post", action="/debates/answers/new")
             input( type="hidden", name="_id", value=debate.linkableId())

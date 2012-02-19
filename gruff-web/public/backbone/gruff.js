@@ -957,9 +957,14 @@
       MiniListView.__super__.constructor.apply(this, arguments);
     }
 
+    MiniListView.prototype.initialize = function(options) {
+      return MiniListView.__super__.initialize.call(this, options);
+    };
+
     MiniListView.prototype.render = function() {
       MiniListView.__super__.render.apply(this, arguments);
-      $(this.el).bind("dblclick", this.showNewDebateForm);
+      this.linkEl = $(this.el).next();
+      this.linkEl.bind("click", this.showNewDebateForm);
       return this;
     };
 
@@ -968,8 +973,10 @@
     };
 
     MiniListView.prototype.showNewDebateForm = function(e) {
+      this.linkEl.hide();
       this.newView = new Gruff.Views.Debates.SimpleNewView({
         'el': this.el,
+        'parentView': this,
         'collection': this.collection,
         'attributeType': this.attributeType
       });
@@ -1141,7 +1148,7 @@
     };
 
     ShowView.prototype.setUpEvents = function() {
-      $(this.el).find(".new-debate-link").bind("click", this.showNewDebateForm);
+      $(this.el).find(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
       $(this.el).find(".debate-list-item .title").bind("dblclick", this.showEditTitle);
       return $(this.el).find(".debate-list-item .body").bind("dblclick", this.showEditDescriptionForm);
     };
@@ -1248,6 +1255,7 @@
 
     SimpleNewView.prototype.initialize = function(options) {
       SimpleNewView.__super__.initialize.call(this, options);
+      this.parentView = options.parentView;
       this.model.set({
         type: this.model.DebateTypes.DIALECTIC
       });
@@ -1274,6 +1282,7 @@
 
     SimpleNewView.prototype.close = function() {
       $(this.formEl).remove();
+      this.parentView.linkEl.show();
       this.unbind();
       return Backbone.ModelBinding.unbind(this);
     };

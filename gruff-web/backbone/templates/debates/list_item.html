@@ -9,11 +9,15 @@
   <div class="arguments" style="display:none; font-size:80%;">
     <div class="for">
       <h3>For</h3>
-      <div class="debates-list"></div>
+      <div class="debates-list">
+      </div>
+      <a class="simple-new-debate-link">New entry</a>
     </div>
     <div class="against">
       <h3>Against</h3>
-      <div class="debates-list"></div>
+      <div class="debates-list">
+      </div>
+      <a class="simple-new-debate-link">New entry</a>
     </div>
     <div class="clear"></div>
   </div>
@@ -21,7 +25,9 @@
   <% if (type === DebateTypes.DEBATE) { %>
   <div class="answers" style="display:none; font-size:80%;">
     <h3>Proposed Answers</h3>
-    <div class="debates-list"></div>
+    <div class="debates-list">
+    </div>
+    <a class="simple-new-debate-link">New entry</a>
   </div>
   <% } %>
     <div class="subdebate-show" id="<%=linkableId%>-subdebate-show" style="display:none;"></div>

@@ -1,5 +1,5 @@
 mixin comment_form(type, commentable)
-  div.bottomForm
+  div.bottom-form
     if everyauth.loggedIn
       form( method="post", action="/"+type+"/comments/new")
         input( type="hidden", name="_id", value=commentable.linkableId())
