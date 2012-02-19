@@ -515,7 +515,7 @@
       $(this.descriptionEl).after(this.template(json));
       this.descriptionEl.hide();
       this.editDescriptionField = $(this.el).find('#' + this.model.linkableId() + "-description-field");
-      this.editDescriptionField.bind("keypress", this.handleKeys);
+      this.editDescriptionField.bind("keydown", this.handleKeys);
       this.editDescriptionField.bind("blur", this.close);
       this.editDescriptionField.show();
       this.editDescriptionField.focus();

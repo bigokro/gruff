@@ -34,7 +34,7 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
     $(@descriptionEl).after(@template( json ))
     @descriptionEl.hide()
     @editDescriptionField = $(@el).find('#'+@model.linkableId()+"-description-field")
-    @editDescriptionField.bind("keypress", @handleKeys)
+    @editDescriptionField.bind("keydown", @handleKeys)
     @editDescriptionField.bind("blur", @close)
     @editDescriptionField.show()
     @editDescriptionField.focus()
