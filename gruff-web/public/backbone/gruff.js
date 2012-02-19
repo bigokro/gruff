@@ -80,7 +80,7 @@
       var debates;
       debates = new Gruff.Collections.Debates;
       debates.url = "/rest/debates/" + this.id + "/" + type;
-      debates.parent = this;
+      debates.setParent(this);
       debates.type = type;
       debates.bind("add", this.makeAddToCollectionEvent(debates));
       debates.bind("remove", this.makeRemoveFromCollectionEvent(debates));
@@ -229,6 +229,7 @@
     __extends(Debates, _super);
 
     function Debates() {
+      this.updateUrl = __bind(this.updateUrl, this);
       Debates.__super__.constructor.apply(this, arguments);
     }
 
@@ -244,6 +245,15 @@
         return json.push(debate.fullJSON());
       });
       return json;
+    };
+
+    Debates.prototype.setParent = function(parent) {
+      this.parent = parent;
+      return this.parent.bind("change", this.updateUrl);
+    };
+
+    Debates.prototype.updateUrl = function(e) {
+      return this.url = "/rest/debates/" + this.parent.id + "/" + this.type;
     };
 
     return Debates;
@@ -774,6 +784,9 @@
       }
       if ($(containerEl).css("display") === "none") {
         this.model.fetchSubdebates({
+          error: function() {
+            return alert("Error");
+          },
           success: function(subdebates, response4) {
             var againstEl, answersEl, forEl, json;
             json = _this.model.fullJSON();
@@ -1230,12 +1243,14 @@
     __extends(SimpleNewView, _super);
 
     function SimpleNewView() {
-      this.handleKeys = __bind(this.handleKeys, this);
       SimpleNewView.__super__.constructor.apply(this, arguments);
     }
 
     SimpleNewView.prototype.initialize = function(options) {
       SimpleNewView.__super__.initialize.call(this, options);
+      this.model.set({
+        type: this.model.DebateTypes.DIALECTIC
+      });
       return this.template = _.template($('#debate-simple-new-template').text());
     };
 
@@ -1261,18 +1276,6 @@
       $(this.formEl).remove();
       this.unbind();
       return Backbone.ModelBinding.unbind(this);
-    };
-
-    SimpleNewView.prototype.handleKeys = function(e) {
-      if (e.keyCode === 13) {
-        this.save(e);
-        return false;
-      } else if (e.keyCode === 27) {
-        this.close(e);
-        return false;
-      } else {
-        return true;
-      }
     };
 
     return SimpleNewView;
@@ -1343,9 +1346,10 @@
     };
 
     SubdebateView.prototype.close = function() {
+      var _ref;
       $(document).unbind('keydown');
       this.model.unbind("fetched-subdebates");
-      this.modal.remove();
+      if ((_ref = this.modal) != null) _ref.remove();
       this.parentView.modalView = null;
       this.parentView.enableDragDrop();
       this.lower();

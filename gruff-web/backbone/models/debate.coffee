@@ -34,7 +34,7 @@ class Gruff.Models.Debate extends Backbone.Model
   initializeDebates: (type) =>
     debates = new Gruff.Collections.Debates
     debates.url = "/rest/debates/" + @id + "/" + type
-    debates.parent = @
+    debates.setParent @
     debates.type = type
     debates.bind("add", @makeAddToCollectionEvent(debates))
     debates.bind("remove", @makeRemoveFromCollectionEvent(debates))
@@ -122,6 +122,13 @@ class Gruff.Collections.Debates extends Backbone.Collection
     @each (debate) =>
       json.push( debate.fullJSON() )
     json
+
+  setParent: (parent) ->
+    @parent = parent
+    @parent.bind "change", @updateUrl
+
+  updateUrl: (e) =>
+    @url = "/rest/debates/" + @parent.id + "/" + @type
 
 classHelper = new exports.ClassHelper()
 classHelper.augmentClass Gruff.Models.Debate, exports.Debate

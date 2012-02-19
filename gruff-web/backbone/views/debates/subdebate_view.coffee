@@ -42,7 +42,7 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
   close: =>
     $(document).unbind('keydown')
     @model.unbind "fetched-subdebates"
-    @modal.remove()
+    @modal?.remove()
     @parentView.modalView = null
     @parentView.enableDragDrop()
     @lower()

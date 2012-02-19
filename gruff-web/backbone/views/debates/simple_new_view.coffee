@@ -3,6 +3,8 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.SimpleNewView extends Gruff.Views.Debates.NewView
   initialize: (options) ->
     super options
+    @model.set
+      type: @model.DebateTypes.DIALECTIC
     @template = _.template $('#debate-simple-new-template').text()
 
   save: (e) ->

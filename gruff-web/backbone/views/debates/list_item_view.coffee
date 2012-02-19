@@ -44,6 +44,8 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       containerEl = @.$('> div.answers')
     if ($(containerEl).css("display") == "none")
       @model.fetchSubdebates(
+        error: =>
+          alert "Error"
         success: (subdebates, response4) =>
           json = @model.fullJSON()
           json.loggedIn = true
