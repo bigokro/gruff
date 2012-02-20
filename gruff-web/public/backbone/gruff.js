@@ -756,10 +756,10 @@
     };
 
     ListItemView.prototype.setUpEvents = function() {
-      this.$("h4.title a.title-link").bind("click", this.toggleInfo);
-      this.$("h4.title a.title-link").bind("dblclick", this.showEditTitleForm);
-      this.$("h4.title a.zoom-link").bind("click", this.openModalView);
-      return this.$(".body").bind("dblclick", this.showEditDescriptionForm);
+      this.$("> h4.title a.title-link").bind("click", this.toggleInfo);
+      this.$("> h4.title a.title-link").bind("dblclick", this.showEditTitleForm);
+      this.$("> h4.title a.zoom-link").bind("click", this.openModalView);
+      return this.$("> .body").bind("dblclick", this.showEditDescriptionForm);
     };
 
     ListItemView.prototype.showEditTitleForm = function(e) {
@@ -1254,7 +1254,7 @@
         $(subdebateDiv).droppable("option", "disabled", false);
         overDebate = this.model.findDebate(subdebateDiv.id);
         this.modalView = new Gruff.Views.Debates.SubdebateView({
-          'el': $(subdebateDiv).find('.subdebate-show'),
+          'el': $(subdebateDiv).find('> .subdebate-show'),
           'model': overDebate,
           'parentView': this
         });

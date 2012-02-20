@@ -110,7 +110,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       $(subdebateDiv).droppable( "option", "disabled", false )
       overDebate = @model.findDebate subdebateDiv.id
       @modalView = new Gruff.Views.Debates.SubdebateView
-        'el': $(subdebateDiv).find('.subdebate-show')
+        'el': $(subdebateDiv).find('> .subdebate-show')
         'model': overDebate
         'parentView': @
       @modalView.render()

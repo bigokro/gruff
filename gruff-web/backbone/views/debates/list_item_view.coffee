@@ -21,10 +21,10 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @
 
   setUpEvents: =>
-    @.$("h4.title a.title-link").bind "click", @toggleInfo
-    @.$("h4.title a.title-link").bind "dblclick", @showEditTitleForm
-    @.$("h4.title a.zoom-link").bind "click", @openModalView
-    @.$(".body").bind "dblclick", @showEditDescriptionForm
+    @.$("> h4.title a.title-link").bind "click", @toggleInfo
+    @.$("> h4.title a.title-link").bind "dblclick", @showEditTitleForm
+    @.$("> h4.title a.zoom-link").bind "click", @openModalView
+    @.$("> .body").bind "dblclick", @showEditDescriptionForm
 
   showEditTitleForm: (e) =>
     e.preventDefault()
