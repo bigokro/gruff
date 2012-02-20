@@ -599,7 +599,7 @@
       this.zoomLink = $(this.el).find('a.zoom-link');
       this.zoomLink.hide();
       this.editTitleField = $(this.el).find('#' + this.model.linkableId() + "-title-field");
-      this.editTitleField.bind("keypress", this.handleKeys);
+      this.editTitleField.bind("keydown", this.handleKeys);
       this.editTitleField.bind("blur", this.close);
       this.editTitleField.show();
       this.editTitleField.focus();
@@ -723,6 +723,9 @@
       this.toggleDescription = __bind(this.toggleDescription, this);
       this.hideInfo = __bind(this.hideInfo, this);
       this.toggleInfo = __bind(this.toggleInfo, this);
+      this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
+      this.showEditTitleForm = __bind(this.showEditTitleForm, this);
+      this.setUpEvents = __bind(this.setUpEvents, this);
       ListItemView.__super__.constructor.apply(this, arguments);
     }
 
@@ -747,15 +750,57 @@
       if (this.attributeType === "subdebates") json.divClass = "subdebate";
       $(this.parentEl).append(this.template(json));
       this.el = $('#' + this.model.linkableId());
-      this.$("h4.title a.title-link").bind("click", this.toggleInfo);
-      this.$("h4.title a.zoom-link").bind("click", this.openModalView);
+      this.setUpEvents();
       this.enableDragDrop();
       return this;
     };
 
+    ListItemView.prototype.setUpEvents = function() {
+      this.$("h4.title a.title-link").bind("click", this.toggleInfo);
+      this.$("h4.title a.title-link").bind("dblclick", this.showEditTitleForm);
+      this.$("h4.title a.zoom-link").bind("click", this.openModalView);
+      return this.$(".body").bind("dblclick", this.showEditDescriptionForm);
+    };
+
+    ListItemView.prototype.showEditTitleForm = function(e) {
+      var clickedDebate, clickedDebateId, editTitleView;
+      e.preventDefault();
+      e.stopPropagation();
+      clearTimeout(this.clickTimeout);
+      this.clickTimeout = null;
+      clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
+      clickedDebate = this.model.findDebate(clickedDebateId);
+      editTitleView = new Gruff.Views.Debates.EditTitleView({
+        'el': e.target,
+        'model': clickedDebate
+      });
+      return editTitleView.render();
+    };
+
+    ListItemView.prototype.showEditDescriptionForm = function(e) {
+      var clickedDebate, clickedDebateId, editDescriptionView;
+      e.preventDefault();
+      e.stopPropagation();
+      clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
+      clickedDebate = this.model.findDebate(clickedDebateId);
+      editDescriptionView = new Gruff.Views.Debates.EditDescriptionView({
+        'el': e.target,
+        'model': clickedDebate
+      });
+      return editDescriptionView.render();
+    };
+
     ListItemView.prototype.toggleInfo = function(e) {
-      this.toggleDescription(e);
-      return this.toggleSubdebates(e);
+      var _this = this;
+      if (this.clickTimeout != null) {
+        return false;
+      } else {
+        this.clickTimeout = setTimeout(function() {
+          _this.toggleSubdebates(e);
+          return _this.clickTimeout = null;
+        }, 500);
+        return false;
+      }
     };
 
     ListItemView.prototype.hideInfo = function() {
@@ -768,7 +813,7 @@
       var parent;
       parent = $(e.target).parents('.debate-list-item')[0];
       if (!$(parent).hasClass('ui-draggable-dragging')) {
-        this.$('div.body').toggle();
+        this.$('> div.body').toggle();
       }
       return false;
     };
@@ -824,6 +869,7 @@
                 });
                 _this.answersView.render();
               }
+              _this.toggleDescription(e);
               return containerEl.show();
             }
           }
@@ -836,6 +882,7 @@
         if ((_ref3 = this.answersView) != null) _ref3.close();
         this.answersView = null;
         containerEl.hide();
+        this.toggleDescription(e);
       }
       return false;
     };
@@ -853,12 +900,12 @@
         hoverClass: 'over',
         greedy: true,
         over: function(e, ui) {
-          return _this.timeout = setTimeout(function() {
+          return _this.hoverTimeout = setTimeout(function() {
             return _this.openModalView(e, ui);
           }, 1000);
         },
         out: function(e, ui) {
-          return clearTimeout(_this.timeout);
+          return clearTimeout(_this.hoverTimeout);
         },
         drop: function(event, ui) {
           var dragged;
@@ -1060,8 +1107,6 @@
     __extends(ShowView, _super);
 
     function ShowView() {
-      this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
-      this.showEditTitleForm = __bind(this.showEditTitleForm, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.disableDragDrop = __bind(this.disableDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
@@ -1150,9 +1195,7 @@
     };
 
     ShowView.prototype.setUpEvents = function() {
-      $(this.el).find(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
-      $(this.el).find(".debate-list-item .title").bind("dblclick", this.showEditTitle);
-      return $(this.el).find(".debate-list-item .body").bind("dblclick", this.showEditDescriptionForm);
+      return $(this.el).find(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
     };
 
     ShowView.prototype.setUpDragDrop = function() {
@@ -1190,28 +1233,6 @@
       $(this.el).find(".argument, .answer, .subdebate").draggable("option", "disabled", false);
       $(this.el).find(".argument, .answer, .subdebate").droppable("option", "disabled", false);
       return $(this.el).find(".for, .against, .subdebates, .answers").droppable("option", "disabled", false);
-    };
-
-    ShowView.prototype.showEditTitleForm = function(e) {
-      var clickedDebate, clickedDebateId, editTitleView;
-      clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
-      clickedDebate = this.model.findDebate(clickedDebateId);
-      editTitleView = new Gruff.Views.Debates.EditTitleView({
-        'el': e.target,
-        'model': clickedDebate
-      });
-      return editTitleView.render();
-    };
-
-    ShowView.prototype.showEditDescriptionForm = function(e) {
-      var clickedDebate, clickedDebateId, editDescriptionView;
-      clickedDebateId = $(e.target).parents('.debate-list-item')[0].id;
-      clickedDebate = this.model.findDebate(clickedDebateId);
-      editDescriptionView = new Gruff.Views.Debates.EditDescriptionView({
-        'el': e.target,
-        'model': clickedDebate
-      });
-      return editDescriptionView.render();
     };
 
     ShowView.prototype.toggleSubdebateDiv = function(e, ui) {

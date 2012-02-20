@@ -35,7 +35,7 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     @zoomLink = $(@el).find('a.zoom-link')
     @zoomLink.hide()
     @editTitleField = $(@el).find('#'+@model.linkableId()+"-title-field")
-    @editTitleField.bind("keypress", @handleKeys)
+    @editTitleField.bind("keydown", @handleKeys)
     @editTitleField.bind("blur", @close)
     @editTitleField.show()
     @editTitleField.focus()

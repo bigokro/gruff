@@ -68,8 +68,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   setUpEvents: =>
     $(@el).find(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
-    $(@el).find(".debate-list-item .title").bind "dblclick", @showEditTitle
-    $(@el).find(".debate-list-item .body").bind "dblclick", @showEditDescriptionForm
 
   setUpDragDrop: =>
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(
@@ -96,22 +94,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     $(@el).find( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", false )
     $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
-
-  showEditTitleForm: (e) =>
-    clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
-    clickedDebate = @model.findDebate clickedDebateId
-    editTitleView = new Gruff.Views.Debates.EditTitleView
-      'el': e.target
-      'model': clickedDebate
-    editTitleView.render()
-
-  showEditDescriptionForm: (e) =>
-    clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
-    clickedDebate = @model.findDebate clickedDebateId
-    editDescriptionView = new Gruff.Views.Debates.EditDescriptionView
-      'el': e.target
-      'model': clickedDebate
-    editDescriptionView.render()
 
   toggleSubdebateDiv: (e, ui) ->
     if @modalView?

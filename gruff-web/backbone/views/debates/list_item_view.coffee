@@ -16,14 +16,48 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     if @attributeType == "subdebates" then json.divClass = "subdebate"
     $(@parentEl).append(@template json)
     @el = $('#'+@model.linkableId())
-    @.$("h4.title a.title-link").bind("click", @toggleInfo)
-    @.$("h4.title a.zoom-link").bind("click", @openModalView)
+    @setUpEvents()
     @enableDragDrop()
     @
 
+  setUpEvents: =>
+    @.$("h4.title a.title-link").bind "click", @toggleInfo
+    @.$("h4.title a.title-link").bind "dblclick", @showEditTitleForm
+    @.$("h4.title a.zoom-link").bind "click", @openModalView
+    @.$(".body").bind "dblclick", @showEditDescriptionForm
+
+  showEditTitleForm: (e) =>
+    e.preventDefault()
+    e.stopPropagation()
+    clearTimeout @clickTimeout
+    @clickTimeout = null
+    clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
+    clickedDebate = @model.findDebate clickedDebateId
+    editTitleView = new Gruff.Views.Debates.EditTitleView
+      'el': e.target
+      'model': clickedDebate
+    editTitleView.render()
+
+  showEditDescriptionForm: (e) =>
+    e.preventDefault()
+    e.stopPropagation() 
+    clickedDebateId = $(e.target).parents('.debate-list-item')[0].id
+    clickedDebate = @model.findDebate clickedDebateId
+    editDescriptionView = new Gruff.Views.Debates.EditDescriptionView
+      'el': e.target
+      'model': clickedDebate
+    editDescriptionView.render()
+
   toggleInfo: (e) =>
-    @toggleDescription(e)
-    @toggleSubdebates(e)
+    if @clickTimeout?
+      false
+    else
+      @clickTimeout = setTimeout( () =>
+        @toggleSubdebates(e)
+        @clickTimeout = null
+      , 500
+      )
+      false
 
   hideInfo: =>
     @.$('div.body').hide()
@@ -33,7 +67,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
   toggleDescription: (e) =>
     parent = $(e.target).parents('.debate-list-item')[0]
     unless $(parent).hasClass('ui-draggable-dragging')
-      @.$('div.body').toggle()
+      @.$('> div.body').toggle()
     false
 
   toggleSubdebates: (e) =>
@@ -78,6 +112,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
                 'parentView': @
                 'showView': @showView
               @answersView.render()
+            @toggleDescription(e)
             containerEl.show()
       )
     else
@@ -88,6 +123,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       @answersView?.close()
       @answersView = null
       containerEl.hide()
+      @toggleDescription(e)
     false
 
   openModalView: (e, ui) =>
@@ -101,13 +137,13 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       hoverClass: 'over'
       greedy: true
       over: (e, ui) =>
-        @timeout = setTimeout( 
+        @hoverTimeout = setTimeout( 
           () => 
             @openModalView(e, ui)
           , 1000
         )
       out: (e, ui) =>
-        clearTimeout(@timeout)
+        clearTimeout @hoverTimeout
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
         @moveDebate dragged, event.target
