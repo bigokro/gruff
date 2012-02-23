@@ -714,6 +714,7 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.centerOnMouse = __bind(this.centerOnMouse, this);
       this.mergeDebates = __bind(this.mergeDebates, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.openModalView = __bind(this.openModalView, this);
@@ -737,7 +738,7 @@
       this.parentView = options.parentView;
       this.showView = options.showView;
       this.attributeType = options.attributeType;
-      return this.dontShow = false;
+      return this.dontShowInfo = false;
     };
 
     ListItemView.prototype.render = function() {
@@ -829,8 +830,8 @@
     ListItemView.prototype.showInfo = function(e) {
       var containerEl,
         _this = this;
-      if (this.dontShow) {
-        this.dontShow = false;
+      if (this.dontShowInfo) {
+        this.dontShowInfo = false;
         return false;
       }
       if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
@@ -932,7 +933,7 @@
         over: function(e, ui) {
           _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
-            return _this.showInfo(e, ui);
+            return _this.doToggleInfo(e, ui);
           }, 1000);
         },
         out: function(e, ui) {
@@ -965,19 +966,16 @@
       return $(this.el).draggable({
         revert: true,
         refreshPositions: true,
+        distance: 5,
+        helper: 'clone',
         start: function(e, ui) {
           var w;
-          _this.dragStartTimeout = setTimeout(function() {
-            _this.dontShow = true;
-            return _this.hideInfo();
-          }, 500);
+          _this.dontShowInfo = true;
+          _this.hideInfo();
           w = Math.min(_this.$("> h4 > a.title-link").width() + _this.$("> h4 > a.zoom-link").width() + 10, _this.$("> h4").width());
-          return $(e.target).width(w);
+          return console.log("Use this w or remove it");
         },
-        stop: function(e, ui) {
-          clearTimeout(_this.dragStartTimeout);
-          return $(e.target).width("100%");
-        }
+        stop: function(e, ui) {}
       });
     };
 
@@ -988,6 +986,16 @@
 
     ListItemView.prototype.mergeDebates = function(dragged, target) {
       return alert("Dropping one debate onto another has not yet been implemented");
+    };
+
+    ListItemView.prototype.centerOnMouse = function(e, ui) {
+      var dragged, offset;
+      dragged = e.target;
+      offset = $(dragged).position();
+      return $(dragged).position({
+        top: offset - $(window).scrollTop(),
+        left: offset
+      });
     };
 
     return ListItemView;
@@ -1066,6 +1074,7 @@
 
     function MiniListView() {
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
+      this.setUpDragDrop = __bind(this.setUpDragDrop, this);
       MiniListView.__super__.constructor.apply(this, arguments);
     }
 
@@ -1075,13 +1084,41 @@
 
     MiniListView.prototype.render = function() {
       MiniListView.__super__.render.apply(this, arguments);
+      this.model = this.collection.parent;
       this.linkEl = $(this.el).next();
       this.linkEl.bind("click", this.showNewDebateForm);
+      this.setUpDragDrop();
       return this;
     };
 
     MiniListView.prototype.close = function() {
       return MiniListView.__super__.close.apply(this, arguments);
+    };
+
+    MiniListView.prototype.setUpDragDrop = function() {
+      var _this = this;
+      return $(this.el).parent().droppable({
+        accept: '.subdebate, .argument, .debate, .answer',
+        greedy: true,
+        drop: function(event, ui) {
+          var dragged;
+          dragged = ui.draggable[0];
+          $(event.target).removeClass('over');
+          if ($(event.target).has(dragged).length === 0) {
+            return _this.moveDebate(dragged, event.target);
+          }
+        },
+        over: function(event, ui) {
+          var dragged;
+          dragged = ui.draggable[0];
+          if ($(event.target).has(dragged).length === 0) {
+            return $(event.target).addClass('over');
+          }
+        },
+        out: function(event, ui) {
+          return $(event.target).removeClass('over');
+        }
+      });
     };
 
     MiniListView.prototype.showNewDebateForm = function(e) {

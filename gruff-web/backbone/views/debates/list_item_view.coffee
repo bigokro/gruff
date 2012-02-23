@@ -7,7 +7,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @parentView = options.parentView
     @showView = options.showView
     @attributeType = options.attributeType
-    @dontShow = false
+    @dontShowInfo = false
 
   render: ->
     json = @model.fullJSON()
@@ -76,8 +76,8 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     false
 
   showInfo: (e) =>
-    if @dontShow
-      @dontShow = false
+    if @dontShowInfo
+      @dontShowInfo = false
       return false
     if @model.get("type") == @model.DebateTypes.DIALECTIC
       containerEl = @.$('> div.arguments')
@@ -160,7 +160,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         @.$('> h4').addClass('over')
         @hoverTimeout = setTimeout( 
           () => 
-            @showInfo(e, ui)
+            @doToggleInfo(e, ui)
           , 1000
         )
       out: (e, ui) =>
@@ -191,21 +191,17 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     $(@el).draggable(
       revert: true
       refreshPositions: true
+      distance: 5
+      helper: 'clone'
       start: (e, ui) =>
-        @dragStartTimeout = setTimeout(
-          () =>
-            @dontShow = true
-            @hideInfo()
-          , 500
-        )
+        @dontShowInfo = true
+        @hideInfo()
         w = Math.min(
           @.$("> h4 > a.title-link").width() + @.$("> h4 > a.zoom-link").width() + 10
           @.$("> h4").width()
         )
-        $(e.target).width(w)
+        console.log "Use this w or remove it"
       stop: (e, ui) =>
-        clearTimeout @dragStartTimeout
-        $(e.target).width("100%")
     )
 
   close: ->
@@ -214,3 +210,11 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   mergeDebates: (dragged, target) =>
     alert "Dropping one debate onto another has not yet been implemented"
+
+  centerOnMouse: (e, ui) =>
+    dragged = e.target
+    offset = $(dragged).position()
+    $(dragged).position(
+      top: offset - $(window).scrollTop()
+      left: offset
+    )
