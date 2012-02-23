@@ -153,7 +153,6 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       hoverClass: 'over'
       greedy: true
       over: (e, ui) =>
-        @.$('> h4').addClass('over')
         @hoverTimeout = setTimeout( 
           () => 
             @showInfo(e, ui)
@@ -161,7 +160,6 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         )
       out: (e, ui) =>
         clearTimeout @hoverTimeout
-        @.$('> h4').removeClass('over')
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
         @mergeDebates dragged, event.target
@@ -193,10 +191,8 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
             @hideInfo()
           , 500
         )
-        $(e.target).width(@.$("> h4 > a.title-link").width() + @.$("> h4 > a.title-link").width())
+        $(e.target).width($(e.target).find("> h4").width())
       stop: (e, ui) =>
-        e.preventDefault()
-        e.stopPropagation()
         clearTimeout @dragStartTimeout
         $(e.target).width("100%")
     )

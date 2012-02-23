@@ -13,11 +13,15 @@ exports.about = function(req, res) {
 };
 
 exports.canvas = function(req, res) {
+  var id = req.params.id
+  if (id.charAt(id.length - 1) == '#') {
+      id = id.substring(0, id.length - 2)
+  }
   res.render('canvas.jade', {
     layout: 'layout_canvas'
     , locals: {
       title: 'Make Your Gruff'
-      , id: req.params.id
+      , id: id
   }});
 };
 

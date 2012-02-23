@@ -51,17 +51,14 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @unbind()
 
   raise: =>
-    target = $(@el).parent()
-    oldZIndex = $(@linkDiv).css('z-index')
-    oldZIndex = $(target).css('z-index') unless oldZIndex?
-    newZIndex = parseInt(oldZIndex) + 5
-    $(target).css('z-index', newZIndex)
-    $(@el).css('z-index', newZIndex)
-    $(@el).find('.debate-list-item').css('z-index', newZIndex)
-    $(@modal).css('z-index', newZIndex-1)
+    _.each($(@el).parents('.debate-list-item'), (parent) =>
+      zindex = parseInt($(parent).css('z-index'))
+      $(parent).css('z-index', zindex + 5)
+      $(@modal).css('z-index', zindex + 4)
+    )
 
   lower: =>
-    target = $(@el).parent()
-    newIndex = 'auto'
-    newZIndex = parseInt($(target).css('z-index')) - 5 unless $(target).css('z-index') == 'auto'
-    $(target).css('z-index', newZIndex)
+    _.each($(@el).parents('.debate-list-item'), (parent) =>
+      zindex = parseInt($(parent).css('z-index'))
+      $(parent).css('z-index', zindex - 5)
+    )

@@ -95,14 +95,15 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
 
-  toggleSubdebateDiv: (e, ui) ->
+  toggleSubdebateDiv: (listItemView) ->
     if @modalView?
       @modalView.close()
       @modalView = null
       @enableDragDrop()
+      listItemView.closeModalView()
     else
-      subdebateDiv = e.target
-      subdebateDiv = $(e.target).parents('.debate-list-item')[0] unless $(e.target).hasClass('debate-list-item')
+      subdebateDiv = listItemView.el[0]
+      subdebateDiv = $(subdebateDiv).parents('.debate-list-item')[0] unless $(subdebateDiv).hasClass('debate-list-item')
       @disableDragDrop()
       if ui?
         dragged = ui.draggable[0]

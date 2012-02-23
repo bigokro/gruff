@@ -496,11 +496,8 @@
           _this.descriptionEl.html(newDescription);
           return _this.close();
         },
-        error: function(debate, jqXHR) {
-          _this.model.set({
-            errors: $.parseJSON(jqXHR.responseText)
-          });
-          return alert(jqXHR.responseText);
+        error: function(jqXHR, type) {
+          return _this.handleRemoteError(jqXHR);
         }
       });
     };
@@ -717,14 +714,19 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.mergeDebates = __bind(this.mergeDebates, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.openModalView = __bind(this.openModalView, this);
-      this.toggleSubdebates = __bind(this.toggleSubdebates, this);
+      this.hideDescription = __bind(this.hideDescription, this);
+      this.showDescription = __bind(this.showDescription, this);
       this.toggleDescription = __bind(this.toggleDescription, this);
       this.hideInfo = __bind(this.hideInfo, this);
+      this.showInfo = __bind(this.showInfo, this);
+      this.doToggleInfo = __bind(this.doToggleInfo, this);
       this.toggleInfo = __bind(this.toggleInfo, this);
       this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
       this.showEditTitleForm = __bind(this.showEditTitleForm, this);
+      this.cancelEvents = __bind(this.cancelEvents, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       ListItemView.__super__.constructor.apply(this, arguments);
     }
@@ -762,6 +764,11 @@
       return this.$("> .body").bind("dblclick", this.showEditDescriptionForm);
     };
 
+    ListItemView.prototype.cancelEvents = function() {
+      this.$("> h4.title a.title-link").unbind;
+      return this.$("> .body").unbind;
+    };
+
     ListItemView.prototype.showEditTitleForm = function(e) {
       var clickedDebate, clickedDebateId, editTitleView;
       e.preventDefault();
@@ -796,133 +803,185 @@
         return false;
       } else {
         this.clickTimeout = setTimeout(function() {
-          _this.toggleSubdebates(e);
+          _this.doToggleInfo(e);
           return _this.clickTimeout = null;
         }, 500);
         return false;
       }
     };
 
-    ListItemView.prototype.hideInfo = function() {
-      this.$('div.body').hide();
-      this.$('div.answers').hide();
-      return this.$('div.arguments').hide();
-    };
-
-    ListItemView.prototype.toggleDescription = function(e) {
-      var parent;
-      parent = $(e.target).parents('.debate-list-item')[0];
-      if (!$(parent).hasClass('ui-draggable-dragging')) {
-        this.$('> div.body').toggle();
-      }
-      return false;
-    };
-
-    ListItemView.prototype.toggleSubdebates = function(e) {
-      var containerEl, parent, _ref, _ref2, _ref3,
-        _this = this;
-      parent = $(e.target).parents('.debate-list-item')[0];
+    ListItemView.prototype.doToggleInfo = function(e) {
+      var containerEl;
       if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
         containerEl = this.$('> div.arguments');
       } else {
         containerEl = this.$('> div.answers');
       }
       if ($(containerEl).css("display") === "none") {
-        this.model.fetchSubdebates({
-          error: function() {
-            return alert("Error");
-          },
-          success: function(subdebates, response4) {
-            var againstEl, answersEl, forEl, json;
-            json = _this.model.fullJSON();
-            json.loggedIn = true;
-            if (!$(parent).hasClass('ui-draggable-dragging')) {
-              if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
-                _this.$('div.arguments').show();
-                forEl = _this.$('> div.arguments > .for .debates-list').first();
-                againstEl = _this.$('> div.arguments > .against .debates-list').first();
-                _this.argumentsForView = new Gruff.Views.Debates.MiniListView({
-                  'el': forEl,
-                  'collection': _this.model.argumentsFor,
-                  'attributeType': 'argumentsFor',
-                  'parentView': _this,
-                  'showView': _this.showView
-                });
-                _this.argumentsForView.render();
-                _this.argumentsAgainstView = new Gruff.Views.Debates.MiniListView({
-                  'el': againstEl,
-                  'collection': _this.model.argumentsAgainst,
-                  'attributeType': 'argumentsAgainst',
-                  'parentView': _this,
-                  'showView': _this.showView
-                });
-                _this.argumentsAgainstView.render();
-              } else {
-                answersEl = _this.$('> div.answers > .debates-list').first();
-                answersEl.show();
-                _this.answersView = new Gruff.Views.Debates.MiniListView({
-                  'el': answersEl,
-                  'collection': _this.model.answers,
-                  'attributeType': 'answers',
-                  'parentView': _this,
-                  'showView': _this.showView
-                });
-                _this.answersView.render();
-              }
-              _this.toggleDescription(e);
-              return containerEl.show();
-            }
-          }
-        });
+        this.showInfo();
       } else {
-        if ((_ref = this.argumentsForView) != null) _ref.close();
-        this.argumentsForView = null;
-        if ((_ref2 = this.argumentsAgainstView) != null) _ref2.close();
-        this.argumentsAgainstView = null;
-        if ((_ref3 = this.answersView) != null) _ref3.close();
-        this.answersView = null;
-        containerEl.hide();
-        this.toggleDescription(e);
+        this.hideInfo();
       }
       return false;
     };
 
-    ListItemView.prototype.openModalView = function(e, ui) {
-      this.hideInfo();
-      this.showView.toggleSubdebateDiv(e, ui);
+    ListItemView.prototype.showInfo = function(e) {
+      var containerEl,
+        _this = this;
+      if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
+        containerEl = this.$('> div.arguments');
+      } else {
+        containerEl = this.$('> div.answers');
+      }
+      return this.model.fetchSubdebates({
+        error: function() {
+          return alert("Error");
+        },
+        success: function(subdebates, response4) {
+          var againstEl, answersEl, forEl, json;
+          json = _this.model.fullJSON();
+          json.loggedIn = true;
+          if (!$(_this.el).hasClass('ui-draggable-dragging')) {
+            if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
+              _this.$('div.arguments').show();
+              forEl = _this.$('> div.arguments > .for .debates-list').first();
+              againstEl = _this.$('> div.arguments > .against .debates-list').first();
+              _this.argumentsForView = new Gruff.Views.Debates.MiniListView({
+                'el': forEl,
+                'collection': _this.model.argumentsFor,
+                'attributeType': 'argumentsFor',
+                'parentView': _this,
+                'showView': _this.showView
+              });
+              _this.argumentsForView.render();
+              _this.argumentsAgainstView = new Gruff.Views.Debates.MiniListView({
+                'el': againstEl,
+                'collection': _this.model.argumentsAgainst,
+                'attributeType': 'argumentsAgainst',
+                'parentView': _this,
+                'showView': _this.showView
+              });
+              _this.argumentsAgainstView.render();
+            } else {
+              answersEl = _this.$('> div.answers > .debates-list').first();
+              answersEl.show();
+              _this.answersView = new Gruff.Views.Debates.MiniListView({
+                'el': answersEl,
+                'collection': _this.model.answers,
+                'attributeType': 'answers',
+                'parentView': _this,
+                'showView': _this.showView
+              });
+              _this.answersView.render();
+            }
+            _this.showDescription();
+            return containerEl.show();
+          }
+        }
+      });
+    };
+
+    ListItemView.prototype.hideInfo = function() {
+      var answersEl, _ref, _ref2, _ref3;
+      this.hideDescription();
+      if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
+        this.$('> div.arguments').hide();
+        if ((_ref = this.argumentsForView) != null) _ref.close();
+        return (_ref2 = this.argumentsAgainstView) != null ? _ref2.close() : void 0;
+      } else {
+        answersEl = this.$('> div.answers > .debates-list').first();
+        answersEl.hide();
+        return (_ref3 = this.answersView) != null ? _ref3.close() : void 0;
+      }
+    };
+
+    ListItemView.prototype.toggleDescription = function(e) {
+      if (!$(this.el).hasClass('ui-draggable-dragging')) {
+        this.$('> div.body').toggle();
+      }
       return false;
     };
 
+    ListItemView.prototype.showDescription = function() {
+      return this.$('> div.body').show();
+    };
+
+    ListItemView.prototype.hideDescription = function() {
+      return this.$('> div.body').hide();
+    };
+
+    ListItemView.prototype.openModalView = function(e, ui) {
+      this.hideInfo();
+      this.showView.toggleSubdebateDiv(this);
+      return false;
+    };
+
+    ListItemView.prototype.closeModalView = function() {};
+
     ListItemView.prototype.enableDragDrop = function() {
       var _this = this;
-      $(this.el).droppable({
+      this.$('> h4 a.title-link').droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         hoverClass: 'over',
         greedy: true,
         over: function(e, ui) {
+          _this.$('> h4').addClass('over');
+          return _this.hoverTimeout = setTimeout(function() {
+            return _this.showInfo(e, ui);
+          }, 1000);
+        },
+        out: function(e, ui) {
+          clearTimeout(_this.hoverTimeout);
+          return _this.$('> h4').removeClass('over');
+        },
+        drop: function(event, ui) {
+          var dragged;
+          dragged = ui.draggable[0];
+          return _this.mergeDebates(dragged, event.target);
+        }
+      });
+      this.$('> h4 a.zoom-link').droppable({
+        accept: '.subdebate, .argument, .debate, .answer',
+        greedy: true,
+        over: function(e, ui) {
+          _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
             return _this.openModalView(e, ui);
           }, 1000);
         },
         out: function(e, ui) {
-          return clearTimeout(_this.hoverTimeout);
+          clearTimeout(_this.hoverTimeout);
+          return _this.$('> h4').removeClass('over');
         },
         drop: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          return _this.moveDebate(dragged, event.target);
+          return alert("Dropping a debate onto the modal link does nothing");
         }
       });
       return $(this.el).draggable({
         revert: true,
         refreshPositions: true,
         start: function(e, ui) {
-          return $(e.target).width($(e.target).find("h4 > a.title-link").width());
+          _this.dragStartTimeout = setTimeout(function() {
+            return _this.hideInfo();
+          }, 500);
+          return $(e.target).width(_this.$("> h4 > a.title-link").width() + _this.$("> h4 > a.title-link").width());
         },
         stop: function(e, ui) {
+          e.preventDefault();
+          e.stopPropagation();
+          clearTimeout(_this.dragStartTimeout);
           return $(e.target).width("100%");
         }
       });
+    };
+
+    ListItemView.prototype.close = function() {
+      this.el.remove();
+      return this.unbind();
+    };
+
+    ListItemView.prototype.mergeDebates = function(dragged, target) {
+      return alert("Dropping one debate onto another has not yet been implemented");
     };
 
     return ListItemView;
@@ -960,8 +1019,7 @@
 
     ListView.prototype.close = function() {
       return _.each(this.views, function(view) {
-        view.remove();
-        return view.unbind();
+        return view.close();
       });
     };
 
@@ -983,7 +1041,8 @@
       var viewToRemove,
         _this = this;
       viewToRemove = _.select(this.views, function(view) {
-        return view.model === debate;
+        var _ref;
+        return ((_ref = view.model) != null ? _ref.id : void 0) === debate.id;
       })[0];
       this.views = _.without(this.views, viewToRemove);
       return $(viewToRemove.el).remove();
@@ -1235,19 +1294,20 @@
       return $(this.el).find(".for, .against, .subdebates, .answers").droppable("option", "disabled", false);
     };
 
-    ShowView.prototype.toggleSubdebateDiv = function(e, ui) {
+    ShowView.prototype.toggleSubdebateDiv = function(listItemView) {
       var dragged, overDebate, subdebateDiv;
       if (this.modalView != null) {
         this.modalView.close();
         this.modalView = null;
-        return this.enableDragDrop();
+        this.enableDragDrop();
+        return listItemView.closeModalView();
       } else {
-        subdebateDiv = e.target;
-        if (!$(e.target).hasClass('debate-list-item')) {
-          subdebateDiv = $(e.target).parents('.debate-list-item')[0];
+        subdebateDiv = listItemView.el[0];
+        if (!$(subdebateDiv).hasClass('debate-list-item')) {
+          subdebateDiv = $(subdebateDiv).parents('.debate-list-item')[0];
         }
         this.disableDragDrop();
-        if (ui != null) {
+        if (typeof ui !== "undefined" && ui !== null) {
           dragged = ui.draggable[0];
           $(dragged).draggable("option", "disabled", false);
         }
@@ -1391,25 +1451,22 @@
     };
 
     SubdebateView.prototype.raise = function() {
-      var newZIndex, oldZIndex, target;
-      target = $(this.el).parent();
-      oldZIndex = $(this.linkDiv).css('z-index');
-      if (oldZIndex == null) oldZIndex = $(target).css('z-index');
-      newZIndex = parseInt(oldZIndex) + 5;
-      $(target).css('z-index', newZIndex);
-      $(this.el).css('z-index', newZIndex);
-      $(this.el).find('.debate-list-item').css('z-index', newZIndex);
-      return $(this.modal).css('z-index', newZIndex - 1);
+      var _this = this;
+      return _.each($(this.el).parents('.debate-list-item'), function(parent) {
+        var zindex;
+        zindex = parseInt($(parent).css('z-index'));
+        $(parent).css('z-index', zindex + 5);
+        return $(_this.modal).css('z-index', zindex + 4);
+      });
     };
 
     SubdebateView.prototype.lower = function() {
-      var newIndex, newZIndex, target;
-      target = $(this.el).parent();
-      newIndex = 'auto';
-      if ($(target).css('z-index') !== 'auto') {
-        newZIndex = parseInt($(target).css('z-index')) - 5;
-      }
-      return $(target).css('z-index', newZIndex);
+      var _this = this;
+      return _.each($(this.el).parents('.debate-list-item'), function(parent) {
+        var zindex;
+        zindex = parseInt($(parent).css('z-index'));
+        return $(parent).css('z-index', zindex - 5);
+      });
     };
 
     return SubdebateView;

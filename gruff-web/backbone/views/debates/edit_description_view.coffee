@@ -22,9 +22,8 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
       success: (data) =>
         @descriptionEl.html newDescription
         @close()
-      error: (debate, jqXHR) =>
-        @model.set({errors: $.parseJSON(jqXHR.responseText)})
-        alert jqXHR.responseText
+      error: (jqXHR, type) =>
+        @handleRemoteError jqXHR
     )
 
   render: ->

@@ -16,8 +16,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
 
   close: ->
     _.each @views, (view) ->
-      view.remove()
-      view.unbind()
+      view.close()
 
   add: (debate) =>
     debate.parentCollection = @collection
@@ -32,7 +31,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
 
   remove: (debate) =>
     viewToRemove = _.select(@views, (view) =>
-      view.model == debate
+      view.model?.id == debate.id
     )[0]
     @views = _.without(@views, viewToRemove)
     $(viewToRemove.el).remove()
