@@ -7,6 +7,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @parentView = options.parentView
     @showView = options.showView
     @attributeType = options.attributeType
+    @dontShow = false
 
   render: ->
     json = @model.fullJSON()
@@ -75,6 +76,9 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     false
 
   showInfo: (e) =>
+    if @dontShow
+      @dontShow = false
+      return false
     if @model.get("type") == @model.DebateTypes.DIALECTIC
       containerEl = @.$('> div.arguments')
     else
@@ -190,13 +194,16 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       start: (e, ui) =>
         @dragStartTimeout = setTimeout(
           () =>
+            @dontShow = true
             @hideInfo()
           , 500
         )
-        $(e.target).width(@.$("> h4 > a.title-link").width() + @.$("> h4 > a.title-link").width())
+        w = Math.min(
+          @.$("> h4 > a.title-link").width() + @.$("> h4 > a.zoom-link").width() + 10
+          @.$("> h4").width()
+        )
+        $(e.target).width(w)
       stop: (e, ui) =>
-        e.preventDefault()
-        e.stopPropagation()
         clearTimeout @dragStartTimeout
         $(e.target).width("100%")
     )

@@ -736,7 +736,8 @@
       this.parentEl = options.parentEl;
       this.parentView = options.parentView;
       this.showView = options.showView;
-      return this.attributeType = options.attributeType;
+      this.attributeType = options.attributeType;
+      return this.dontShow = false;
     };
 
     ListItemView.prototype.render = function() {
@@ -828,6 +829,10 @@
     ListItemView.prototype.showInfo = function(e) {
       var containerEl,
         _this = this;
+      if (this.dontShow) {
+        this.dontShow = false;
+        return false;
+      }
       if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
         containerEl = this.$('> div.arguments');
       } else {
@@ -961,14 +966,15 @@
         revert: true,
         refreshPositions: true,
         start: function(e, ui) {
+          var w;
           _this.dragStartTimeout = setTimeout(function() {
+            _this.dontShow = true;
             return _this.hideInfo();
           }, 500);
-          return $(e.target).width(_this.$("> h4 > a.title-link").width() + _this.$("> h4 > a.title-link").width());
+          w = Math.min(_this.$("> h4 > a.title-link").width() + _this.$("> h4 > a.zoom-link").width() + 10, _this.$("> h4").width());
+          return $(e.target).width(w);
         },
         stop: function(e, ui) {
-          e.preventDefault();
-          e.stopPropagation();
           clearTimeout(_this.dragStartTimeout);
           return $(e.target).width("100%");
         }
