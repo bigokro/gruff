@@ -192,30 +192,17 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       revert: true
       refreshPositions: true
       distance: 5
-      helper: () =>
-        $(@el).after('<div id="list-item-draggable"><h4></h4></div>')
-        newEl = $('#list-item-draggable')
-        newEl.addClass $(@el).attr('class')
-        newEl.css('background-color', 'transparent')
-        newEl.width(@.$("> h4").width())
-        linkEl = newEl.find("> h4")
-        linkEl.html @.$("> h4").html()
-        linkEl.addClass @.$("> h4").attr('class')
-        linkEl.find('.zoom-link').remove()
-        linkEl.css('text-align', 'right') if newEl.hasClass('argumentFor')
-        linkEl.css('background-color', 'transparent')
-        w = Math.min(
-          @.$("> h4 > a.title-link").width()
-          @.$("> h4").width()
-        )
-        newEl.width(w)
-        newEl
+      helper: 'clone'
+      cursorAt:
+        left: 0
       start: (e, ui) =>
         @dontShowInfo = true
         @hideInfo()
         @.$('> h4').css('opacity', 0)
+
+        cloneEl = ui.helper
+        cloneEl.find('div, a.zoom-link').remove()
       stop: (e, ui) =>
-        $('#list-item-draggable').remove()
         @.$('> h4').css('opacity', 1)
     )
 

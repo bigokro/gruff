@@ -925,7 +925,8 @@
     ListItemView.prototype.closeModalView = function() {};
 
     ListItemView.prototype.enableDragDrop = function() {
-      var _this = this;
+      var indent,
+        _this = this;
       this.$('> h4 a.title-link').droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         hoverClass: 'over',
@@ -963,40 +964,24 @@
           return alert("Dropping a debate onto the modal link does nothing");
         }
       });
-      $('#test-div').draggable({
-        revert: true,
-        refreshPositions: true,
-        distance: 5,
-        helper: 'clone'
-      });
+      indent = this.$('> h4').width() / 2;
       return $(this.el).draggable({
         revert: true,
         refreshPositions: true,
         distance: 5,
-        helper: function() {
-          var linkEl, newEl, w;
-          $(_this.el).after('<div id="list-item-draggable"><h4></h4></div>');
-          newEl = $('#list-item-draggable');
-          newEl.addClass($(_this.el).attr('class'));
-          newEl.css('background-color', 'transparent');
-          newEl.width(_this.$("> h4").width());
-          linkEl = newEl.find("> h4");
-          linkEl.html(_this.$("> h4").html());
-          linkEl.addClass(_this.$("> h4").attr('class'));
-          linkEl.find('.zoom-link').remove();
-          if (newEl.hasClass('argumentFor')) linkEl.css('text-align', 'right');
-          linkEl.css('background-color', 'transparent');
-          w = Math.min(_this.$("> h4 > a.title-link").width(), _this.$("> h4").width());
-          newEl.width(w);
-          return newEl;
+        helper: 'clone',
+        cursorAt: {
+          left: 0
         },
         start: function(e, ui) {
+          var cloneEl;
           _this.dontShowInfo = true;
           _this.hideInfo();
-          return _this.$('> h4').css('opacity', 0);
+          _this.$('> h4').css('opacity', 0);
+          cloneEl = ui.helper;
+          return cloneEl.find('div, a.zoom-link').remove();
         },
         stop: function(e, ui) {
-          $('#list-item-draggable').remove();
           return _this.$('> h4').css('opacity', 1);
         }
       });
