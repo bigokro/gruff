@@ -963,19 +963,42 @@
           return alert("Dropping a debate onto the modal link does nothing");
         }
       });
+      $('#test-div').draggable({
+        revert: true,
+        refreshPositions: true,
+        distance: 5,
+        helper: 'clone'
+      });
       return $(this.el).draggable({
         revert: true,
         refreshPositions: true,
         distance: 5,
-        helper: 'clone',
+        helper: function() {
+          var linkEl, newEl, w;
+          $(_this.el).after('<div id="list-item-draggable"><h4></h4></div>');
+          newEl = $('#list-item-draggable');
+          newEl.addClass($(_this.el).attr('class'));
+          newEl.css('background-color', 'transparent');
+          newEl.width(_this.$("> h4").width());
+          linkEl = newEl.find("> h4");
+          linkEl.html(_this.$("> h4").html());
+          linkEl.addClass(_this.$("> h4").attr('class'));
+          linkEl.find('.zoom-link').remove();
+          if (newEl.hasClass('argumentFor')) linkEl.css('text-align', 'right');
+          linkEl.css('background-color', 'transparent');
+          w = Math.min(_this.$("> h4 > a.title-link").width(), _this.$("> h4").width());
+          newEl.width(w);
+          return newEl;
+        },
         start: function(e, ui) {
-          var w;
           _this.dontShowInfo = true;
           _this.hideInfo();
-          w = Math.min(_this.$("> h4 > a.title-link").width() + _this.$("> h4 > a.zoom-link").width() + 10, _this.$("> h4").width());
-          return console.log("Use this w or remove it");
+          return _this.$('> h4').css('opacity', 0);
         },
-        stop: function(e, ui) {}
+        stop: function(e, ui) {
+          $('#list-item-draggable').remove();
+          return _this.$('> h4').css('opacity', 1);
+        }
       });
     };
 
