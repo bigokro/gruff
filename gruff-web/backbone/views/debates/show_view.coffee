@@ -68,6 +68,28 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   setUpEvents: =>
     $(@el).find(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @setUpHandleKeys()
+
+  setUpHandleKeys: =>
+    $(document).bind('keydown', @handleKeys)
+
+  cancelHandleKeys: =>
+    $(document).unbind('keydown', @handleKeys)
+
+  handleKeys: (e) =>
+    if $("input:focus, textarea:focus").length > 0
+      return true
+    if e.keyCode == 65
+      @.$('[debate-type="argumentsAgainst"], [debate-type="answers"]').click()
+      false
+    else if e.keyCode == 70
+      @.$('[debate-type="argumentsFor"]').click()
+      false
+    else if e.keyCode == 83
+      @.$('[debate-type="subdebates"]').click()
+      false
+    else
+      true
 
   setUpDragDrop: =>
     $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(

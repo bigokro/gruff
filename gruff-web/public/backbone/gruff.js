@@ -925,8 +925,7 @@
     ListItemView.prototype.closeModalView = function() {};
 
     ListItemView.prototype.enableDragDrop = function() {
-      var indent,
-        _this = this;
+      var _this = this;
       this.$('> h4 a.title-link').droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         hoverClass: 'over',
@@ -964,7 +963,6 @@
           return alert("Dropping a debate onto the modal link does nothing");
         }
       });
-      indent = this.$('> h4').width() / 2;
       return $(this.el).draggable({
         revert: true,
         refreshPositions: true,
@@ -1220,6 +1218,9 @@
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.disableDragDrop = __bind(this.disableDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
+      this.handleKeys = __bind(this.handleKeys, this);
+      this.cancelHandleKeys = __bind(this.cancelHandleKeys, this);
+      this.setUpHandleKeys = __bind(this.setUpHandleKeys, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
       ShowView.__super__.constructor.apply(this, arguments);
@@ -1305,7 +1306,33 @@
     };
 
     ShowView.prototype.setUpEvents = function() {
-      return $(this.el).find(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      $(this.el).find(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      return this.setUpHandleKeys();
+    };
+
+    ShowView.prototype.setUpHandleKeys = function() {
+      return $(document).bind('keydown', this.handleKeys);
+    };
+
+    ShowView.prototype.cancelHandleKeys = function() {
+      return $(document).unbind('keydown', this.handleKeys);
+    };
+
+    ShowView.prototype.handleKeys = function(e) {
+      console.log($("*:focus").name);
+      if ($("input:focus, textarea:focus").length > 0) return true;
+      if (e.keyCode === 65) {
+        this.$('[debate-type="argumentsAgainst"], [debate-type="answers"]').click();
+        return false;
+      } else if (e.keyCode === 70) {
+        this.$('[debate-type="argumentsFor"]').click();
+        return false;
+      } else if (e.keyCode === 83) {
+        this.$('[debate-type="subdebates"]').click();
+        return false;
+      } else {
+        return true;
+      }
     };
 
     ShowView.prototype.setUpDragDrop = function() {
