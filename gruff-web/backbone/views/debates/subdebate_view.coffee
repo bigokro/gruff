@@ -52,13 +52,27 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
 
   raise: =>
     _.each($(@el).parents('.debate-list-item'), (parent) =>
-      zindex = parseInt($(parent).css('z-index'))
+      zindex = $(parent).css('z-index')
+      if zindex == 'auto'
+        zindex = 10 
+      else
+        zindex = parseInt(zindex)
       $(parent).css('z-index', zindex + 5)
+      $(@el).css('z-index', zindex + 5)
       $(@modal).css('z-index', zindex + 4)
     )
-
+    h4 = @el.siblings('h4')
+    @cloneEl = h4.clone(true)
+    @cloneEl.css('position', 'absolute')
+    @cloneEl.offset(h4.find('a.title-link').offset())
+    @cloneEl.css('z-index', @el.css('z-index'))
+    @cloneEl.css('margin', 0)
+    @cloneEl.css('padding', 0)
+    @el.parent().append(@cloneEl)
   lower: =>
     _.each($(@el).parents('.debate-list-item'), (parent) =>
       zindex = parseInt($(parent).css('z-index'))
       $(parent).css('z-index', zindex - 5)
+      $(@el).css('z-index', zindex - 5)
     )
+    @cloneEl.remove()

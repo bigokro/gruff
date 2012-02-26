@@ -1319,7 +1319,6 @@
     };
 
     ShowView.prototype.handleKeys = function(e) {
-      console.log($("*:focus").name);
       if ($("input:focus, textarea:focus").length > 0) return true;
       if (e.keyCode === 65) {
         this.$('[debate-type="argumentsAgainst"], [debate-type="answers"]').click();
@@ -1529,22 +1528,39 @@
     };
 
     SubdebateView.prototype.raise = function() {
-      var _this = this;
-      return _.each($(this.el).parents('.debate-list-item'), function(parent) {
+      var h4,
+        _this = this;
+      _.each($(this.el).parents('.debate-list-item'), function(parent) {
         var zindex;
-        zindex = parseInt($(parent).css('z-index'));
+        zindex = $(parent).css('z-index');
+        if (zindex === 'auto') {
+          zindex = 10;
+        } else {
+          zindex = parseInt(zindex);
+        }
         $(parent).css('z-index', zindex + 5);
+        $(_this.el).css('z-index', zindex + 5);
         return $(_this.modal).css('z-index', zindex + 4);
       });
+      h4 = this.el.siblings('h4');
+      this.cloneEl = h4.clone(true);
+      this.cloneEl.css('position', 'absolute');
+      this.cloneEl.offset(h4.find('a.title-link').offset());
+      this.cloneEl.css('z-index', this.el.css('z-index'));
+      this.cloneEl.css('margin', 0);
+      this.cloneEl.css('padding', 0);
+      return this.el.parent().append(this.cloneEl);
     };
 
     SubdebateView.prototype.lower = function() {
       var _this = this;
-      return _.each($(this.el).parents('.debate-list-item'), function(parent) {
+      _.each($(this.el).parents('.debate-list-item'), function(parent) {
         var zindex;
         zindex = parseInt($(parent).css('z-index'));
-        return $(parent).css('z-index', zindex - 5);
+        $(parent).css('z-index', zindex - 5);
+        return $(_this.el).css('z-index', zindex - 5);
       });
+      return this.cloneEl.remove();
     };
 
     return SubdebateView;
