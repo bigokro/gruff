@@ -67,7 +67,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
 
   setUpEvents: =>
-    $(@el).find(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @.$(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @.$("> .title").bind "dblclick", @showEditTitleForm
+    @.$("> .description").bind "dblclick", @showEditDescriptionForm
     @setUpHandleKeys()
 
   setUpHandleKeys: =>
@@ -128,7 +130,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       subdebateDiv = $(subdebateDiv).parents('.debate-list-item')[0] unless $(subdebateDiv).hasClass('debate-list-item')
       @disableDragDrop()
       if ui?
-        dragged = ui.draggable[0]
+        dragged = ui.helper
         $(dragged).draggable( "option", "disabled", false )
       $(subdebateDiv).droppable( "option", "disabled", false )
       overDebate = @model.findDebate subdebateDiv.id
@@ -137,4 +139,24 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         'model': overDebate
         'parentView': @
       @modalView.render()
+
+  showEditTitleForm: (e) =>
+    e.preventDefault()
+    e.stopPropagation()
+    clearTimeout @clickTimeout
+    @clickTimeout = null
+    editTitleView = new Gruff.Views.Debates.EditTitleView
+      'el': e.target
+      'titleEl': e.target
+      'model': @model
+    editTitleView.render()
+
+  showEditDescriptionForm: (e) =>
+    e.preventDefault()
+    e.stopPropagation() 
+    editDescriptionView = new Gruff.Views.Debates.EditDescriptionView
+      'el': e.target
+      'descriptionEl': e.target
+      'model': @model
+    editDescriptionView.render()
 

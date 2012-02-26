@@ -3,6 +3,8 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.EditTitleView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-edit-title-template').text()
+    @titleEl = options.titleEl
+    @zoomEl = options.zoomEl
 
     @model.bind("change:errors", () =>
       this.render()
@@ -20,7 +22,7 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
         _id: @model.linkableId()
         title: newTitle
       success: (data) =>
-        @titleLink.html newTitle
+        $(@titleEl).html newTitle
         @close()
       error: (jqXHR, type) =>
         @handleRemoteError jqXHR
@@ -30,10 +32,10 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     json = @model.fullJSON()
     @el = $(@el).parents('.title')[0] unless $(@el).hasClass('.title')
     $(@el).append(@template( json ))
-    @titleLink = $(@el).find('a.title-link')
-    @titleLink.hide()
-    @zoomLink = $(@el).find('a.zoom-link')
-    @zoomLink.hide()
+    @titleEl = $(@el).find('a.title-link') unless @titleEl?
+    $(@titleEl).hide()
+    @zoomEl = $(@el).find('a.zoom-link') unless @zoomEl?
+    $(@zoomEl).hide()
     @editTitleField = $(@el).find('#'+@model.linkableId()+"-title-field")
     @editTitleField.bind("keydown", @handleKeys)
     @editTitleField.bind("blur", @close)
@@ -42,8 +44,8 @@ class Gruff.Views.Debates.EditTitleView extends Backbone.View
     @
 
   close: =>
-    @titleLink.show()
-    @zoomLink.show()
+    $(@titleEl).show()
+    $(@zoomEl).show()
     @editTitleField.remove()
     @unbind()
 

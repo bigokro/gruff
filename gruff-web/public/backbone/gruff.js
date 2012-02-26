@@ -468,12 +468,14 @@
     function EditDescriptionView() {
       this.handleKeys = __bind(this.handleKeys, this);
       this.close = __bind(this.close, this);
+      this.render = __bind(this.render, this);
       EditDescriptionView.__super__.constructor.apply(this, arguments);
     }
 
     EditDescriptionView.prototype.initialize = function(options) {
       var _this = this;
       this.template = _.template($('#debate-edit-description-template').text());
+      this.descriptionEl = options.descriptionEl;
       return this.model.bind("change:errors", function() {
         return _this.render();
       });
@@ -493,7 +495,7 @@
           desc: newDescription
         },
         success: function(data) {
-          _this.descriptionEl.html(newDescription);
+          $(_this.descriptionEl).html(newDescription);
           return _this.close();
         },
         error: function(jqXHR, type) {
@@ -505,13 +507,13 @@
     EditDescriptionView.prototype.render = function() {
       var json;
       json = this.model.fullJSON();
-      if (!$(this.el).hasClass('.debate-list-item')) {
-        this.el = $(this.el).parents('.debate-list-item')[0];
+      this.parent = $(this.el).parent();
+      if (this.descriptionEl == null) {
+        this.descriptionEl = $(this.parent).find('> .body');
       }
-      this.descriptionEl = $(this.el).find('> .body');
       $(this.descriptionEl).after(this.template(json));
-      this.descriptionEl.hide();
-      this.editDescriptionField = $(this.el).find('#' + this.model.linkableId() + "-description-field");
+      $(this.descriptionEl).hide();
+      this.editDescriptionField = $(this.parent).find('#' + this.model.linkableId() + "-description-field");
       this.editDescriptionField.bind("keydown", this.handleKeys);
       this.editDescriptionField.bind("blur", this.close);
       this.editDescriptionField.show();
@@ -520,7 +522,7 @@
     };
 
     EditDescriptionView.prototype.close = function() {
-      this.descriptionEl.show();
+      $(this.descriptionEl).show();
       this.editDescriptionField.remove();
       return this.unbind();
     };
@@ -556,6 +558,8 @@
     EditTitleView.prototype.initialize = function(options) {
       var _this = this;
       this.template = _.template($('#debate-edit-title-template').text());
+      this.titleEl = options.titleEl;
+      this.zoomEl = options.zoomEl;
       return this.model.bind("change:errors", function() {
         return _this.render();
       });
@@ -575,7 +579,7 @@
           title: newTitle
         },
         success: function(data) {
-          _this.titleLink.html(newTitle);
+          $(_this.titleEl).html(newTitle);
           return _this.close();
         },
         error: function(jqXHR, type) {
@@ -591,10 +595,10 @@
         this.el = $(this.el).parents('.title')[0];
       }
       $(this.el).append(this.template(json));
-      this.titleLink = $(this.el).find('a.title-link');
-      this.titleLink.hide();
-      this.zoomLink = $(this.el).find('a.zoom-link');
-      this.zoomLink.hide();
+      if (this.titleEl == null) this.titleEl = $(this.el).find('a.title-link');
+      $(this.titleEl).hide();
+      if (this.zoomEl == null) this.zoomEl = $(this.el).find('a.zoom-link');
+      $(this.zoomEl).hide();
       this.editTitleField = $(this.el).find('#' + this.model.linkableId() + "-title-field");
       this.editTitleField.bind("keydown", this.handleKeys);
       this.editTitleField.bind("blur", this.close);
@@ -604,8 +608,8 @@
     };
 
     EditTitleView.prototype.close = function() {
-      this.titleLink.show();
-      this.zoomLink.show();
+      $(this.titleEl).show();
+      $(this.zoomEl).show();
       this.editTitleField.remove();
       return this.unbind();
     };
@@ -977,7 +981,8 @@
           _this.hideInfo();
           _this.$('> h4').css('opacity', 0);
           cloneEl = ui.helper;
-          return cloneEl.find('div, a.zoom-link').remove();
+          cloneEl.find('div, a.zoom-link').remove();
+          return cloneEl.attr('id', _this.model.id);
         },
         stop: function(e, ui) {
           return _this.$('> h4').css('opacity', 1);
@@ -1215,6 +1220,8 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
+      this.showEditTitleForm = __bind(this.showEditTitleForm, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.disableDragDrop = __bind(this.disableDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
@@ -1306,7 +1313,9 @@
     };
 
     ShowView.prototype.setUpEvents = function() {
-      $(this.el).find(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      this.$(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      this.$("> .title").bind("dblclick", this.showEditTitleForm);
+      this.$("> .description").bind("dblclick", this.showEditDescriptionForm);
       return this.setUpHandleKeys();
     };
 
@@ -1385,7 +1394,7 @@
         }
         this.disableDragDrop();
         if (typeof ui !== "undefined" && ui !== null) {
-          dragged = ui.draggable[0];
+          dragged = ui.helper;
           $(dragged).draggable("option", "disabled", false);
         }
         $(subdebateDiv).droppable("option", "disabled", false);
@@ -1397,6 +1406,32 @@
         });
         return this.modalView.render();
       }
+    };
+
+    ShowView.prototype.showEditTitleForm = function(e) {
+      var editTitleView;
+      e.preventDefault();
+      e.stopPropagation();
+      clearTimeout(this.clickTimeout);
+      this.clickTimeout = null;
+      editTitleView = new Gruff.Views.Debates.EditTitleView({
+        'el': e.target,
+        'titleEl': e.target,
+        'model': this.model
+      });
+      return editTitleView.render();
+    };
+
+    ShowView.prototype.showEditDescriptionForm = function(e) {
+      var editDescriptionView;
+      e.preventDefault();
+      e.stopPropagation();
+      editDescriptionView = new Gruff.Views.Debates.EditDescriptionView({
+        'el': e.target,
+        'descriptionEl': e.target,
+        'model': this.model
+      });
+      return editDescriptionView.render();
     };
 
     return ShowView;
@@ -1461,6 +1496,7 @@
       this.lower = __bind(this.lower, this);
       this.raise = __bind(this.raise, this);
       this.close = __bind(this.close, this);
+      this.cloneLink = __bind(this.cloneLink, this);
       this.handleKeys = __bind(this.handleKeys, this);
       SubdebateView.__super__.constructor.apply(this, arguments);
     }
@@ -1514,6 +1550,18 @@
       });
     };
 
+    SubdebateView.prototype.cloneLink = function() {
+      var h4;
+      h4 = this.el.siblings('h4');
+      this.cloneEl = h4.clone(true);
+      this.cloneEl.css('position', 'absolute');
+      this.cloneEl.offset(h4.find('a.title-link').offset());
+      this.cloneEl.css('z-index', this.el.css('z-index'));
+      this.cloneEl.css('margin', 0);
+      this.cloneEl.css('padding', 0);
+      return this.el.parent().append(this.cloneEl);
+    };
+
     SubdebateView.prototype.close = function() {
       var _ref;
       $(document).unbind('keydown');
@@ -1528,8 +1576,7 @@
     };
 
     SubdebateView.prototype.raise = function() {
-      var h4,
-        _this = this;
+      var _this = this;
       _.each($(this.el).parents('.debate-list-item'), function(parent) {
         var zindex;
         zindex = $(parent).css('z-index');
@@ -1542,14 +1589,7 @@
         $(_this.el).css('z-index', zindex + 5);
         return $(_this.modal).css('z-index', zindex + 4);
       });
-      h4 = this.el.siblings('h4');
-      this.cloneEl = h4.clone(true);
-      this.cloneEl.css('position', 'absolute');
-      this.cloneEl.offset(h4.find('a.title-link').offset());
-      this.cloneEl.css('z-index', this.el.css('z-index'));
-      this.cloneEl.css('margin', 0);
-      this.cloneEl.css('padding', 0);
-      return this.el.parent().append(this.cloneEl);
+      return this.cloneLink();
     };
 
     SubdebateView.prototype.lower = function() {
@@ -1630,7 +1670,7 @@
       targetParent = $(target).parents('.debate-list-item, .debate')[0];
       targetDebateId = targetParent.id;
       targetDebate = this.model.findDebate(targetDebateId);
-      newCollection = targetDebate.getCollectionByName(target.className);
+      newCollection = targetDebate.getCollectionByName(targetParent.className);
       debate = this.model.findDebate(dragged.id);
       oldCollection = debate.parentCollection;
       oldCollection.remove(debate);

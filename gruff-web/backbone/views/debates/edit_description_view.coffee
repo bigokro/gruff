@@ -3,6 +3,7 @@ Gruff.Views.Debates ||= {}
 class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-edit-description-template').text()
+    @descriptionEl = options.descriptionEl
 
     @model.bind("change:errors", () =>
       this.render()
@@ -20,19 +21,19 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
         _id: @model.linkableId()
         desc: newDescription
       success: (data) =>
-        @descriptionEl.html newDescription
+        $(@descriptionEl).html newDescription
         @close()
       error: (jqXHR, type) =>
         @handleRemoteError jqXHR
     )
 
-  render: ->
+  render: =>
     json = @model.fullJSON()
-    @el = $(@el).parents('.debate-list-item')[0] unless $(@el).hasClass('.debate-list-item')
-    @descriptionEl = $(@el).find('> .body')
+    @parent = $(@el).parent()
+    @descriptionEl = $(@parent).find('> .body') unless @descriptionEl?
     $(@descriptionEl).after(@template( json ))
-    @descriptionEl.hide()
-    @editDescriptionField = $(@el).find('#'+@model.linkableId()+"-description-field")
+    $(@descriptionEl).hide()
+    @editDescriptionField = $(@parent).find('#'+@model.linkableId()+"-description-field")
     @editDescriptionField.bind("keydown", @handleKeys)
     @editDescriptionField.bind("blur", @close)
     @editDescriptionField.show()
@@ -40,7 +41,7 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
     @
 
   close: =>
-    @descriptionEl.show()
+    $(@descriptionEl).show()
     @editDescriptionField.remove()
     @unbind()
 

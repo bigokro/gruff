@@ -39,6 +39,16 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
     @modal.height($(document).height())
     @modal.offset({ top: 0, left: 0 })
 
+  cloneLink: =>
+    h4 = @el.siblings('h4')
+    @cloneEl = h4.clone(true)
+    @cloneEl.css('position', 'absolute')
+    @cloneEl.offset(h4.find('a.title-link').offset())
+    @cloneEl.css('z-index', @el.css('z-index'))
+    @cloneEl.css('margin', 0)
+    @cloneEl.css('padding', 0)
+    @el.parent().append(@cloneEl)
+
   close: =>
     $(document).unbind('keydown')
     @model.unbind "fetched-subdebates"
@@ -61,14 +71,8 @@ class Gruff.Views.Debates.SubdebateView extends Gruff.Views.Debates.ShowView
       $(@el).css('z-index', zindex + 5)
       $(@modal).css('z-index', zindex + 4)
     )
-    h4 = @el.siblings('h4')
-    @cloneEl = h4.clone(true)
-    @cloneEl.css('position', 'absolute')
-    @cloneEl.offset(h4.find('a.title-link').offset())
-    @cloneEl.css('z-index', @el.css('z-index'))
-    @cloneEl.css('margin', 0)
-    @cloneEl.css('padding', 0)
-    @el.parent().append(@cloneEl)
+    @cloneLink()
+
   lower: =>
     _.each($(@el).parents('.debate-list-item'), (parent) =>
       zindex = parseInt($(parent).css('z-index'))

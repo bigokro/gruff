@@ -202,6 +202,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
         cloneEl = ui.helper
         cloneEl.find('div, a.zoom-link').remove()
+        cloneEl.attr('id', @model.id)
       stop: (e, ui) =>
         @.$('> h4').css('opacity', 1)
     )

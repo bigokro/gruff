@@ -5,7 +5,7 @@ _.extend(Backbone.View.prototype,
     targetParent = $(target).parents('.debate-list-item, .debate')[0]
     targetDebateId = targetParent.id
     targetDebate = @model.findDebate targetDebateId
-    newCollection = targetDebate.getCollectionByName target.className
+    newCollection = targetDebate.getCollectionByName targetParent.className
 
     debate = @model.findDebate dragged.id
     oldCollection = debate.parentCollection
