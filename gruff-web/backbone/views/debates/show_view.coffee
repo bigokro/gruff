@@ -160,3 +160,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': @model
     editDescriptionView.render()
 
+  minimize: () ->
+    @.$('.description, .arguments, .answers, .subdebates, .comments').hide()
+
+  maximize: () ->
+    @.$('.description, .arguments, .answers, .subdebates, .comments').show()
+

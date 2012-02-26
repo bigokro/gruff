@@ -314,6 +314,7 @@
       "/index": "index",
       "/:id/edit": "edit",
       "/:id": "show",
+      "/:id#": "show",
       ".*": "index"
     };
 
@@ -718,6 +719,7 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.zoom = __bind(this.zoom, this);
       this.centerOnMouse = __bind(this.centerOnMouse, this);
       this.mergeDebates = __bind(this.mergeDebates, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
@@ -766,7 +768,7 @@
     ListItemView.prototype.setUpEvents = function() {
       this.$("> h4.title a.title-link").bind("click", this.toggleInfo);
       this.$("> h4.title a.title-link").bind("dblclick", this.showEditTitleForm);
-      this.$("> h4.title a.zoom-link").bind("click", this.openModalView);
+      this.$("> h4.title a.zoom-link").bind("click", this.zoom);
       return this.$("> .body").bind("dblclick", this.showEditDescriptionForm);
     };
 
@@ -1007,6 +1009,11 @@
         top: offset - $(window).scrollTop(),
         left: offset
       });
+    };
+
+    ListItemView.prototype.zoom = function() {
+      this.showView.minimize();
+      return false;
     };
 
     return ListItemView;
@@ -1432,6 +1439,14 @@
         'model': this.model
       });
       return editDescriptionView.render();
+    };
+
+    ShowView.prototype.minimize = function() {
+      return this.$('.description, .arguments, .answers, .subdebates, .comments').hide();
+    };
+
+    ShowView.prototype.maximize = function() {
+      return this.$('.description, .arguments, .answers, .subdebates, .comments').show();
     };
 
     return ShowView;

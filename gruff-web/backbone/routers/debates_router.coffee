@@ -11,6 +11,7 @@ class Gruff.Routers.DebatesRouter extends Backbone.Router
     "/index"    : "index"
     "/:id/edit" : "edit"
     "/:id"      : "show"
+    "/:id#"     : "show"
     ".*"        : "index"
 
   newDebate: ->
