@@ -4,55 +4,41 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-show-template').text()
     @tags_template = _.template $('#tags-index-template').text()
+    @rendered = false
     
   render: ->
-    @model.fetchSubdebates(
-      success: (subdebates, response4) =>
-        json = @model.fullJSON()
-        json.loggedIn = true
-        $(@el).html(@template json)
-    
-        json.objecttype = "debates"
-        json.objectid = json.linkableId
-        json.attributetype = ""
-        json.attributeid = ""
-        json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
-
-        $(@el).find('.tags').html(@tags_template json)
-        if @model.get("type") == @model.DebateTypes.DEBATE
-          @answersView = new Gruff.Views.Debates.ListView
-            'el': $(@el).find('.answers .debates-list').first()
-            'collection': @model.answers
-            'attributeType': 'answers'
-            'parentView': @
-            'showView': @
-          @answersView.render()
-        if @model.get("type") == @model.DebateTypes.DIALECTIC
-          @argumentsForView = new Gruff.Views.Debates.ListView
-            'el': $(@el).find('> .arguments > .for .debates-list').first()
-            'collection': @model.argumentsFor
-            'attributeType': 'argumentsFor'
-            'parentView': @
-            'showView': @
-          @argumentsForView.render()
-          @argumentsAgainstView = new Gruff.Views.Debates.ListView
-            'el': $(@el).find('> .arguments > .against .debates-list').first()
-            'collection': @model.argumentsAgainst
-            'attributeType': 'argumentsAgainst'
-            'parentView': @
-            'showView': @
-          @argumentsAgainstView.render()
-        @subdebatesView = new Gruff.Views.Debates.ListView
-          'el': $(@el).find('> .subdebates .debates-list').first()
-          'collection': @model.subdebates
-          'attributeType': 'subdebates'
-          'parentView': @
-          'showView': @
-        @subdebatesView.render()
-        @setUpDragDrop()
-        @setUpEvents()
-    )
+    json = @model.fullJSON()
+    json.loggedIn = true
+    $(@el).html(@template json)
+    @renderParents()
+    @setUpEvents()
     @
+
+  renderParents: =>
+    parentId = @model.get("parentId")
+    if parentId? && !@model.parent?
+      @model.parent = new Gruff.Models.Debate {"_id": parentId}
+      @model.parent.fetch
+        success: (model, response) =>
+          parentEl = $(@el).clone()
+          parentEl.attr('id', parentId)
+          $(@el).before(parentEl)
+          @parentView = new Gruff.Views.Debates.ShowView 
+            'el': parentEl
+            'model': @model.parent
+          @parentView.render()
+          @parentView.minimize()
+          @indentTitle()
+    else
+      @indentTitle()
+
+  indentTitle: =>
+    parents = 0
+    currParent = @model.parent
+    while currParent?
+      parents++
+      currParent = currParent.parent
+    @.$('> div.title').css('margin-left', 5*parents+'%')
 
   showNewDebateForm: (e) =>
     debateType = $(e.target).attr("debate-type")
@@ -67,10 +53,15 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
 
   setUpEvents: =>
-    @.$(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @.$("> .title").bind "click", @maximize
     @.$("> .title").bind "dblclick", @showEditTitleForm
     @.$("> .description").bind "dblclick", @showEditDescriptionForm
     @setUpHandleKeys()
+
+  setUpMaximizeEvents: =>
+    @.$("> .title").unbind "click", @maximize
+    @.$(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @setUpDragDrop()
 
   setUpHandleKeys: =>
     $(document).bind('keydown', @handleKeys)
@@ -94,7 +85,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       true
 
   setUpDragDrop: =>
-    $(@el).find( ".for, .against, .subdebates, .answers" ).droppable(
+    @.$( ".for, .against, .subdebates, .answers" ).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) =>
         dragged = ui.draggable[0]
@@ -110,14 +101,14 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     )
 
   disableDragDrop: =>
-    $(@el).find( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", true )
-    $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", true )
-    $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", true )
+    @.$( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", true )
+    @.$( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", true )
+    @.$( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", true )
 
   enableDragDrop: =>
-    $(@el).find( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", false )
-    $(@el).find( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
-    $(@el).find( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
+    @.$( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", false )
+    @.$( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
+    @.$( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
 
   toggleSubdebateDiv: (listItemView) ->
     if @modalView?
@@ -160,9 +151,55 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': @model
     editDescriptionView.render()
 
-  minimize: () ->
-    @.$('.description, .arguments, .answers, .subdebates, .comments').hide()
+  minimize: () =>
+    @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').hide()
 
-  maximize: () ->
-    @.$('.description, .arguments, .answers, .subdebates, .comments').show()
-
+  maximize: () =>
+    if @rendered
+      @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show()
+    else
+      @model.fetchSubdebates(
+        success: (subdebates, response4) =>
+          @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show()
+          json = @model.fullJSON()
+          json.loggedIn = true
+          json.objecttype = "debates"
+          json.objectid = json.linkableId
+          json.attributetype = ""
+          json.attributeid = ""
+          json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
+  
+          @.$('.tags').html(@tags_template json)
+          if @model.get("type") == @model.DebateTypes.DEBATE
+            @answersView = new Gruff.Views.Debates.ListView
+              'el': @.$('.answers .debates-list').first()
+              'collection': @model.answers
+              'attributeType': 'answers'
+              'parentView': @
+              'showView': @
+            @answersView.render()
+          if @model.get("type") == @model.DebateTypes.DIALECTIC
+            @argumentsForView = new Gruff.Views.Debates.ListView
+              'el': @.$('> .arguments > .for .debates-list').first()
+              'collection': @model.argumentsFor
+              'attributeType': 'argumentsFor'
+              'parentView': @
+              'showView': @
+            @argumentsForView.render()
+            @argumentsAgainstView = new Gruff.Views.Debates.ListView
+              'el': @.$('> .arguments > .against .debates-list').first()
+              'collection': @model.argumentsAgainst
+              'attributeType': 'argumentsAgainst'
+              'parentView': @
+              'showView': @
+            @argumentsAgainstView.render()
+          @subdebatesView = new Gruff.Views.Debates.ListView
+            'el': @.$('> .subdebates .debates-list').first()
+            'collection': @model.subdebates
+            'attributeType': 'subdebates'
+            'parentView': @
+            'showView': @
+          @subdebatesView.render()
+          @setUpMaximizeEvents()
+          @rendered = true
+      )

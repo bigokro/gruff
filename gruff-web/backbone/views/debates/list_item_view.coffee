@@ -8,6 +8,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @showView = options.showView
     @attributeType = options.attributeType
     @dontShowInfo = false
+    @model.parent = @model.collection.parent
 
   render: ->
     json = @model.fullJSON()
@@ -224,4 +225,12 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   zoom: =>
     @showView.minimize()
+    newShowEl = $(@showView.el).clone()
+    newShowEl.attr('id', @model.id)
+    $(@showView.el).after(newShowEl)
+    @myShowView = new Gruff.Views.Debates.ShowView 
+      'el': newShowEl
+      'model': @model
+    @myShowView.render()
+    @myShowView.maximize()
     false

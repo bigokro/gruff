@@ -5,6 +5,8 @@ class Gruff.Routers.DebatesRouter extends Backbone.Router
       success: (model, response) =>
         @view = new Gruff.Views.Debates.ShowView 'el': $('#'+model.linkableId()), 'model': model
         @view.render()
+        @view.maximize()
+        
 
   routes:
     "/new"      : "newDebate"

@@ -304,7 +304,8 @@
             'el': $('#' + model.linkableId()),
             'model': model
           });
-          return _this.view.render();
+          _this.view.render();
+          return _this.view.maximize();
         }
       });
     };
@@ -744,7 +745,8 @@
       this.parentView = options.parentView;
       this.showView = options.showView;
       this.attributeType = options.attributeType;
-      return this.dontShowInfo = false;
+      this.dontShowInfo = false;
+      return this.model.parent = this.model.collection.parent;
     };
 
     ListItemView.prototype.render = function() {
@@ -1012,7 +1014,17 @@
     };
 
     ListItemView.prototype.zoom = function() {
+      var newShowEl;
       this.showView.minimize();
+      newShowEl = $(this.showView.el).clone();
+      newShowEl.attr('id', this.model.id);
+      $(this.showView.el).after(newShowEl);
+      this.myShowView = new Gruff.Views.Debates.ShowView({
+        'el': newShowEl,
+        'model': this.model
+      });
+      this.myShowView.render();
+      this.myShowView.maximize();
       return false;
     };
 
@@ -1227,6 +1239,8 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.maximize = __bind(this.maximize, this);
+      this.minimize = __bind(this.minimize, this);
       this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
       this.showEditTitleForm = __bind(this.showEditTitleForm, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
@@ -1235,73 +1249,67 @@
       this.handleKeys = __bind(this.handleKeys, this);
       this.cancelHandleKeys = __bind(this.cancelHandleKeys, this);
       this.setUpHandleKeys = __bind(this.setUpHandleKeys, this);
+      this.setUpMaximizeEvents = __bind(this.setUpMaximizeEvents, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
+      this.indentTitle = __bind(this.indentTitle, this);
+      this.renderParents = __bind(this.renderParents, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
 
     ShowView.prototype.initialize = function(options) {
       this.template = _.template($('#debate-show-template').text());
-      return this.tags_template = _.template($('#tags-index-template').text());
+      this.tags_template = _.template($('#tags-index-template').text());
+      return this.rendered = false;
     };
 
     ShowView.prototype.render = function() {
-      var _this = this;
-      this.model.fetchSubdebates({
-        success: function(subdebates, response4) {
-          var json, _ref;
-          json = _this.model.fullJSON();
-          json.loggedIn = true;
-          $(_this.el).html(_this.template(json));
-          json.objecttype = "debates";
-          json.objectid = json.linkableId;
-          json.attributetype = "";
-          json.attributeid = "";
-          json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
-            "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
-          };
-          $(_this.el).find('.tags').html(_this.tags_template(json));
-          if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
-            _this.answersView = new Gruff.Views.Debates.ListView({
-              'el': $(_this.el).find('.answers .debates-list').first(),
-              'collection': _this.model.answers,
-              'attributeType': 'answers',
-              'parentView': _this,
-              'showView': _this
-            });
-            _this.answersView.render();
-          }
-          if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
-            _this.argumentsForView = new Gruff.Views.Debates.ListView({
-              'el': $(_this.el).find('> .arguments > .for .debates-list').first(),
-              'collection': _this.model.argumentsFor,
-              'attributeType': 'argumentsFor',
-              'parentView': _this,
-              'showView': _this
-            });
-            _this.argumentsForView.render();
-            _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
-              'el': $(_this.el).find('> .arguments > .against .debates-list').first(),
-              'collection': _this.model.argumentsAgainst,
-              'attributeType': 'argumentsAgainst',
-              'parentView': _this,
-              'showView': _this
-            });
-            _this.argumentsAgainstView.render();
-          }
-          _this.subdebatesView = new Gruff.Views.Debates.ListView({
-            'el': $(_this.el).find('> .subdebates .debates-list').first(),
-            'collection': _this.model.subdebates,
-            'attributeType': 'subdebates',
-            'parentView': _this,
-            'showView': _this
-          });
-          _this.subdebatesView.render();
-          _this.setUpDragDrop();
-          return _this.setUpEvents();
-        }
-      });
+      var json;
+      json = this.model.fullJSON();
+      json.loggedIn = true;
+      $(this.el).html(this.template(json));
+      this.renderParents();
+      this.setUpEvents();
       return this;
+    };
+
+    ShowView.prototype.renderParents = function() {
+      var parentId,
+        _this = this;
+      parentId = this.model.get("parentId");
+      if ((parentId != null) && !(this.model.parent != null)) {
+        this.model.parent = new Gruff.Models.Debate({
+          "_id": parentId
+        });
+        return this.model.parent.fetch({
+          success: function(model, response) {
+            var parentEl;
+            parentEl = $(_this.el).clone();
+            parentEl.attr('id', parentId);
+            $(_this.el).before(parentEl);
+            _this.parentView = new Gruff.Views.Debates.ShowView({
+              'el': parentEl,
+              'model': _this.model.parent
+            });
+            _this.parentView.render();
+            _this.parentView.minimize();
+            return _this.indentTitle();
+          }
+        });
+      } else {
+        return this.indentTitle();
+      }
+    };
+
+    ShowView.prototype.indentTitle = function() {
+      var currParent, parents;
+      parents = 0;
+      currParent = this.model.parent;
+      while (currParent != null) {
+        parents++;
+        currParent = currParent.parent;
+      }
+      return this.$('> div.title').css('margin-left', 5 * parents + '%');
     };
 
     ShowView.prototype.showNewDebateForm = function(e) {
@@ -1320,10 +1328,16 @@
     };
 
     ShowView.prototype.setUpEvents = function() {
-      this.$(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      this.$("> .title").bind("click", this.maximize);
       this.$("> .title").bind("dblclick", this.showEditTitleForm);
       this.$("> .description").bind("dblclick", this.showEditDescriptionForm);
       return this.setUpHandleKeys();
+    };
+
+    ShowView.prototype.setUpMaximizeEvents = function() {
+      this.$("> .title").unbind("click", this.maximize);
+      this.$(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      return this.setUpDragDrop();
     };
 
     ShowView.prototype.setUpHandleKeys = function() {
@@ -1352,7 +1366,7 @@
 
     ShowView.prototype.setUpDragDrop = function() {
       var _this = this;
-      return $(this.el).find(".for, .against, .subdebates, .answers").droppable({
+      return this.$(".for, .against, .subdebates, .answers").droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
@@ -1376,15 +1390,15 @@
     };
 
     ShowView.prototype.disableDragDrop = function() {
-      $(this.el).find(".argument, .answer, .subdebate").draggable("option", "disabled", true);
-      $(this.el).find(".argument, .answer, .subdebate").droppable("option", "disabled", true);
-      return $(this.el).find(".for, .against, .subdebates, .answers").droppable("option", "disabled", true);
+      this.$(".argument, .answer, .subdebate").draggable("option", "disabled", true);
+      this.$(".argument, .answer, .subdebate").droppable("option", "disabled", true);
+      return this.$(".for, .against, .subdebates, .answers").droppable("option", "disabled", true);
     };
 
     ShowView.prototype.enableDragDrop = function() {
-      $(this.el).find(".argument, .answer, .subdebate").draggable("option", "disabled", false);
-      $(this.el).find(".argument, .answer, .subdebate").droppable("option", "disabled", false);
-      return $(this.el).find(".for, .against, .subdebates, .answers").droppable("option", "disabled", false);
+      this.$(".argument, .answer, .subdebate").draggable("option", "disabled", false);
+      this.$(".argument, .answer, .subdebate").droppable("option", "disabled", false);
+      return this.$(".for, .against, .subdebates, .answers").droppable("option", "disabled", false);
     };
 
     ShowView.prototype.toggleSubdebateDiv = function(listItemView) {
@@ -1442,11 +1456,69 @@
     };
 
     ShowView.prototype.minimize = function() {
-      return this.$('.description, .arguments, .answers, .subdebates, .comments').hide();
+      return this.$('.description, .tags, .arguments, .answers, .subdebates, .comments').hide();
     };
 
     ShowView.prototype.maximize = function() {
-      return this.$('.description, .arguments, .answers, .subdebates, .comments').show();
+      var _this = this;
+      if (this.rendered) {
+        return this.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show();
+      } else {
+        return this.model.fetchSubdebates({
+          success: function(subdebates, response4) {
+            var json, _ref;
+            _this.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show();
+            json = _this.model.fullJSON();
+            json.loggedIn = true;
+            json.objecttype = "debates";
+            json.objectid = json.linkableId;
+            json.attributetype = "";
+            json.attributeid = "";
+            json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
+              "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
+            };
+            _this.$('.tags').html(_this.tags_template(json));
+            if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
+              _this.answersView = new Gruff.Views.Debates.ListView({
+                'el': _this.$('.answers .debates-list').first(),
+                'collection': _this.model.answers,
+                'attributeType': 'answers',
+                'parentView': _this,
+                'showView': _this
+              });
+              _this.answersView.render();
+            }
+            if (_this.model.get("type") === _this.model.DebateTypes.DIALECTIC) {
+              _this.argumentsForView = new Gruff.Views.Debates.ListView({
+                'el': _this.$('> .arguments > .for .debates-list').first(),
+                'collection': _this.model.argumentsFor,
+                'attributeType': 'argumentsFor',
+                'parentView': _this,
+                'showView': _this
+              });
+              _this.argumentsForView.render();
+              _this.argumentsAgainstView = new Gruff.Views.Debates.ListView({
+                'el': _this.$('> .arguments > .against .debates-list').first(),
+                'collection': _this.model.argumentsAgainst,
+                'attributeType': 'argumentsAgainst',
+                'parentView': _this,
+                'showView': _this
+              });
+              _this.argumentsAgainstView.render();
+            }
+            _this.subdebatesView = new Gruff.Views.Debates.ListView({
+              'el': _this.$('> .subdebates .debates-list').first(),
+              'collection': _this.model.subdebates,
+              'attributeType': 'subdebates',
+              'parentView': _this,
+              'showView': _this
+            });
+            _this.subdebatesView.render();
+            _this.setUpMaximizeEvents();
+            return _this.rendered = true;
+          }
+        });
+      }
     };
 
     return ShowView;
