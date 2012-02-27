@@ -6,6 +6,11 @@ _.extend(Backbone.View.prototype,
     targetDebateId = targetParent.id
     targetDebate = @model.findDebate targetDebateId
     newCollection = targetDebate.getCollectionByName targetParent.className
+    newCollection = targetDebate.getCollectionByName target.attr('class') unless newCollection?
+
+    if dragged.id == newCollection.parent?.id
+      alert "Error: the page is attempting to assign the debate to its own sublist!"
+      return false
 
     debate = @model.findDebate dragged.id
     oldCollection = debate.parentCollection

@@ -1365,26 +1365,25 @@
     };
 
     ShowView.prototype.setUpDragDrop = function() {
-      var _this = this;
+      var _this;
+      _this = this;
       return this.$(".for, .against, .subdebates, .answers").droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
-          $(event.target).removeClass('over');
-          if ($(event.target).has(dragged).length === 0) {
-            return _this.moveDebate(dragged, event.target);
+          $(this).removeClass('over');
+          if ($(this).has(dragged).length === 0) {
+            return _this.moveDebate(dragged, $(this));
           }
         },
         over: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
-          if ($(event.target).has(dragged).length === 0) {
-            return $(event.target).addClass('over');
-          }
+          if ($(this).has(dragged).length === 0) return $(this).addClass('over');
         },
         out: function(event, ui) {
-          return $(event.target).removeClass('over');
+          return $(this).removeClass('over');
         }
       });
     };
@@ -1752,12 +1751,19 @@
 
   _.extend(Backbone.View.prototype, {
     moveDebate: function(dragged, target, view) {
-      var debate, newCollection, oldCollection, targetDebate, targetDebateId, targetParent,
+      var debate, newCollection, oldCollection, targetDebate, targetDebateId, targetParent, _ref,
         _this = this;
       targetParent = $(target).parents('.debate-list-item, .debate')[0];
       targetDebateId = targetParent.id;
       targetDebate = this.model.findDebate(targetDebateId);
       newCollection = targetDebate.getCollectionByName(targetParent.className);
+      if (newCollection == null) {
+        newCollection = targetDebate.getCollectionByName(target.attr('class'));
+      }
+      if (dragged.id === ((_ref = newCollection.parent) != null ? _ref.id : void 0)) {
+        alert("Error: the page is attempting to assign the debate to its own sublist!");
+        return false;
+      }
       debate = this.model.findDebate(dragged.id);
       oldCollection = debate.parentCollection;
       oldCollection.remove(debate);
