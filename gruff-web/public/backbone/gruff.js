@@ -761,7 +761,7 @@
       if (this.attributeType === "answers") json.divClass = "answers";
       if (this.attributeType === "subdebates") json.divClass = "subdebate";
       $(this.parentEl).append(this.template(json));
-      this.el = $('#' + this.model.linkableId());
+      this.el = $(this.parentEl).find('#' + this.model.linkableId());
       this.setUpEvents();
       this.enableDragDrop();
       return this;
@@ -1126,27 +1126,29 @@
     };
 
     MiniListView.prototype.setUpDragDrop = function() {
-      var _this = this;
+      var _this;
+      _this = this;
       return $(this.el).parent().droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         greedy: true,
         drop: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
-          $(event.target).removeClass('over');
-          if ($(event.target).has(dragged).length === 0) {
-            return _this.moveDebate(dragged, event.target);
+          $(this).removeClass('over');
+          if ($(dragged).parent().parent()[0] !== this) {
+            _this.moveDebate(dragged, $(this));
+            return ui.helper.hide();
           }
         },
         over: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
-          if ($(event.target).has(dragged).length === 0) {
-            return $(event.target).addClass('over');
+          if ($(dragged).parent().parent()[0] !== this) {
+            return $(this).addClass('over');
           }
         },
         out: function(event, ui) {
-          return $(event.target).removeClass('over');
+          return $(this).removeClass('over');
         }
       });
     };
@@ -1367,20 +1369,23 @@
     ShowView.prototype.setUpDragDrop = function() {
       var _this;
       _this = this;
-      return this.$(".for, .against, .subdebates, .answers").droppable({
+      return this.$("> .arguments > .for, > .arguments > .against, > .subdebates, > .answers").droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
           $(this).removeClass('over');
-          if ($(this).has(dragged).length === 0) {
-            return _this.moveDebate(dragged, $(this));
+          if ($(dragged).parent().parent()[0] !== this) {
+            _this.moveDebate(dragged, $(this));
+            return ui.helper.hide();
           }
         },
         over: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
-          if ($(this).has(dragged).length === 0) return $(this).addClass('over');
+          if ($(dragged).parent().parent()[0] !== this) {
+            return $(this).addClass('over');
+          }
         },
         out: function(event, ui) {
           return $(this).removeClass('over');
@@ -1756,9 +1761,9 @@
       targetParent = $(target).parents('.debate-list-item, .debate')[0];
       targetDebateId = targetParent.id;
       targetDebate = this.model.findDebate(targetDebateId);
-      newCollection = targetDebate.getCollectionByName(targetParent.className);
+      newCollection = targetDebate.getCollectionByName(target.attr('class'));
       if (newCollection == null) {
-        newCollection = targetDebate.getCollectionByName(target.attr('class'));
+        newCollection = targetDebate.getCollectionByName(targetParent.className);
       }
       if (dragged.id === ((_ref = newCollection.parent) != null ? _ref.id : void 0)) {
         alert("Error: the page is attempting to assign the debate to its own sublist!");
@@ -1768,6 +1773,7 @@
       oldCollection = debate.parentCollection;
       oldCollection.remove(debate);
       newCollection.add(debate);
+      debate.parent = newCollection.parent;
       return oldCollection.parent.save(null, {
         wait: true,
         error: function(debate, jqXHR) {

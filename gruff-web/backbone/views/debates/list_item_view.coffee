@@ -17,7 +17,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     if @attributeType == "answers" then json.divClass = "answers"
     if @attributeType == "subdebates" then json.divClass = "subdebate"
     $(@parentEl).append(@template json)
-    @el = $('#'+@model.linkableId())
+    @el = $(@parentEl).find('#'+@model.linkableId())
     @setUpEvents()
     @enableDragDrop()
     @

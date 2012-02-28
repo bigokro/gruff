@@ -86,16 +86,17 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   setUpDragDrop: =>
     _this = @
-    @.$( ".for, .against, .subdebates, .answers" ).droppable(
+    @.$( "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers" ).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) ->
         dragged = ui.draggable[0]
         $(this).removeClass('over')
-        if $(this).has(dragged).length == 0
+        unless $(dragged).parent().parent()[0] == this
           _this.moveDebate dragged, $(this)
+          ui.helper.hide()
       over: ( event, ui ) ->
         dragged = ui.draggable[0]
-        if $(this).has(dragged).length == 0
+        unless $(dragged).parent().parent()[0] == this
           $(this).addClass('over')
       out: ( event, ui ) ->
         $(this).removeClass('over')

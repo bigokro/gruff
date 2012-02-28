@@ -16,20 +16,22 @@ class Gruff.Views.Debates.MiniListView extends Gruff.Views.Debates.ListView
     super
 
   setUpDragDrop: =>
+    _this = @
     $(@el).parent().droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       greedy: true
-      drop: ( event, ui ) =>
+      drop: ( event, ui ) ->
         dragged = ui.draggable[0]
-        $(event.target).removeClass('over')
-        if $(event.target).has(dragged).length == 0
-          @moveDebate dragged, event.target
-      over: ( event, ui ) =>
+        $(this).removeClass('over')
+        unless $(dragged).parent().parent()[0] == this
+          _this.moveDebate dragged, $(this)
+          ui.helper.hide()
+      over: ( event, ui ) ->
         dragged = ui.draggable[0]
-        if $(event.target).has(dragged).length == 0
-          $(event.target).addClass('over')
-      out: ( event, ui ) =>
-        $(event.target).removeClass('over')
+        unless $(dragged).parent().parent()[0] == this
+          $(this).addClass('over')
+      out: ( event, ui ) ->
+        $(this).removeClass('over')
     )
 
   showNewDebateForm: (e) =>

@@ -5,8 +5,8 @@ _.extend(Backbone.View.prototype,
     targetParent = $(target).parents('.debate-list-item, .debate')[0]
     targetDebateId = targetParent.id
     targetDebate = @model.findDebate targetDebateId
-    newCollection = targetDebate.getCollectionByName targetParent.className
-    newCollection = targetDebate.getCollectionByName target.attr('class') unless newCollection?
+    newCollection = targetDebate.getCollectionByName target.attr('class')
+    newCollection = targetDebate.getCollectionByName targetParent.className unless newCollection?
 
     if dragged.id == newCollection.parent?.id
       alert "Error: the page is attempting to assign the debate to its own sublist!"
@@ -17,6 +17,7 @@ _.extend(Backbone.View.prototype,
 
     oldCollection.remove debate
     newCollection.add debate
+    debate.parent = newCollection.parent
 
     oldCollection.parent.save(null,
       wait: true
