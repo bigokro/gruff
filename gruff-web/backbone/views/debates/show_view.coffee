@@ -4,14 +4,20 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-show-template').text()
     @tags_template = _.template $('#tags-index-template').text()
+    @childView = options.childView
+    @childView.parentView = @ if @childView?
+    @parentView = options.parentView
+    @parentView.childView = @ if @parentView?
     @rendered = false
     
   render: ->
     json = @model.fullJSON()
     json.loggedIn = true
     $(@el).html(@template json)
+    @zoomLink = @.$('> .canvas-title .zoom-link')
     @renderParents()
     @setUpEvents()
+    @zoomLink.hide()
     @
 
   renderParents: =>
@@ -26,10 +32,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
           @parentView = new Gruff.Views.Debates.ShowView 
             'el': parentEl
             'model': @model.parent
+            'childView': @
           @parentView.render()
           @parentView.minimize()
           @indentTitle()
     else
+      @parentView?.childView = @
       @indentTitle()
 
   indentTitle: =>
@@ -53,13 +61,19 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
 
   setUpEvents: =>
-    @.$("> .title").bind "click", @maximize
+    @.$("> .title").bind "click", @toggleDescription
     @.$("> .title").bind "dblclick", @showEditTitleForm
     @.$("> .description").bind "dblclick", @showEditDescriptionForm
+    @zoomLink.bind "click", @maximize
     @setUpHandleKeys()
 
+  setUpMinimizeEvents: =>
+    @.$("> .title").bind "click", @toggleDescription
+    @zoomLink.show()
+
   setUpMaximizeEvents: =>
-    @.$("> .title").unbind "click", @maximize
+    @zoomLink.hide()
+    @.$("> .title").unbind "click", @toggleDescription
     @.$(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
     @setUpDragDrop()
 
@@ -102,6 +116,23 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         $(this).removeClass('over')
     )
 
+    @zoomLink.droppable(
+      accept: '.subdebate, .argument, .debate, .answer'
+      greedy: true
+      over: (e, ui) =>
+        @.$('> .canvas-title').addClass('over')
+        @hoverTimeout = setTimeout( 
+          () => 
+            @maximize()
+          , 1500
+        )
+      out: (e, ui) =>
+        clearTimeout @hoverTimeout
+        @.$('> canvas-title').removeClass('over')
+      drop: ( event, ui ) =>
+        alert "Dropping a debate onto the zoom link does nothing"
+    )
+
   disableDragDrop: =>
     @.$( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", true )
     @.$( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", true )
@@ -111,6 +142,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", false )
     @.$( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
     @.$( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
+
+  toggleDescription: (e) =>
+    @.$('> div.description').toggle()
+    false
 
   toggleSubdebateDiv: (listItemView) ->
     if @modalView?
@@ -155,10 +190,14 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   minimize: () =>
     @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').hide()
+    @setUpMinimizeEvents()
+    false
 
   maximize: () =>
+    @childView?.close()
     if @rendered
       @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show()
+      @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
         success: (subdebates, response4) =>
@@ -205,3 +244,13 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
           @setUpMaximizeEvents()
           @rendered = true
       )
+      false
+
+  close: ->
+    @childView?.close()
+    @argumentsForView?.close()
+    @argumentsAgainstView?.close()
+    @answersView?.close()
+    @subdebatesView?.close()
+    $(@el).html('')
+    @unbind()

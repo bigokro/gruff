@@ -179,14 +179,14 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         @.$('> h4').addClass('over')
         @hoverTimeout = setTimeout( 
           () => 
-            @openModalView(e, ui)
+            @zoom()
           , 1000
         )
       out: (e, ui) =>
         clearTimeout @hoverTimeout
         @.$('> h4').removeClass('over')
       drop: ( event, ui ) =>
-        alert "Dropping a debate onto the modal link does nothing"
+        alert "Dropping a debate onto the zoom link does nothing"
     )
 
     $(@el).draggable(
@@ -215,14 +215,6 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
   mergeDebates: (dragged, target) =>
     alert "Dropping one debate onto another has not yet been implemented"
 
-  centerOnMouse: (e, ui) =>
-    dragged = e.target
-    offset = $(dragged).position()
-    $(dragged).position(
-      top: offset - $(window).scrollTop()
-      left: offset
-    )
-
   zoom: =>
     @showView.minimize()
     newShowEl = $(@showView.el).clone()
@@ -231,6 +223,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @myShowView = new Gruff.Views.Debates.ShowView 
       'el': newShowEl
       'model': @model
+      'parentView': @showView
     @myShowView.render()
     @myShowView.maximize()
     false
