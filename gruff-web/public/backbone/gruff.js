@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -11,6 +11,8 @@
     Views: {},
     Common: {}
   };
+
+  (_base = Gruff.Models).Debates || (_base.Debates = {});
 
   Gruff.Models.Debate = (function(_super) {
 
@@ -38,7 +40,8 @@
       this.argumentsFor = this.initializeDebates("argumentsFor");
       this.argumentsAgainst = this.initializeDebates("argumentsAgainst");
       this.subdebates = this.initializeDebates("subdebates");
-      return this.parentCollection = options.parentCollection;
+      this.parentCollection = options.parentCollection;
+      return Gruff.Models.Debates[this.linkableId()] = this;
     };
 
     Debate.prototype.fullJSON = function() {
@@ -115,13 +118,14 @@
 
     Debate.prototype.findDebate = function(id) {
       var root;
+      return Gruff.Models.Debates[id];
       root = this.findRootDebate();
       return root.findSubdebate(id);
     };
 
     Debate.prototype.findRootDebate = function() {
-      if (this.parentCollection !== null && typeof this.parentCollection !== 'undefined') {
-        return this.parentCollection.parent.findRootDebate();
+      if (this.parent != null) {
+        return this.parent.findRootDebate();
       } else {
         return this;
       }
@@ -428,7 +432,7 @@
 
   })(Backbone.View);
 
-  (_base = Gruff.Views).Debates || (_base.Debates = {});
+  (_base2 = Gruff.Views).Debates || (_base2.Debates = {});
 
   Gruff.Views.Debates.DebateView = (function(_super) {
 
@@ -461,7 +465,7 @@
 
   })(Backbone.View);
 
-  (_base2 = Gruff.Views).Debates || (_base2.Debates = {});
+  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
 
   Gruff.Views.Debates.EditDescriptionView = (function(_super) {
 
@@ -545,7 +549,7 @@
 
   })(Backbone.View);
 
-  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
+  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
 
   Gruff.Views.Debates.EditTitleView = (function(_super) {
 
@@ -632,7 +636,7 @@
 
   })(Backbone.View);
 
-  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
+  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
 
   Gruff.Views.Debates.EditView = (function(_super) {
 
@@ -670,7 +674,7 @@
 
   })(Backbone.View);
 
-  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
+  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -713,7 +717,7 @@
 
   })(Backbone.View);
 
-  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
+  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -1028,7 +1032,7 @@
 
   })(Backbone.View);
 
-  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
+  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -1092,7 +1096,7 @@
 
   })(Backbone.View);
 
-  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
+  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
 
   Gruff.Views.Debates.MiniListView = (function(_super) {
 
@@ -1164,7 +1168,7 @@
 
   })(Gruff.Views.Debates.ListView);
 
-  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
+  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -1230,9 +1234,9 @@
 
   })(Backbone.View);
 
-  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
 
-  (_base11 = Gruff.Views.Debates).ShowViews || (_base11.ShowViews = {});
+  (_base12 = Gruff.Views.Debates).ShowViews || (_base12.ShowViews = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -1246,6 +1250,7 @@
       this.toggleDescription = __bind(this.toggleDescription, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
       this.disableDragDrop = __bind(this.disableDragDrop, this);
+      this.setUpZoomLinkDragDrop = __bind(this.setUpZoomLinkDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
       this.handleKeys = __bind(this.handleKeys, this);
       this.cancelHandleKeys = __bind(this.cancelHandleKeys, this);
@@ -1348,7 +1353,8 @@
 
     ShowView.prototype.setUpMinimizeEvents = function() {
       this.$("> .title").bind("click", this.toggleDescription);
-      return this.zoomLink.show();
+      this.zoomLink.show();
+      return this.setUpZoomLinkDragDrop();
     };
 
     ShowView.prototype.setUpMaximizeEvents = function() {
@@ -1383,9 +1389,9 @@
     };
 
     ShowView.prototype.setUpDragDrop = function() {
-      var _this = this;
+      var _this;
       _this = this;
-      this.$("> .arguments > .for, > .arguments > .against, > .subdebates, > .answers").droppable({
+      return this.$("> .arguments > .for, > .arguments > .against, > .subdebates, > .answers").droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
@@ -1407,18 +1413,24 @@
           return $(this).removeClass('over');
         }
       });
-      return this.zoomLink.droppable({
+    };
+
+    ShowView.prototype.setUpZoomLinkDragDrop = function() {
+      var _this = this;
+      return this.$('> .canvas-title').add(this.zoomLink).droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         greedy: true,
         over: function(e, ui) {
           _this.$('> .canvas-title').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
-            return _this.maximize();
+            _this.maximize();
+            ui.helper.show();
+            return ui.draggable.show();
           }, 1500);
         },
         out: function(e, ui) {
-          clearTimeout(_this.hoverTimeout);
-          return _this.$('> canvas-title').removeClass('over');
+          _this.$('> .canvas-title').removeClass('over');
+          return clearTimeout(_this.hoverTimeout);
         },
         drop: function(event, ui) {
           return alert("Dropping a debate onto the zoom link does nothing");
@@ -1506,7 +1518,11 @@
     ShowView.prototype.maximize = function() {
       var _ref,
         _this = this;
-      if ((_ref = this.childView) != null) _ref.hide(200);
+      if ($('.ui-draggable-dragging').length) {
+        $('.ui-draggable-dragging').bind('drop', this.hide);
+      } else {
+        if ((_ref = this.childView) != null) _ref.hide();
+      }
       if (this.rendered) {
         this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
         return this.setUpMaximizeEvents();
@@ -1594,7 +1610,7 @@
 
   })(Backbone.View);
 
-  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
+  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
 
   Gruff.Views.Debates.SimpleNewView = (function(_super) {
 
@@ -1642,7 +1658,7 @@
 
   })(Gruff.Views.Debates.NewView);
 
-  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
+  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -1763,7 +1779,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base14 = Gruff.Views).Login || (_base14.Login = {});
+  (_base15 = Gruff.Views).Login || (_base15.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 

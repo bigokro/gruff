@@ -1,3 +1,5 @@
+Gruff.Models.Debates ||= {}
+
 class Gruff.Models.Debate extends Backbone.Model
   paramRoot: 'debate'
   urlRoot: '/rest/debates'
@@ -14,6 +16,7 @@ class Gruff.Models.Debate extends Backbone.Model
     @argumentsAgainst = @initializeDebates "argumentsAgainst"
     @subdebates = @initializeDebates "subdebates"
     @parentCollection = options.parentCollection
+    Gruff.Models.Debates[@linkableId()] = @
 
   fullJSON: () ->
     json = @toJSON()
@@ -53,12 +56,13 @@ class Gruff.Models.Debate extends Backbone.Model
                     @trigger "fetched-subdebates"
 
   findDebate: (id) ->
+    return Gruff.Models.Debates[id]
     root = @findRootDebate()
     root.findSubdebate(id)
 
   findRootDebate: ->
-    if @parentCollection != null && typeof(@parentCollection) != 'undefined'
-      @parentCollection.parent.findRootDebate()
+    if @parent?
+      @parent.findRootDebate()
     else
       @
 

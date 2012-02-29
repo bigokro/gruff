@@ -72,6 +72,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   setUpMinimizeEvents: =>
     @.$("> .title").bind "click", @toggleDescription
     @zoomLink.show()
+    @setUpZoomLinkDragDrop()
 
   setUpMaximizeEvents: =>
     @zoomLink.hide()
@@ -118,7 +119,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         $(this).removeClass('over')
     )
 
-    @zoomLink.droppable(
+  setUpZoomLinkDragDrop: =>
+    @.$('> .canvas-title').add(@zoomLink).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       greedy: true
       over: (e, ui) =>
@@ -126,11 +128,13 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         @hoverTimeout = setTimeout( 
           () => 
             @maximize()
+            ui.helper.show()
+            ui.draggable.show()
           , 1500
         )
       out: (e, ui) =>
+        @.$('> .canvas-title').removeClass('over')
         clearTimeout @hoverTimeout
-        @.$('> canvas-title').removeClass('over')
       drop: ( event, ui ) =>
         alert "Dropping a debate onto the zoom link does nothing"
     )
@@ -196,7 +200,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     false
 
   maximize: () =>
-    @childView?.hide(200)
+    if $('.ui-draggable-dragging').length
+      $('.ui-draggable-dragging').bind('drop', @hide)
+    else
+      @childView?.hide()
     if @rendered
       @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
       @setUpMaximizeEvents()
