@@ -217,13 +217,18 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   zoom: =>
     @showView.minimize()
-    newShowEl = $(@showView.el).clone()
-    newShowEl.attr('id', @model.id)
-    $(@showView.el).after(newShowEl)
-    @myShowView = new Gruff.Views.Debates.ShowView 
-      'el': newShowEl
-      'model': @model
-      'parentView': @showView
-    @myShowView.render()
-    @myShowView.maximize()
+    @myShowView = Gruff.Views.Debates.ShowViews[@model.id]
+    if @myShowView?
+      @myShowView.show()
+      @myShowView.maximize()
+    else
+      newShowEl = $(@showView.el).clone()
+      newShowEl.attr('id', @model.id)
+      $(@showView.el).after(newShowEl)
+      @myShowView = new Gruff.Views.Debates.ShowView 
+        'el': newShowEl
+        'model': @model
+        'parentView': @showView
+      @myShowView.render()
+      @myShowView.maximize()
     false

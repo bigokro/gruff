@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -1005,16 +1005,22 @@
     ListItemView.prototype.zoom = function() {
       var newShowEl;
       this.showView.minimize();
-      newShowEl = $(this.showView.el).clone();
-      newShowEl.attr('id', this.model.id);
-      $(this.showView.el).after(newShowEl);
-      this.myShowView = new Gruff.Views.Debates.ShowView({
-        'el': newShowEl,
-        'model': this.model,
-        'parentView': this.showView
-      });
-      this.myShowView.render();
-      this.myShowView.maximize();
+      this.myShowView = Gruff.Views.Debates.ShowViews[this.model.id];
+      if (this.myShowView != null) {
+        this.myShowView.show();
+        this.myShowView.maximize();
+      } else {
+        newShowEl = $(this.showView.el).clone();
+        newShowEl.attr('id', this.model.id);
+        $(this.showView.el).after(newShowEl);
+        this.myShowView = new Gruff.Views.Debates.ShowView({
+          'el': newShowEl,
+          'model': this.model,
+          'parentView': this.showView
+        });
+        this.myShowView.render();
+        this.myShowView.maximize();
+      }
       return false;
     };
 
@@ -1226,6 +1232,8 @@
 
   (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
+  (_base11 = Gruff.Views.Debates).ShowViews || (_base11.ShowViews = {});
+
   Gruff.Views.Debates.ShowView = (function(_super) {
 
     __extends(ShowView, _super);
@@ -1258,7 +1266,8 @@
       if (this.childView != null) this.childView.parentView = this;
       this.parentView = options.parentView;
       if (this.parentView != null) this.parentView.childView = this;
-      return this.rendered = false;
+      this.rendered = false;
+      return Gruff.Views.Debates.ShowViews[this.model.id] = this;
     };
 
     ShowView.prototype.render = function() {
@@ -1489,7 +1498,7 @@
     };
 
     ShowView.prototype.minimize = function() {
-      this.$('.description, .tags, .arguments, .answers, .subdebates, .comments').hide();
+      this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide();
       this.setUpMinimizeEvents();
       return false;
     };
@@ -1497,15 +1506,15 @@
     ShowView.prototype.maximize = function() {
       var _ref,
         _this = this;
-      if ((_ref = this.childView) != null) _ref.close();
+      if ((_ref = this.childView) != null) _ref.hide(200);
       if (this.rendered) {
-        this.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show();
+        this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response4) {
             var json, _ref2;
-            _this.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show();
+            _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
             json = _this.model.fullJSON();
             json.loggedIn = true;
             json.objecttype = "debates";
@@ -1571,11 +1580,21 @@
       return this.unbind();
     };
 
+    ShowView.prototype.hide = function() {
+      var _ref;
+      if ((_ref = this.childView) != null) _ref.hide();
+      return $(this.el).hide();
+    };
+
+    ShowView.prototype.show = function() {
+      return $(this.el).show(200);
+    };
+
     return ShowView;
 
   })(Backbone.View);
 
-  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
+  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
 
   Gruff.Views.Debates.SimpleNewView = (function(_super) {
 
@@ -1623,7 +1642,7 @@
 
   })(Gruff.Views.Debates.NewView);
 
-  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
+  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -1744,7 +1763,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base13 = Gruff.Views).Login || (_base13.Login = {});
+  (_base14 = Gruff.Views).Login || (_base14.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 

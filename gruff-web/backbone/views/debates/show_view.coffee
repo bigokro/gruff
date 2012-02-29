@@ -1,4 +1,5 @@
 Gruff.Views.Debates ||= {}
+Gruff.Views.Debates.ShowViews ||= {}
 
 class Gruff.Views.Debates.ShowView extends Backbone.View
   initialize: (options) ->
@@ -9,6 +10,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @parentView = options.parentView
     @parentView.childView = @ if @parentView?
     @rendered = false
+    Gruff.Views.Debates.ShowViews[@model.id] = @
     
   render: ->
     json = @model.fullJSON()
@@ -189,19 +191,19 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     editDescriptionView.render()
 
   minimize: () =>
-    @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').hide()
+    @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide()
     @setUpMinimizeEvents()
     false
 
   maximize: () =>
-    @childView?.close()
+    @childView?.hide(200)
     if @rendered
-      @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show()
+      @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
         success: (subdebates, response4) =>
-          @.$('.description, .tags, .arguments, .answers, .subdebates, .comments').show()
+          @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
           json = @model.fullJSON()
           json.loggedIn = true
           json.objecttype = "debates"
@@ -254,3 +256,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @subdebatesView?.close()
     $(@el).html('')
     @unbind()
+
+  hide: ->
+    @childView?.hide()
+    $(@el).hide()
+
+  show: ->
+    $(@el).show(200)
