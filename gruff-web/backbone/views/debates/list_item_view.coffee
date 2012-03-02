@@ -14,12 +14,12 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     json = @model.fullJSON()
     if @attributeType == "argumentsFor" then json.divClass = "argument argumentFor"
     if @attributeType == "argumentsAgainst" then json.divClass = "argument argumentAgainst"
-    if @attributeType == "answers" then json.divClass = "answers"
+    if @attributeType == "answers" then json.divClass = "answer"
     if @attributeType == "subdebates" then json.divClass = "subdebate"
     $(@parentEl).append(@template json)
     @el = $(@parentEl).find('#'+@model.linkableId())
     @setUpEvents()
-    @enableDragDrop()
+    @setUpDragDrop()
     @
 
   setUpEvents: =>
@@ -152,7 +152,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   closeModalView: ->
 
-  enableDragDrop: =>
+  setUpDragDrop: =>
     @.$('> h4 a.title-link').droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       hoverClass: 'over'
@@ -208,6 +208,16 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         @resolveZoom()
         @.$('> h4').css('opacity', 1)
     )
+
+  disableDragDrop: ->
+    @.$('> h4 a.title-link').droppable("disable")
+    @.$('> h4 a.zoom-link').droppable("disable")
+    $(@el).draggable("disable")
+
+  enableDragDrop: ->
+    @.$('> h4 a.title-link').droppable("enable")
+    @.$('> h4 a.zoom-link').droppable("enable")
+    $(@el).draggable("enable")
 
   close: ->
     @el.remove()

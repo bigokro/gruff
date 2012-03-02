@@ -11,6 +11,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @parentView.childView = @ if @parentView?
     @loaded = false
     @status = "unrendered"
+    @subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers"
+    @subdebatesSelector = '> .debates-list > .debate-list-item'
     Gruff.Views.Debates.ShowViews[@model.id] = @
     
   render: ->
@@ -43,6 +45,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     else
       @parentView?.childView = @
       @indentTitle()
+
+  mySubdebateLists: ->
+    @.$(@subdebateListsSelector)
+
+  mySubdebates: ->
+    @mySubdebateLists().find(@subdebatesSelector)
 
   indentTitle: =>
     parents = 0
@@ -105,7 +113,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   setUpDragDrop: =>
     _this = @
-    @.$( "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers" ).droppable(
+    @mySubdebateLists().droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       drop: ( event, ui ) ->
         dragged = ui.draggable[0]
@@ -143,14 +151,18 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     )
 
   disableDragDrop: =>
-    @.$( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", true )
-    @.$( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", true )
-    @.$( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", true )
+    @mySubdebateLists().droppable("destroy")
+    @argumentsForView?.disableDragDrop()
+    @argumentsAgainstView?.disableDragDrop()
+    @answersView?.disableDragDrop()
+    @subdebatesView?.disableDragDrop()
 
   enableDragDrop: =>
-    @.$( ".argument, .answer, .subdebate" ).draggable( "option", "disabled", false )
-    @.$( ".argument, .answer, .subdebate" ).droppable( "option", "disabled", false )
-    @.$( ".for, .against, .subdebates, .answers" ).droppable( "option", "disabled", false )
+    @mySubdebateLists().droppable( "enable" )
+    @argumentsForView?.enableDragDrop()
+    @argumentsAgainstView?.enableDragDrop()
+    @answersView?.enableDragDrop()
+    @subdebatesView?.enableDragDrop()
 
   toggleDescription: (e) =>
     @.$('> div.description').toggle()
@@ -266,6 +278,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   offScreen: ->
     unless @isOffScreen
+      @disableDragDrop()
       height = $(@el).height() - @.$('> .canvas-title').height()
       childPos = $(@childView.el).offset()
       $(@childView.el).offset
@@ -275,6 +288,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   onScreen: ->
     if @isOffScreen
+      @enableDragDrop()
       height = $(@el).height() - @.$('> .canvas-title').height()
       childPos = $(@childView.el).offset()
       $(@childView.el).offset

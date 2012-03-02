@@ -732,7 +732,7 @@
       this.resolveZoom = __bind(this.resolveZoom, this);
       this.zoom = __bind(this.zoom, this);
       this.mergeDebates = __bind(this.mergeDebates, this);
-      this.enableDragDrop = __bind(this.enableDragDrop, this);
+      this.setUpDragDrop = __bind(this.setUpDragDrop, this);
       this.openModalView = __bind(this.openModalView, this);
       this.hideDescription = __bind(this.hideDescription, this);
       this.showDescription = __bind(this.showDescription, this);
@@ -767,12 +767,12 @@
       if (this.attributeType === "argumentsAgainst") {
         json.divClass = "argument argumentAgainst";
       }
-      if (this.attributeType === "answers") json.divClass = "answers";
+      if (this.attributeType === "answers") json.divClass = "answer";
       if (this.attributeType === "subdebates") json.divClass = "subdebate";
       $(this.parentEl).append(this.template(json));
       this.el = $(this.parentEl).find('#' + this.model.linkableId());
       this.setUpEvents();
-      this.enableDragDrop();
+      this.setUpDragDrop();
       return this;
     };
 
@@ -941,7 +941,7 @@
 
     ListItemView.prototype.closeModalView = function() {};
 
-    ListItemView.prototype.enableDragDrop = function() {
+    ListItemView.prototype.setUpDragDrop = function() {
       var _this = this;
       this.$('> h4 a.title-link').droppable({
         accept: '.subdebate, .argument, .debate, .answer',
@@ -1002,6 +1002,18 @@
           return _this.$('> h4').css('opacity', 1);
         }
       });
+    };
+
+    ListItemView.prototype.disableDragDrop = function() {
+      this.$('> h4 a.title-link').droppable("disable");
+      this.$('> h4 a.zoom-link').droppable("disable");
+      return $(this.el).draggable("disable");
+    };
+
+    ListItemView.prototype.enableDragDrop = function() {
+      this.$('> h4 a.title-link').droppable("enable");
+      this.$('> h4 a.zoom-link').droppable("enable");
+      return $(this.el).draggable("enable");
     };
 
     ListItemView.prototype.close = function() {
@@ -1106,6 +1118,18 @@
       })[0];
       this.views = _.without(this.views, viewToRemove);
       return $(viewToRemove.el).remove();
+    };
+
+    ListView.prototype.disableDragDrop = function() {
+      return _.each(this.views, function(view) {
+        return view.disableDragDrop();
+      });
+    };
+
+    ListView.prototype.enableDragDrop = function() {
+      return _.each(this.views, function(view) {
+        return view.enableDragDrop();
+      });
     };
 
     return ListView;
@@ -1289,6 +1313,8 @@
       if (this.parentView != null) this.parentView.childView = this;
       this.loaded = false;
       this.status = "unrendered";
+      this.subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers";
+      this.subdebatesSelector = '> .debates-list > .debate-list-item';
       return Gruff.Views.Debates.ShowViews[this.model.id] = this;
     };
 
@@ -1333,6 +1359,14 @@
         if ((_ref = this.parentView) != null) _ref.childView = this;
         return this.indentTitle();
       }
+    };
+
+    ShowView.prototype.mySubdebateLists = function() {
+      return this.$(this.subdebateListsSelector);
+    };
+
+    ShowView.prototype.mySubdebates = function() {
+      return this.mySubdebateLists().find(this.subdebatesSelector);
     };
 
     ShowView.prototype.indentTitle = function() {
@@ -1409,7 +1443,7 @@
     ShowView.prototype.setUpDragDrop = function() {
       var _this;
       _this = this;
-      return this.$("> .arguments > .for, > .arguments > .against, > .subdebates, > .answers").droppable({
+      return this.mySubdebateLists().droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         drop: function(event, ui) {
           var dragged;
@@ -1458,15 +1492,21 @@
     };
 
     ShowView.prototype.disableDragDrop = function() {
-      this.$(".argument, .answer, .subdebate").draggable("option", "disabled", true);
-      this.$(".argument, .answer, .subdebate").droppable("option", "disabled", true);
-      return this.$(".for, .against, .subdebates, .answers").droppable("option", "disabled", true);
+      var _ref, _ref2, _ref3, _ref4;
+      this.mySubdebateLists().droppable("destroy");
+      if ((_ref = this.argumentsForView) != null) _ref.disableDragDrop();
+      if ((_ref2 = this.argumentsAgainstView) != null) _ref2.disableDragDrop();
+      if ((_ref3 = this.answersView) != null) _ref3.disableDragDrop();
+      return (_ref4 = this.subdebatesView) != null ? _ref4.disableDragDrop() : void 0;
     };
 
     ShowView.prototype.enableDragDrop = function() {
-      this.$(".argument, .answer, .subdebate").draggable("option", "disabled", false);
-      this.$(".argument, .answer, .subdebate").droppable("option", "disabled", false);
-      return this.$(".for, .against, .subdebates, .answers").droppable("option", "disabled", false);
+      var _ref, _ref2, _ref3, _ref4;
+      this.mySubdebateLists().droppable("enable");
+      if ((_ref = this.argumentsForView) != null) _ref.enableDragDrop();
+      if ((_ref2 = this.argumentsAgainstView) != null) _ref2.enableDragDrop();
+      if ((_ref3 = this.answersView) != null) _ref3.enableDragDrop();
+      return (_ref4 = this.subdebatesView) != null ? _ref4.enableDragDrop() : void 0;
     };
 
     ShowView.prototype.toggleDescription = function(e) {
@@ -1609,6 +1649,7 @@
     ShowView.prototype.offScreen = function() {
       var childPos, height;
       if (!this.isOffScreen) {
+        this.disableDragDrop();
         height = $(this.el).height() - this.$('> .canvas-title').height();
         childPos = $(this.childView.el).offset();
         $(this.childView.el).offset({
@@ -1622,6 +1663,7 @@
     ShowView.prototype.onScreen = function() {
       var childPos, height;
       if (this.isOffScreen) {
+        this.enableDragDrop();
         height = $(this.el).height() - this.$('> .canvas-title').height();
         childPos = $(this.childView.el).offset();
         $(this.childView.el).offset({

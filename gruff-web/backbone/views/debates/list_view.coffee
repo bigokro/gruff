@@ -35,3 +35,12 @@ class Gruff.Views.Debates.ListView extends Backbone.View
     )[0]
     @views = _.without(@views, viewToRemove)
     $(viewToRemove.el).remove()
+
+  disableDragDrop: ->
+    _.each @views, (view) ->
+      view.disableDragDrop()
+
+  enableDragDrop: ->
+    _.each @views, (view) ->
+      view.enableDragDrop()
+
