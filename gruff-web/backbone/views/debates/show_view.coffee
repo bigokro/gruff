@@ -156,27 +156,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$('> div.description').toggle()
     false
 
-  toggleSubdebateDiv: (listItemView) ->
-    if @modalView?
-      @modalView.close()
-      @modalView = null
-      @enableDragDrop()
-      listItemView.closeModalView()
-    else
-      subdebateDiv = listItemView.el[0]
-      subdebateDiv = $(subdebateDiv).parents('.debate-list-item')[0] unless $(subdebateDiv).hasClass('debate-list-item')
-      @disableDragDrop()
-      if ui?
-        dragged = ui.helper
-        $(dragged).draggable( "option", "disabled", false )
-      $(subdebateDiv).droppable( "option", "disabled", false )
-      overDebate = @model.findDebate subdebateDiv.id
-      @modalView = new Gruff.Views.Debates.SubdebateView
-        'el': $(subdebateDiv).find('> .subdebate-show')
-        'model': overDebate
-        'parentView': @
-      @modalView.render()
-
   showEditTitleForm: (e) =>
     e.preventDefault()
     e.stopPropagation()

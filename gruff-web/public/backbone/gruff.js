@@ -1474,34 +1474,6 @@
       return false;
     };
 
-    ShowView.prototype.toggleSubdebateDiv = function(listItemView) {
-      var dragged, overDebate, subdebateDiv;
-      if (this.modalView != null) {
-        this.modalView.close();
-        this.modalView = null;
-        this.enableDragDrop();
-        return listItemView.closeModalView();
-      } else {
-        subdebateDiv = listItemView.el[0];
-        if (!$(subdebateDiv).hasClass('debate-list-item')) {
-          subdebateDiv = $(subdebateDiv).parents('.debate-list-item')[0];
-        }
-        this.disableDragDrop();
-        if (typeof ui !== "undefined" && ui !== null) {
-          dragged = ui.helper;
-          $(dragged).draggable("option", "disabled", false);
-        }
-        $(subdebateDiv).droppable("option", "disabled", false);
-        overDebate = this.model.findDebate(subdebateDiv.id);
-        this.modalView = new Gruff.Views.Debates.SubdebateView({
-          'el': $(subdebateDiv).find('> .subdebate-show'),
-          'model': overDebate,
-          'parentView': this
-        });
-        return this.modalView.render();
-      }
-    };
-
     ShowView.prototype.showEditTitleForm = function(e) {
       var editTitleView;
       e.preventDefault();
