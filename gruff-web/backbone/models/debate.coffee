@@ -16,7 +16,8 @@ class Gruff.Models.Debate extends Backbone.Model
     @argumentsAgainst = @initializeDebates "argumentsAgainst"
     @subdebates = @initializeDebates "subdebates"
     @parentCollection = options.parentCollection
-    Gruff.Models.Debates[@linkableId()] = @
+    @updateGlobalHash()
+    @bind('change', @updateGlobalHash)
 
   fullJSON: () ->
     json = @toJSON()
@@ -42,6 +43,9 @@ class Gruff.Models.Debate extends Backbone.Model
     debates.bind("add", @makeAddToCollectionEvent(debates))
     debates.bind("remove", @makeRemoveFromCollectionEvent(debates))
     debates
+
+  updateGlobalHash: ->
+    Gruff.Models.Debates[@linkableId()] = @
 
   fetchSubdebates: (options) ->
     @answers.fetch 

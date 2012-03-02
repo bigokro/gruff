@@ -162,7 +162,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         @hoverTimeout = setTimeout( 
           () => 
             @doToggleInfo(e, ui)
-          , 1000
+          , 500
         )
       out: (e, ui) =>
         clearTimeout @hoverTimeout
@@ -180,7 +180,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         @hoverTimeout = setTimeout( 
           () => 
             @zoom()
-          , 1000
+          , 500
         )
       out: (e, ui) =>
         clearTimeout @hoverTimeout
@@ -205,6 +205,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         cloneEl.find('div, a.zoom-link').remove()
         cloneEl.attr('id', @model.id)
       stop: (e, ui) =>
+        @resolveZoom()
         @.$('> h4').css('opacity', 1)
     )
 
@@ -216,7 +217,6 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     alert "Dropping one debate onto another has not yet been implemented"
 
   zoom: =>
-    @showView.minimize()
     @myShowView = Gruff.Views.Debates.ShowViews[@model.id]
     if @myShowView?
       @myShowView.show()
@@ -231,4 +231,12 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         'parentView': @showView
       @myShowView.render()
       @myShowView.maximize()
+    if @isDragging()
+      @showView.offScreen()
+    else
+      @showView.minimize()
     false
+
+  resolveZoom: =>
+    @showView.maximize()
+    @showView.focus()

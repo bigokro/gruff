@@ -38,6 +38,9 @@ _.extend(Backbone.View.prototype,
           )
     )
 
+  isDragging: ->
+    $('.ui-draggable-dragging').length > 0
+
   handleRemoteError: (jqXHR, data) ->
     message = $.parseJSON(jqXHR.responseText)
     message = message[0].message if message[0]?.message?

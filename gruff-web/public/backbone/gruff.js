@@ -41,7 +41,8 @@
       this.argumentsAgainst = this.initializeDebates("argumentsAgainst");
       this.subdebates = this.initializeDebates("subdebates");
       this.parentCollection = options.parentCollection;
-      return Gruff.Models.Debates[this.linkableId()] = this;
+      this.updateGlobalHash();
+      return this.bind('change', this.updateGlobalHash);
     };
 
     Debate.prototype.fullJSON = function() {
@@ -88,6 +89,10 @@
       debates.bind("add", this.makeAddToCollectionEvent(debates));
       debates.bind("remove", this.makeRemoveFromCollectionEvent(debates));
       return debates;
+    };
+
+    Debate.prototype.updateGlobalHash = function() {
+      return Gruff.Models.Debates[this.linkableId()] = this;
     };
 
     Debate.prototype.fetchSubdebates = function(options) {
@@ -724,6 +729,7 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.resolveZoom = __bind(this.resolveZoom, this);
       this.zoom = __bind(this.zoom, this);
       this.mergeDebates = __bind(this.mergeDebates, this);
       this.enableDragDrop = __bind(this.enableDragDrop, this);
@@ -945,7 +951,7 @@
           _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
             return _this.doToggleInfo(e, ui);
-          }, 1000);
+          }, 500);
         },
         out: function(e, ui) {
           clearTimeout(_this.hoverTimeout);
@@ -964,7 +970,7 @@
           _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
             return _this.zoom();
-          }, 1000);
+          }, 500);
         },
         out: function(e, ui) {
           clearTimeout(_this.hoverTimeout);
@@ -992,6 +998,7 @@
           return cloneEl.attr('id', _this.model.id);
         },
         stop: function(e, ui) {
+          _this.resolveZoom();
           return _this.$('> h4').css('opacity', 1);
         }
       });
@@ -1008,7 +1015,6 @@
 
     ListItemView.prototype.zoom = function() {
       var newShowEl;
-      this.showView.minimize();
       this.myShowView = Gruff.Views.Debates.ShowViews[this.model.id];
       if (this.myShowView != null) {
         this.myShowView.show();
@@ -1025,7 +1031,17 @@
         this.myShowView.render();
         this.myShowView.maximize();
       }
+      if (this.isDragging()) {
+        this.showView.offScreen();
+      } else {
+        this.showView.minimize();
+      }
       return false;
+    };
+
+    ListItemView.prototype.resolveZoom = function() {
+      this.showView.maximize();
+      return this.showView.focus();
     };
 
     return ListItemView;
@@ -1271,7 +1287,8 @@
       if (this.childView != null) this.childView.parentView = this;
       this.parentView = options.parentView;
       if (this.parentView != null) this.parentView.childView = this;
-      this.rendered = false;
+      this.loaded = false;
+      this.status = "unrendered";
       return Gruff.Views.Debates.ShowViews[this.model.id] = this;
     };
 
@@ -1284,6 +1301,7 @@
       this.renderParents();
       this.setUpEvents();
       this.zoomLink.hide();
+      this.status = "rendered";
       return this;
     };
 
@@ -1399,7 +1417,8 @@
           $(this).removeClass('over');
           if ($(dragged).parent().parent()[0] !== this) {
             _this.moveDebate(dragged, $(this));
-            return ui.helper.hide();
+            ui.helper.hide();
+            return _this.focus();
           }
         },
         over: function(event, ui) {
@@ -1426,7 +1445,7 @@
             _this.maximize();
             ui.helper.show();
             return ui.draggable.show();
-          }, 1500);
+          }, 500);
         },
         out: function(e, ui) {
           _this.$('> .canvas-title').removeClass('over');
@@ -1510,26 +1529,26 @@
     };
 
     ShowView.prototype.minimize = function() {
+      var _ref;
+      if (this.isOffScreen) this.onScreen();
+      if ((_ref = this.parentView) != null) _ref.minimize();
       this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide();
       this.setUpMinimizeEvents();
+      this.status = "minimized";
       return false;
     };
 
     ShowView.prototype.maximize = function() {
-      var _ref,
-        _this = this;
-      if ($('.ui-draggable-dragging').length) {
-        $('.ui-draggable-dragging').bind('drop', this.hide);
-      } else {
-        if ((_ref = this.childView) != null) _ref.hide();
-      }
-      if (this.rendered) {
+      var _this = this;
+      this.status = "maximized";
+      if (!this.isDragging()) this.focus();
+      if (this.loaded) {
         this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response4) {
-            var json, _ref2;
+            var json, _ref;
             _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
             json = _this.model.fullJSON();
             json.loggedIn = true;
@@ -1537,7 +1556,7 @@
             json.objectid = json.linkableId;
             json.attributetype = "";
             json.attributeid = "";
-            json.baseurl = (_ref2 = json.attributetype !== "") != null ? _ref2 : "/" + json.objecttype + "/" + json.objectid + {
+            json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
               "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
             };
             _this.$('.tags').html(_this.tags_template(json));
@@ -1578,7 +1597,7 @@
             });
             _this.subdebatesView.render();
             _this.setUpMaximizeEvents();
-            return _this.rendered = true;
+            return _this.loaded = true;
           }
         });
         return false;
@@ -1593,17 +1612,52 @@
       if ((_ref4 = this.answersView) != null) _ref4.close();
       if ((_ref5 = this.subdebatesView) != null) _ref5.close();
       $(this.el).html('');
+      this.status = "closed";
       return this.unbind();
     };
 
     ShowView.prototype.hide = function() {
       var _ref;
       if ((_ref = this.childView) != null) _ref.hide();
-      return $(this.el).hide();
+      $(this.el).hide();
+      return this.status = "hidden";
     };
 
     ShowView.prototype.show = function() {
       return $(this.el).show(200);
+    };
+
+    ShowView.prototype.focus = function() {
+      var _ref, _ref2;
+      if (this.isOffScreen) this.onScreen();
+      if ((_ref = this.childView) != null) _ref.hide();
+      return (_ref2 = this.parentView) != null ? _ref2.minimize() : void 0;
+    };
+
+    ShowView.prototype.offScreen = function() {
+      var childPos, height;
+      if (!this.isOffScreen) {
+        height = $(this.el).height() - this.$('> .canvas-title').height();
+        childPos = $(this.childView.el).offset();
+        $(this.childView.el).offset({
+          left: childPos.left,
+          top: childPos.top - height
+        });
+        return this.isOffScreen = true;
+      }
+    };
+
+    ShowView.prototype.onScreen = function() {
+      var childPos, height;
+      if (this.isOffScreen) {
+        height = $(this.el).height() - this.$('> .canvas-title').height();
+        childPos = $(this.childView.el).offset();
+        $(this.childView.el).offset({
+          left: childPos.left,
+          top: childPos.top + height
+        });
+        return this.isOffScreen = false;
+      }
     };
 
     return ShowView;
@@ -1879,6 +1933,9 @@
           }
         }
       });
+    },
+    isDragging: function() {
+      return $('.ui-draggable-dragging').length > 0;
     },
     handleRemoteError: function(jqXHR, data) {
       var message, _ref;

@@ -9,7 +9,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @childView.parentView = @ if @childView?
     @parentView = options.parentView
     @parentView.childView = @ if @parentView?
-    @rendered = false
+    @loaded = false
+    @status = "unrendered"
     Gruff.Views.Debates.ShowViews[@model.id] = @
     
   render: ->
@@ -20,6 +21,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @renderParents()
     @setUpEvents()
     @zoomLink.hide()
+    @status = "rendered"
     @
 
   renderParents: =>
@@ -111,6 +113,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         unless $(dragged).parent().parent()[0] == this
           _this.moveDebate dragged, $(this)
           ui.helper.hide()
+          _this.focus()
       over: ( event, ui ) ->
         dragged = ui.draggable[0]
         unless $(dragged).parent().parent()[0] == this
@@ -130,7 +133,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             @maximize()
             ui.helper.show()
             ui.draggable.show()
-          , 1500
+          , 500
         )
       out: (e, ui) =>
         @.$('> .canvas-title').removeClass('over')
@@ -195,16 +198,19 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     editDescriptionView.render()
 
   minimize: () =>
+    if @isOffScreen
+      @onScreen()
+    @parentView?.minimize()
     @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide()
     @setUpMinimizeEvents()
+    @status = "minimized"
     false
 
   maximize: () =>
-    if $('.ui-draggable-dragging').length
-      $('.ui-draggable-dragging').bind('drop', @hide)
-    else
-      @childView?.hide()
-    if @rendered
+    @status = "maximized"
+    unless @isDragging()
+      @focus()
+    if @loaded
       @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
       @setUpMaximizeEvents()
     else
@@ -251,7 +257,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             'showView': @
           @subdebatesView.render()
           @setUpMaximizeEvents()
-          @rendered = true
+          @loaded = true
       )
       false
 
@@ -262,11 +268,37 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @answersView?.close()
     @subdebatesView?.close()
     $(@el).html('')
+    @status = "closed"
     @unbind()
 
   hide: ->
     @childView?.hide()
     $(@el).hide()
+    @status = "hidden"
 
   show: ->
     $(@el).show(200)
+
+  focus: ->
+    if @isOffScreen
+      @onScreen()
+    @childView?.hide()
+    @parentView?.minimize()
+
+  offScreen: ->
+    unless @isOffScreen
+      height = $(@el).height() - @.$('> .canvas-title').height()
+      childPos = $(@childView.el).offset()
+      $(@childView.el).offset
+        left: childPos.left
+        top: childPos.top - height
+      @isOffScreen = true
+
+  onScreen: ->
+    if @isOffScreen
+      height = $(@el).height() - @.$('> .canvas-title').height()
+      childPos = $(@childView.el).offset()
+      $(@childView.el).offset
+        left: childPos.left
+        top: childPos.top + height
+      @isOffScreen = false
