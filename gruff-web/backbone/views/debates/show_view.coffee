@@ -118,6 +118,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     else if e.keyCode == 83
       @.$('[debate-type="subdebates"]').click()
       false
+    else if e.keyCode == 84
+      @tagsView.showForm()
+      false
     else
       true
 

@@ -12,7 +12,7 @@ class Gruff.Views.Tags.ShowView extends Backbone.View
     json = @model.toJSON()
     json.loggedIn = true
     $(@parentEl).find('.label').after(@template json)
-    @el = $(@parentEl).find('#'+@model.get("name"))
+    @el = $(@parentEl).find('#'+@model.get("name").replace(" ", "\\ ")+'-tag')
     @deleteEl = @.$("> a.delete-tag")
     @setUpEvents()
     @
@@ -22,18 +22,22 @@ class Gruff.Views.Tags.ShowView extends Backbone.View
     $(@el).bind "mouseout", @hideDelete
     @deleteEl.bind("click", @removeTag)
 
-  showDelete: ->
+  showDelete: =>
     @deleteEl.show()
     $(@el).removeClass('spacer')
 
-  hideDelete: ->
+  hideDelete: =>
     @deleteEl.hide()
     $(@el).addClass('spacer')
 
-  removeTag: ->
-    @model.destroy()
-    @close()
+  removeTag: =>
+    @model.destroy(
+      success: (tag) =>
+        @close()
+      error: (tag, jqXHR) =>
+        @handleRemoteError jqXHR, tag
+    )
 
-  close: ->
+  close: =>
     @el.remove()
     @unbind()

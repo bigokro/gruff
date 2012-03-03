@@ -13,7 +13,7 @@ class Gruff.Views.Tags.IndexView extends Backbone.View
     json.id = @parentModel.id
     json.loggedIn = true
     $(@el).html(@template json)
-    @showFormEl = @.$(".show-add-tag-form")
+    @showFormEl = @.$(".show-add-tag-form a")
     @formEl = @.$(".add-tag-form")
     @inputEl = @formEl.find('input')
     @hideFormEl = @formEl.find('a')
@@ -32,8 +32,8 @@ class Gruff.Views.Tags.IndexView extends Backbone.View
 
   setUpEvents: ->
     Backbone.ModelBinding.bind @
-    @showFormEl.find('a').bind 'click', @showForm
-    @hideFormEl.find('a').bind 'click', @hideForm
+    @showFormEl.bind 'click', @showForm
+    @hideFormEl.bind 'click', @hideForm
     @inputEl.bind 'keypress', @handleKeys
     @inputEl.autocomplete
       source: "/rest/tags",

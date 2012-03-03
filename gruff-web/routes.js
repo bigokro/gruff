@@ -622,12 +622,16 @@ exports.removeTag = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/' 
-      + req.params.objecttype
-      + '/' 
-      + req.params.objectid 
-      + (req.params.attributetype ? '/'+req.params.attributetype : '')
-    );
+    if (req.xhr) {
+	res.json({ name: docs });
+    } else {
+      res.redirect('/' 
+        + req.params.objecttype
+        + '/' 
+        + req.params.objectid 
+        + (req.params.attributetype ? '/'+req.params.attributetype : '')
+      );
+    }
 });
 };
 

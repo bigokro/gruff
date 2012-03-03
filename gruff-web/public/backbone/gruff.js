@@ -1517,6 +1517,9 @@
       } else if (e.keyCode === 83) {
         this.$('[debate-type="subdebates"]').click();
         return false;
+      } else if (e.keyCode === 84) {
+        this.tagsView.showForm();
+        return false;
       } else {
         return true;
       }
@@ -2016,7 +2019,7 @@
       json.id = this.parentModel.id;
       json.loggedIn = true;
       $(this.el).html(this.template(json));
-      this.showFormEl = this.$(".show-add-tag-form");
+      this.showFormEl = this.$(".show-add-tag-form a");
       this.formEl = this.$(".add-tag-form");
       this.inputEl = this.formEl.find('input');
       this.hideFormEl = this.formEl.find('a');
@@ -2038,8 +2041,8 @@
 
     IndexView.prototype.setUpEvents = function() {
       Backbone.ModelBinding.bind(this);
-      this.showFormEl.find('a').bind('click', this.showForm);
-      this.hideFormEl.find('a').bind('click', this.hideForm);
+      this.showFormEl.bind('click', this.showForm);
+      this.hideFormEl.bind('click', this.hideForm);
       this.inputEl.bind('keypress', this.handleKeys);
       return this.inputEl.autocomplete({
         source: "/rest/tags",
@@ -2124,6 +2127,10 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.close = __bind(this.close, this);
+      this.removeTag = __bind(this.removeTag, this);
+      this.hideDelete = __bind(this.hideDelete, this);
+      this.showDelete = __bind(this.showDelete, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
@@ -2142,7 +2149,7 @@
       json = this.model.toJSON();
       json.loggedIn = true;
       $(this.parentEl).find('.label').after(this.template(json));
-      this.el = $(this.parentEl).find('#' + this.model.get("name"));
+      this.el = $(this.parentEl).find('#' + this.model.get("name").replace(" ", "\\ ") + '-tag');
       this.deleteEl = this.$("> a.delete-tag");
       this.setUpEvents();
       return this;
@@ -2165,8 +2172,15 @@
     };
 
     ShowView.prototype.removeTag = function() {
-      this.model.destroy();
-      return this.close();
+      var _this = this;
+      return this.model.destroy({
+        success: function(tag) {
+          return _this.close();
+        },
+        error: function(tag, jqXHR) {
+          return _this.handleRemoteError(jqXHR, tag);
+        }
+      });
     };
 
     ShowView.prototype.close = function() {
