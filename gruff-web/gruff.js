@@ -114,6 +114,9 @@ app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', ro
 // json
 app.get('/rest/tags', routes.getTagSearch);
 app.get('/rest/tags/counts', routes.getTagCounts);
+app.get('/rest/:objecttype/:objectid/tag/:tag', routes.getTag);
+app.post('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
+app.put('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.get('/rest/debates', routes.getJSONDebates);
 app.get('/rest/debates/:id', routes.getJSONDebate);
 app.get('/rest/debates/:id/:attributetype', routes.getJSONDebates);

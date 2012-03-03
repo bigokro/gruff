@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base2, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -294,6 +294,74 @@
 
   })(Backbone.Model);
 
+  (_base2 = Gruff.Models).Tags || (_base2.Tags = {});
+
+  Gruff.Models.Tag = (function(_super) {
+
+    __extends(Tag, _super);
+
+    function Tag() {
+      Tag.__super__.constructor.apply(this, arguments);
+    }
+
+    Tag.prototype.paramRoot = '';
+
+    Tag.prototype.idAttribute = "name";
+
+    Tag.prototype.defaults = {
+      name: null
+    };
+
+    Tag.prototype.initialize = function(options) {
+      this.updateUrl();
+      return this.bind("change", this.updateUrl);
+    };
+
+    Tag.prototype.updateUrl = function(e) {
+      var _ref, _ref2;
+      return this.url = "/rest/debates/" + ((_ref = this.collection) != null ? (_ref2 = _ref.parent) != null ? _ref2.id : void 0 : void 0) + "/tag/" + this.get("name");
+    };
+
+    Tag.prototype.save = function() {
+      this.updateUrl();
+      return Tag.__super__.save.apply(this, arguments);
+    };
+
+    return Tag;
+
+  })(Backbone.Model);
+
+  Gruff.Collections.Tags = (function(_super) {
+
+    __extends(Tags, _super);
+
+    function Tags() {
+      Tags.__super__.constructor.apply(this, arguments);
+    }
+
+    Tags.prototype.model = Gruff.Models.Tag;
+
+    Tags.prototype.initialize = function(options) {
+      var _ref;
+      this.parent = options.parent;
+      return this.url = "/rest/debates/" + ((_ref = this.parent) != null ? _ref.id : void 0) + "/tags";
+    };
+
+    Tags.prototype.resetFromArray = function(arr) {
+      var tagArr;
+      tagArr = [];
+      _.each(arr, function(tag) {
+        return tagArr.push({
+          name: tag
+        });
+      });
+      return this.reset(tagArr);
+    };
+
+    return Tags;
+
+  })(Backbone.Collection);
+
   Gruff.Routers.DebatesRouter = (function(_super) {
 
     __extends(DebatesRouter, _super);
@@ -437,7 +505,7 @@
 
   })(Backbone.View);
 
-  (_base2 = Gruff.Views).Debates || (_base2.Debates = {});
+  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
 
   Gruff.Views.Debates.DebateView = (function(_super) {
 
@@ -470,7 +538,7 @@
 
   })(Backbone.View);
 
-  (_base3 = Gruff.Views).Debates || (_base3.Debates = {});
+  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
 
   Gruff.Views.Debates.EditDescriptionView = (function(_super) {
 
@@ -554,7 +622,7 @@
 
   })(Backbone.View);
 
-  (_base4 = Gruff.Views).Debates || (_base4.Debates = {});
+  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
 
   Gruff.Views.Debates.EditTitleView = (function(_super) {
 
@@ -641,7 +709,7 @@
 
   })(Backbone.View);
 
-  (_base5 = Gruff.Views).Debates || (_base5.Debates = {});
+  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
 
   Gruff.Views.Debates.EditView = (function(_super) {
 
@@ -679,7 +747,7 @@
 
   })(Backbone.View);
 
-  (_base6 = Gruff.Views).Debates || (_base6.Debates = {});
+  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -722,7 +790,7 @@
 
   })(Backbone.View);
 
-  (_base7 = Gruff.Views).Debates || (_base7.Debates = {});
+  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -1060,7 +1128,7 @@
 
   })(Backbone.View);
 
-  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
+  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -1136,7 +1204,7 @@
 
   })(Backbone.View);
 
-  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
+  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
   Gruff.Views.Debates.MiniListView = (function(_super) {
 
@@ -1208,7 +1276,7 @@
 
   })(Gruff.Views.Debates.ListView);
 
-  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -1274,9 +1342,9 @@
 
   })(Backbone.View);
 
-  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
+  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
 
-  (_base12 = Gruff.Views.Debates).ShowViews || (_base12.ShowViews = {});
+  (_base13 = Gruff.Views.Debates).ShowViews || (_base13.ShowViews = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -1301,12 +1369,12 @@
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
       this.indentTitle = __bind(this.indentTitle, this);
       this.renderParents = __bind(this.renderParents, this);
+      this.renderTags = __bind(this.renderTags, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
 
     ShowView.prototype.initialize = function(options) {
       this.template = _.template($('#debate-show-template').text());
-      this.tags_template = _.template($('#tags-index-template').text());
       this.childView = options.childView;
       if (this.childView != null) this.childView.parentView = this;
       this.parentView = options.parentView;
@@ -1324,11 +1392,25 @@
       json.loggedIn = true;
       $(this.el).html(this.template(json));
       this.zoomLink = this.$('> .canvas-title .zoom-link');
+      this.renderTags();
       this.renderParents();
       this.setUpEvents();
       this.zoomLink.hide();
       this.status = "rendered";
       return this;
+    };
+
+    ShowView.prototype.renderTags = function() {
+      this.model.tags = new Gruff.Collections.Tags({
+        parent: this.model
+      });
+      this.model.tags.resetFromArray(this.model.get("tags"));
+      this.tagsView = new Gruff.Views.Tags.IndexView({
+        el: this.$('> .tags'),
+        collection: this.model.tags,
+        parentView: this
+      });
+      return this.tagsView.render();
     };
 
     ShowView.prototype.renderParents = function() {
@@ -1571,7 +1653,6 @@
             json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
               "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
             };
-            _this.$('.tags').html(_this.tags_template(json));
             if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
               _this.answersView = new Gruff.Views.Debates.ListView({
                 'el': _this.$('.answers .debates-list').first(),
@@ -1678,7 +1759,7 @@
 
   })(Backbone.View);
 
-  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
+  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
 
   Gruff.Views.Debates.SimpleNewView = (function(_super) {
 
@@ -1726,7 +1807,7 @@
 
   })(Gruff.Views.Debates.NewView);
 
-  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
+  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -1847,7 +1928,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base15 = Gruff.Views).Login || (_base15.Login = {});
+  (_base16 = Gruff.Views).Login || (_base16.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 
@@ -1902,6 +1983,200 @@
     return LoginView;
 
   })(Gruff.Views.ModalView);
+
+  (_base17 = Gruff.Views).Tags || (_base17.Tags = {});
+
+  Gruff.Views.Tags.IndexView = (function(_super) {
+
+    __extends(IndexView, _super);
+
+    function IndexView() {
+      this.remove = __bind(this.remove, this);
+      this.add = __bind(this.add, this);
+      this.save = __bind(this.save, this);
+      this.close = __bind(this.close, this);
+      this.hideForm = __bind(this.hideForm, this);
+      this.showForm = __bind(this.showForm, this);
+      this.handleKeys = __bind(this.handleKeys, this);
+      IndexView.__super__.constructor.apply(this, arguments);
+    }
+
+    IndexView.prototype.initialize = function(options) {
+      this.template = _.template($('#tags-index-template').text());
+      this.collection.bind('add', this.add);
+      this.collection.bind('remove', this.remove);
+      this.parentView = options.parentView;
+      return this.parentModel = this.collection.parent;
+    };
+
+    IndexView.prototype.render = function() {
+      var json,
+        _this = this;
+      json = {};
+      json.id = this.parentModel.id;
+      json.loggedIn = true;
+      $(this.el).html(this.template(json));
+      this.showFormEl = this.$(".show-add-tag-form");
+      this.formEl = this.$(".add-tag-form");
+      this.inputEl = this.formEl.find('input');
+      this.hideFormEl = this.formEl.find('a');
+      this.views = [];
+      this.collection.each(function(tag) {
+        return _this.add(tag);
+      });
+      this.initializeForm();
+      this.setUpEvents();
+      this.hideForm();
+      return this;
+    };
+
+    IndexView.prototype.initializeForm = function() {
+      this.inputEl.val('');
+      this.model = new this.collection.model();
+      return this.model.parent = this.parentModel;
+    };
+
+    IndexView.prototype.setUpEvents = function() {
+      Backbone.ModelBinding.bind(this);
+      this.showFormEl.find('a').bind('click', this.showForm);
+      this.hideFormEl.find('a').bind('click', this.hideForm);
+      this.inputEl.bind('keypress', this.handleKeys);
+      return this.inputEl.autocomplete({
+        source: "/rest/tags",
+        autoFocus: true
+      });
+    };
+
+    IndexView.prototype.handleKeys = function(e) {
+      if (e.which === 13) return this.save();
+    };
+
+    IndexView.prototype.showForm = function() {
+      this.formEl.show();
+      this.showFormEl.hide();
+      this.inputEl.focus();
+      return false;
+    };
+
+    IndexView.prototype.hideForm = function() {
+      this.showFormEl.show();
+      this.formEl.hide();
+      return false;
+    };
+
+    IndexView.prototype.close = function() {
+      _.each(this.views, function(view) {
+        return view.close();
+      });
+      $(this.el).html('');
+      Backbone.ModelBinding.unbind(this);
+      return this.unbind();
+    };
+
+    IndexView.prototype.save = function() {
+      var _this = this;
+      this.model.set({
+        name: this.inputEl.val()
+      });
+      this.model.unset("errors");
+      return this.collection.create(this.model.toJSON(), {
+        success: function(tag) {
+          _this.initializeForm();
+          return _this.hideForm();
+        },
+        error: function(tag, jqXHR) {
+          return _this.handleRemoteError(jqXHR, tag);
+        }
+      });
+    };
+
+    IndexView.prototype.add = function(tag) {
+      var tagView;
+      tag.parentCollection = this.collection;
+      tagView = new Gruff.Views.Tags.ShowView({
+        'parentEl': this.el,
+        'model': tag,
+        'parentView': this
+      });
+      this.views.push(tagView);
+      return tagView.render();
+    };
+
+    IndexView.prototype.remove = function(tag) {
+      var viewToRemove,
+        _this = this;
+      viewToRemove = _.select(this.views, function(view) {
+        var _ref;
+        return ((_ref = view.model) != null ? _ref.name : void 0) === tag.name;
+      })[0];
+      this.views = _.without(this.views, viewToRemove);
+      return viewToRemove.close();
+    };
+
+    return IndexView;
+
+  })(Backbone.View);
+
+  (_base18 = Gruff.Views).Tags || (_base18.Tags = {});
+
+  Gruff.Views.Tags.ShowView = (function(_super) {
+
+    __extends(ShowView, _super);
+
+    function ShowView() {
+      this.setUpEvents = __bind(this.setUpEvents, this);
+      ShowView.__super__.constructor.apply(this, arguments);
+    }
+
+    ShowView.prototype.initialize = function(options) {
+      var _ref;
+      this.template = _.template($('#tags-show-template').text());
+      this.parentEl = options.parentEl;
+      this.parentView = options.parentView;
+      this.parentModel = options.parentModel;
+      return this.parentModel || (this.parentModel = (_ref = this.parentView) != null ? _ref.parentModel : void 0);
+    };
+
+    ShowView.prototype.render = function() {
+      var json;
+      json = this.model.toJSON();
+      json.loggedIn = true;
+      $(this.parentEl).find('.label').after(this.template(json));
+      this.el = $(this.parentEl).find('#' + this.model.get("name"));
+      this.deleteEl = this.$("> a.delete-tag");
+      this.setUpEvents();
+      return this;
+    };
+
+    ShowView.prototype.setUpEvents = function() {
+      $(this.el).bind("mouseover", this.showDelete);
+      $(this.el).bind("mouseout", this.hideDelete);
+      return this.deleteEl.bind("click", this.removeTag);
+    };
+
+    ShowView.prototype.showDelete = function() {
+      this.deleteEl.show();
+      return $(this.el).removeClass('spacer');
+    };
+
+    ShowView.prototype.hideDelete = function() {
+      this.deleteEl.hide();
+      return $(this.el).addClass('spacer');
+    };
+
+    ShowView.prototype.removeTag = function() {
+      this.model.destroy();
+      return this.close();
+    };
+
+    ShowView.prototype.close = function() {
+      this.el.remove();
+      return this.unbind();
+    };
+
+    return ShowView;
+
+  })(Backbone.View);
 
   _.extend(Backbone.View.prototype, {
     moveDebate: function(dragged, target, view) {

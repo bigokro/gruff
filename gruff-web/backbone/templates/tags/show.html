@@ -1,0 +1,12 @@
+<script type="text/x-jquery-tmpl" id="tags-show-template">
+<span class="tag spacer" id="<%= name %>-tag">
+  <a class="tag" title="View others with this tag" href="/tags/<%=name%>"><%=name%></a>
+  <%
+   if (loggedIn) {
+  %>
+  <a class="delete-tag" title="Remove" href="#" style="display: none;">X</a>
+  <%
+   }
+  %>
+</span>
+</script>

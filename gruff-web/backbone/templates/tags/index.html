@@ -1,38 +1,16 @@
 <script type="text/x-jquery-tmpl" id="tags-index-template">
-<div class="tags">
     <span class="label">tags:</span>
     <%
-      if (typeof(tags)!== 'undefined') {
-        _.each(tags, function(tag) {
-          var removeurl = baseurl + tag + "/remove";
-          if (loggedIn) {
-    %>
-        <span class="tag spacer" onmouseover="$('.delete-tag', this).show(); $(this).toggleClass('spacer')" onmouseout="$('.delete-tag', this).hide(); $(this).toggleClass('spacer')">
-            <a class="tag" title="View others with this tag" href="/tags/<%=tag%>"><%=tag%></a>
-            <a class="delete-tag" title="Remove" href="<%=removeurl%>" style="display: none;">X</a>
-        </span>
-    <%
-          } else {
-    %>
-        <span class="tag spacer">
-            <a class="tag" title="View others with this tag" href="/tags/<%=tag%>"><%=tag%></a>
-        </span>
-    <%
-         }
-       });
-     }
      if (loggedIn) {
     %>
-      <span class="show-add-tag-form" id="show-add-tag-form-<%=attributeid%>">
-        <a title="Add a tag" href="#" onclick="$('#add-tag-form-<%=attributeid%>').show(); $('#show-add-tag-form-<%=attributeid%>').hide(); $('#add-tag-form-field-<%=attributeid%>').focus(); return false;">+</a>
+      <span class="show-add-tag-form" id="show-add-tag-form-<%=id%>">
+        <a title="Add a tag" href="#">+</a>
       </span>
-      <span class="add-tag-form" id="add-tag-form-<%=attributeid%>" style="display: none;">
-        <a title="Hide tag form" href="#" onclick="$('#show-add-tag-form-<%=attributeid%>').show(); $('#add-tag-form-<%=attributeid%>').hide(); return false;">-</a>
-        <input type="text" id="add-tag-form-field-<%=attributeid%>"/>
+      <span class="add-tag-form" id="add-tag-form-<%=id%>">
+        <a title="Hide tag form" href="#">-</a>
+        <input type="text" id="name"/>
       </span>
-      <!-- TODO: scripts - see tags.jade -->
     <%
      }
     %>
-</div>
 </script>

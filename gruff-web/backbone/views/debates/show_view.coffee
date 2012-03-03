@@ -4,7 +4,6 @@ Gruff.Views.Debates.ShowViews ||= {}
 class Gruff.Views.Debates.ShowView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-show-template').text()
-    @tags_template = _.template $('#tags-index-template').text()
     @childView = options.childView
     @childView.parentView = @ if @childView?
     @parentView = options.parentView
@@ -20,11 +19,22 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     json.loggedIn = true
     $(@el).html(@template json)
     @zoomLink = @.$('> .canvas-title .zoom-link')
+    @renderTags()
     @renderParents()
     @setUpEvents()
     @zoomLink.hide()
     @status = "rendered"
     @
+
+  renderTags: =>
+    @model.tags = new Gruff.Collections.Tags
+      parent: @model
+    @model.tags.resetFromArray @model.get("tags")
+    @tagsView = new Gruff.Views.Tags.IndexView
+      el: @.$('> .tags')
+      collection: @model.tags
+      parentView: @
+    @tagsView.render()
 
   renderParents: =>
     parentId = @model.get("parentId")
@@ -216,7 +226,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
           json.attributeid = ""
           json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
   
-          @.$('.tags').html(@tags_template json)
           if @model.get("type") == @model.DebateTypes.DEBATE
             @answersView = new Gruff.Views.Debates.ListView
               'el': @.$('.answers .debates-list').first()

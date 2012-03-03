@@ -585,13 +585,27 @@ exports.postTag = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/' 
+    if (req.xhr) {
+	res.json({ name: docs });
+    } else {
+      res.redirect('/' 
                  + req.params.objecttype
                  + '/' 
                  + req.params.objectid 
                  + (req.params.attributetype ? '/'+req.params.attributetype : '')
                 );
+    }
   });
+};
+
+exports.getTag = function(req, res) {
+    res.json({
+          "Object type": req.params.objecttype,
+          "Object id": req.params.objectid,
+          "Attr type": req.params.attributetype,
+          "Attr id": req.params.attributeid,
+          "Tag": req.params.tag
+	});
 };
 
 exports.removeTag = function(req, res) {
