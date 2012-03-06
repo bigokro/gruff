@@ -797,6 +797,7 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this["delete"] = __bind(this["delete"], this);
       this.resolveZoom = __bind(this.resolveZoom, this);
       this.zoom = __bind(this.zoom, this);
       this.mergeDebates = __bind(this.mergeDebates, this);
@@ -848,6 +849,7 @@
       this.$("> h4.title a.title-link").bind("click", this.toggleInfo);
       this.$("> h4.title a.title-link").bind("dblclick", this.showEditTitleForm);
       this.$("> h4.title a.zoom-link").bind("click", this.zoom);
+      this.$("> h4.title a.delete-link").bind("click", this["delete"]);
       return this.$("> .body").bind("dblclick", this.showEditDescriptionForm);
     };
 
@@ -925,8 +927,8 @@
         containerEl = this.$('> div.answers');
       }
       return this.model.fetchSubdebates({
-        error: function() {
-          return alert("Error");
+        error: function(debate, jqXHR) {
+          return _this.handleRemoteError(jqXHR, debate);
         },
         success: function(subdebates, response4) {
           var againstEl, answersEl, forEl, json;
@@ -1122,6 +1124,19 @@
     ListItemView.prototype.resolveZoom = function() {
       this.showView.maximize();
       return this.showView.focus();
+    };
+
+    ListItemView.prototype["delete"] = function() {
+      var _this = this;
+      this.model.destroy({
+        error: function(debate, jqXHR) {
+          return _this.handleRemoteError(jqXHR, debate);
+        },
+        success: function() {
+          return _this.close();
+        }
+      });
+      return false;
     };
 
     return ListItemView;

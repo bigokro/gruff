@@ -1,6 +1,6 @@
-var referenceProvider = new ReferenceProvider('localhost', 27017)
-var describableProvider = new DescribableProvider('localhost', 27017)
-var debateProvider = new DebateProvider('localhost', 27017, describableProvider, referenceProvider)
+var referenceProvider = new ReferenceProvider('localhost', 27017);
+var describableProvider = new DescribableProvider('localhost', 27017);
+var debateProvider = new DebateProvider('localhost', 27017, describableProvider, referenceProvider);
 var tagProvider = new TagProvider('localhost', 27017, debateProvider, referenceProvider);
 var debate = new Debate();
 
@@ -13,7 +13,7 @@ exports.about = function(req, res) {
 };
 
 exports.canvas = function(req, res) {
-  var id = req.params.id
+  var id = req.params.id;
   res.render('canvas.jade', {
     layout: 'layout_canvas'
     , locals: {
@@ -663,6 +663,24 @@ exports.putDebate = function(req, res){
   });
 };
 
+// DELETE
+
+exports.deleteDebate = function(req, res){
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  debateProvider.delete(req.params.id, function( error, doc) {
+    if (handleError(req, res, error, doc)) {
+      return;
+    }
+    if (req.xhr) {
+      res.json(doc);
+    } else {
+      res.redirect('/debates/'+doc.parentId);
+    }
+  });
+};
+
 
 // Handlers
 
@@ -678,16 +696,16 @@ exports.handle404 = function(req, res) {
   }
 };
 
-exports.handle500 = function(req, res) {
+exports.handle500 = function(req, res, error) {
   res.statusCode = 500;
   if (req.xhr) {
-    res.json([{ "message": "500 Horrendous Error" }]);
+    res.json([{ "message": "500 Error: " + error }]);
   } else {
     res.render('500.jade', { locals: {
       title: '500 Horrendous Error'
     }});
   }
-}
+};
 
 // Helpers
 
@@ -705,12 +723,12 @@ bounceAnonymous = function (req, res) {
   else {
     return false;
   }
-}
+};
 
 handleError = function(req, res, error, value) {
   if (error) {
     console.log('500 error: ' + error);
-    exports.handle500(req, res);
+    exports.handle500(req, res, error);
     return true;
   }
   else if (! value || value == null) {
@@ -721,4 +739,4 @@ handleError = function(req, res, error, value) {
   else {
     return false;
   }
-}
+};

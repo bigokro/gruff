@@ -127,8 +127,9 @@ app.post('/rest/debates/:parentid/:attributetype/:id', routes.postDebate);
 app.post('/rest/debates/:id/:attributetype', routes.addDebateToDebate);
 app.put('/rest/debates/:id', routes.putDebate);
 app.put('/rest/debates/:parentid/:attributetype/:id', routes.putDebate);
+app.delete('/rest/debates/:id', routes.deleteDebate);
+app.delete('/rest/debates/:parentid/:attributetype/:id', routes.deleteDebate);
 app.post('/rest/login', routes.postJSONLogin);
-
 
 // default
 app.get('*', routes.handle404);

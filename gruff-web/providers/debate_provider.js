@@ -129,7 +129,7 @@ function buildSearchQueryExpression(tokens) {
         result.push([]);
       }
     } else if (token != '' && token != 'and') {
-      var tokenForRegex = token.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, "");
+      var tokenForRegex = token.replace(/[.*+,\/"%!@#$^&()=<>?:;`~|]/g, ""); // "
       var expr = '(.*' + tokenForRegex + '.*)'; 
       var tagexpr = '((.*:)?' + tokenForRegex + ')';
      result[orCount].push(
@@ -175,7 +175,7 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
   var provider = this;
   this.getCollection(function(error, debate_collection) {
     if (error) {
-      callback(error)
+      callback(error);
     }
     else {
         debate_collection.findOne({_id: objId}, function(error, result) {
@@ -556,11 +556,120 @@ DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, ca
 		                {"$push": {referenceIds: referenceId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, debate)
+		                    else callback(null, debate);
 		                });
             });
         }
 	  });
+};
+
+DebateProvider.prototype.delete = function(id, callback) {
+    var provider = this;
+    try {
+        var objId = this.idToObjId(id);
+    }
+    catch (error) {
+        if (error == 'Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters in hex format') {
+            // we want a 404 here and not an error
+            return callback(null, null);
+        }
+        else {
+            return callback(error);
+        }
+    }
+    this.getCollection(
+        function(error, debate_collection) {
+	          if( error ) callback( error );
+	          else {
+                provider.findByObjID(
+                    objId,
+                    function(error, found) {
+                        if (error) {
+                            callback(error);
+                        }
+                        else if (found.hasChildren()) {
+                            callback("You cannot delete a debate that has subdebates or references");
+                        }
+                        else {
+                            var debate = found;
+	                          debate_collection.remove(
+                                {_id: objId}, 
+                                function(error, removed) {
+		                                if( error ) callback(error);
+                                    else if (debate.parentId === null || typeof(debate.parentId) === 'undefined') {
+                                        callback(null, debate);
+                                    }
+		                                else {
+                                        provider.removeLink(
+                                            objId, 
+                                            debate.parentId,
+                                            function(error, updated) {
+                                                if (error) {
+                                                    callback(error);
+                                                }
+                                                else {
+                                                    callback(null, debate);
+                                                }
+                                            });
+                                    }
+                                    
+                                });
+                        }
+                    });
+            }
+        });
+};
+
+// TODO: There MUST be a more efficient way to do this
+DebateProvider.prototype.removeLink = function(parentId, childId, callback) {
+    var provider = this;
+    this.getCollection(
+        function(error, debate_collection) {
+	          if( error ) callback( error );
+	          else {
+                debate_collection.update(
+                    {_id: parentId}, 
+                    { $pull: { argumentsForIds: childId }},
+                    function(error, updated) {
+                        if (error) {
+                            callback(error);
+                        }
+                        else {
+                            debate_collection.update(
+                                {_id: parentId}, 
+                                { $pull: { argumentsAgainstIds: childId }},
+                                function(error, updated) {
+                                    if (error) {
+                                        callback(error);
+                                    }
+                                    else {
+                                        debate_collection.update(
+                                            {_id: parentId}, 
+                                            { $pull: { answerIds: childId }},
+                                            function(error, updated) {
+                                                if (error) {
+                                                    callback(error);
+                                                }
+                                                else {
+                                                    debate_collection.update(
+                                                        {_id: parentId}, 
+                                                        { $pull: { subdebateIds: childId }},
+                                                        function(error, updated) {
+                                                            if (error) {
+                                                                callback(error);
+                                                            }
+                                                            else {
+                                                                callback(null, updated);
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                    }
+                                });
+                        }
+                    });
+            }
+        });
 };
 
 DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId, callback) {
@@ -576,12 +685,12 @@ DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId
 	              else {
                     debate_collection.findOne({_id: redundantObjId}, function(error, redundant) {
                         if (error) {
-                            callback(error)
+                            callback(error);
                         }
                         else {
                             debate_collection.findOne({_id: survivorObjId}, function(error, survivor) {
                                 if (error) {
-                                    callback(error)
+                                    callback(error);
                                 }
                                 else {
                                     // Merge debates

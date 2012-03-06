@@ -26,6 +26,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @.$("> h4.title a.title-link").bind "click", @toggleInfo
     @.$("> h4.title a.title-link").bind "dblclick", @showEditTitleForm
     @.$("> h4.title a.zoom-link").bind "click", @zoom
+    @.$("> h4.title a.delete-link").bind "click", @delete
     @.$("> .body").bind "dblclick", @showEditDescriptionForm
 
   cancelEvents: =>
@@ -85,8 +86,8 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     else
       containerEl = @.$('> div.answers')
     @model.fetchSubdebates(
-      error: =>
-        alert "Error"
+      error: (debate, jqXHR) =>
+        @handleRemoteError jqXHR, debate
       success: (subdebates, response4) =>
         json = @model.fullJSON()
         json.loggedIn = true
@@ -250,3 +251,11 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
   resolveZoom: =>
     @showView.maximize()
     @showView.focus()
+
+  delete: =>
+    @model.destroy
+      error: (debate, jqXHR) =>
+        @handleRemoteError jqXHR, debate
+      success: =>
+        @close()
+    false

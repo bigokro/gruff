@@ -20,6 +20,15 @@ var classHelper = new ClassHelper();
 Debate = function() {
 };
 
+// Needed to provide compatibility between Backbone and simple Node models
+Debate.prototype.safeGet = function(attribute) {
+    if (typeof(this.get)==="undefined") {
+      return this[attribute];
+    } else {
+      return this.get(attribute);
+    }
+};
+
 Debate.prototype.DebateTypes = {
     DEBATE : "Debate",
     DIALECTIC : "Dialectic"
@@ -45,14 +54,34 @@ Debate.prototype.votesCount = function() {
 
 Debate.prototype.countItems = function(attribute) {
   return this[attribute] && this[attribute] != null ? this[attribute].length : 0;
-}
+};
 
 Debate.prototype.titleLink = function() {
   var href = "/debates/"+this.linkableId();
   var titleStr = this.contributionsCount()+" contributions, "+this.votesCount()+" votes";
   return '<a href="'+href+'" title="'+titleStr+'">'+this.bestTitleText()+'</a>';
+};
 
-}
+Debate.prototype.hasChildren = function() {
+  var fields = [
+    "argumentsForIds"
+    , "argumentsAgainstIds"
+    , "answerIds"
+    , "subdebateIds"
+    , "referenceIds"
+  ];
+  var count = 0;
+  for (i=0; i < fields.length; i++) {
+    var field = this.safeGet(fields[i]);
+    if (typeof(field) !== 'undefined' 
+        && field !== null
+        && typeof(field.length) !== 'undefined'
+        && field.length !== null) {
+        count += field.length;
+    }
+  }
+  return count > 0;
+};
 
 classHelper.augmentClass(Debate, Identifiable);
 classHelper.augmentClass(Debate, Describable);

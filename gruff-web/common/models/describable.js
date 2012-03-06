@@ -15,7 +15,7 @@ Describable.prototype.safeGet = function(attribute) {
     } else {
       return this.get(attribute);
     }
-}
+};
 
 // Needed to provide compatibility between Backbone and simple Node models
 Describable.prototype.safeSet = function(attributes) {
@@ -26,7 +26,7 @@ Describable.prototype.safeSet = function(attributes) {
     } else {
         return this.set(attributes);
     }
-}
+};
 
 Describable.prototype.bestTitle = function() {
     var titles = this.safeGet("titles");
