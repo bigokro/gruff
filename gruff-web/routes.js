@@ -244,7 +244,7 @@ exports.getTagSearch = function(req, res){
       return;
     }
     res.json(tags);
-  })
+  });
 };
 
 exports.getTagCounts = function(req, res){
@@ -253,7 +253,7 @@ exports.getTagCounts = function(req, res){
       return;
     }
     res.json(counts);
-  })
+  });
 };
 
 exports.getJSONDebate = function(req, res) {
@@ -261,7 +261,7 @@ exports.getJSONDebate = function(req, res) {
     if (handleError(req, res, error, debate)) {
       return;
     }
-    res.json(debate);
+    res.json(debate.stripChildren());
   });
 };
 
@@ -295,7 +295,7 @@ exports.postDebate = function(req, res){
       return;
     }
     if (req.xhr) {
-      res.json(docs[0]);
+      res.json(docs[0].stripChildren());
     } else {
       res.redirect('/');
     }
@@ -656,7 +656,7 @@ exports.putDebate = function(req, res){
       return;
     }
     if (req.xhr) {
-      res.json(doc);
+      res.json(doc.stripChildren());
     } else {
       res.redirect('/debates/'+doc._id);
     }
@@ -674,7 +674,7 @@ exports.deleteDebate = function(req, res){
       return;
     }
     if (req.xhr) {
-      res.json(doc);
+      res.json(doc.stripChildren());
     } else {
       res.redirect('/debates/'+doc.parentId);
     }

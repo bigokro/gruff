@@ -83,6 +83,16 @@ Debate.prototype.hasChildren = function() {
   return count > 0;
 };
 
+Debate.prototype.stripChildren = function() {
+  this.argumentsFor = null;
+  this.argumentsAgainst = null;
+  this.answers = null;
+  this.subdebates = null;
+  this.parent = null;
+  this.references = null;
+  return this;
+};
+
 classHelper.augmentClass(Debate, Identifiable);
 classHelper.augmentClass(Debate, Describable);
 
