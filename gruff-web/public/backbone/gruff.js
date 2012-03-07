@@ -1503,14 +1503,16 @@
     ShowView.prototype.setUpMinimizeEvents = function() {
       this.$("> .title").bind("click", this.toggleDescription);
       this.zoomLink.show();
-      return this.setUpZoomLinkDragDrop();
+      this.setUpZoomLinkDragDrop();
+      return this.cancelHandleKeys();
     };
 
     ShowView.prototype.setUpMaximizeEvents = function() {
       this.zoomLink.hide();
       this.$("> .title").unbind("click", this.toggleDescription);
       this.$(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
-      return this.setUpDragDrop();
+      this.setUpDragDrop();
+      return this.setUpHandleKeys();
     };
 
     ShowView.prototype.setUpHandleKeys = function() {
