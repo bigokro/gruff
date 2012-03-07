@@ -656,7 +656,7 @@ exports.putDebate = function(req, res){
       return;
     }
     if (req.xhr) {
-      res.json(doc.stripChildren());
+      res.json(doc);
     } else {
       res.redirect('/debates/'+doc._id);
     }

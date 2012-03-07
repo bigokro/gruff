@@ -484,7 +484,7 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
                 var answerId = doc._id;
 	              debate_collection.update(
 		                {_id: parentId},
-		                {"$push": {answerIds: answerId}},
+		                {"$addToSet": {answerIds: answerId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else callback(null, doc)
@@ -507,7 +507,7 @@ DebateProvider.prototype.addSubdebateToDebate = function(debateId, subdebate, ca
                 var subdebateId = doc._id;
 	              debate_collection.update(
 		                {_id: parentId},
-		                {"$push": {subdebateIds: subdebateId}},
+		                {"$addToSet": {subdebateIds: subdebateId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else callback(null, doc)
@@ -530,7 +530,7 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
                 var argumentId = doc._id;
 	              debate_collection.update(
 		                {_id: parentId},
-		                {"$push": (isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId})},
+		                {"$addToSet": (isFor ? {argumentsForIds: argumentId} : {argumentsAgainstIds: argumentId})},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else {
@@ -553,7 +553,7 @@ DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, ca
                 var referenceId = references[0]._id;
 	              debate_collection.update(
 		                {_id: parentId},
-		                {"$push": {referenceIds: referenceId}},
+		                {"$addToSet": {referenceIds: referenceId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
 		                    else callback(null, debate);
