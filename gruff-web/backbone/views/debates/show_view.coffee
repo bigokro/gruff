@@ -12,6 +12,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @status = "unrendered"
     @subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers"
     @subdebatesSelector = '> .debates-list > .debate-list-item'
+    @newDebateFormViews ||= []
     Gruff.Views.Debates.ShowViews[@model.id] = @
     
   render: ->
@@ -71,7 +72,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$('> div.title').css('margin-left', 5*parents+'%')
 
   showNewDebateForm: (e) =>
-    debateType = $(e.target).attr("debate-type")
+    debateType = e
+    debateType = $(e.target).attr("debate-type") if e.target?
     collection = @model[debateType]
     $(e.target).hide()
     formDiv = $('#'+@model.id+'-new-'+debateType+'-div')
@@ -81,13 +83,13 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'collection': collection
       'attributeType': debateType
     formView.render()
+    @newDebateFormViews.push formView
 
   setUpEvents: =>
     @.$("> .title").bind "click", @toggleDescription
     @.$("> .title").bind "dblclick", @showEditTitleForm
     @.$("> .description").bind "dblclick", @showEditDescriptionForm
     @zoomLink.bind "click", @maximize
-    @setUpHandleKeys()
 
   setUpMinimizeEvents: =>
     @.$("> .title").bind "click", @toggleDescription
@@ -112,13 +114,16 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     if $("input:focus, textarea:focus").length > 0
       return true
     if e.keyCode == 65
-      @.$('[debate-type="argumentsAgainst"], [debate-type="answers"]').click()
+      if @argumentsForView?
+        @showNewDebateForm("argumentsAgainst")
+      else
+        @showNewDebateForm("answers")
       false
     else if e.keyCode == 70
-      @.$('[debate-type="argumentsFor"]').click()
+      @showNewDebateForm("argumentsFor")
       false
     else if e.keyCode == 83
-      @.$('[debate-type="subdebates"]').click()
+      @showNewDebateForm("subdebates")
       false
     else if e.keyCode == 84
       @tagsView.showForm()
@@ -188,20 +193,20 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     e.stopPropagation()
     clearTimeout @clickTimeout
     @clickTimeout = null
-    editTitleView = new Gruff.Views.Debates.EditTitleView
+    @editTitleView = new Gruff.Views.Debates.EditTitleView
       'el': e.target
       'titleEl': e.target
       'model': @model
-    editTitleView.render()
+    @editTitleView.render()
 
   showEditDescriptionForm: (e) =>
     e.preventDefault()
     e.stopPropagation() 
-    editDescriptionView = new Gruff.Views.Debates.EditDescriptionView
+    @editDescriptionView = new Gruff.Views.Debates.EditDescriptionView
       'el': e.target
       'descriptionEl': e.target
       'model': @model
-    editDescriptionView.render()
+    @editDescriptionView.render()
 
   minimize: () =>
     if @isOffScreen
@@ -209,6 +214,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @parentView?.minimize()
     @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide()
     @setUpMinimizeEvents()
+    @tagsView.hideForm()
+    @editTitleView?.close()
+    @editDescriptionView?.close()
+    _.each @newDebateFormViews, (formView) ->
+      formView.close()
+    @newDebateFormViews = []
     @status = "minimized"
     false
 
@@ -268,7 +279,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   close: ->
     @childView?.close()
-    @argumentsForView?.close()
+    @argumensForView?.close()
     @argumentsAgainstView?.close()
     @answersView?.close()
     @subdebatesView?.close()

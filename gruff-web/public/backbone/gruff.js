@@ -1398,6 +1398,7 @@
       this.status = "unrendered";
       this.subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers";
       this.subdebatesSelector = '> .debates-list > .debate-list-item';
+      this.newDebateFormViews || (this.newDebateFormViews = []);
       return Gruff.Views.Debates.ShowViews[this.model.id] = this;
     };
 
@@ -1479,7 +1480,8 @@
 
     ShowView.prototype.showNewDebateForm = function(e) {
       var collection, debateType, formDiv, formView;
-      debateType = $(e.target).attr("debate-type");
+      debateType = e;
+      if (e.target != null) debateType = $(e.target).attr("debate-type");
       collection = this.model[debateType];
       $(e.target).hide();
       formDiv = $('#' + this.model.id + '-new-' + debateType + '-div');
@@ -1489,15 +1491,15 @@
         'collection': collection,
         'attributeType': debateType
       });
-      return formView.render();
+      formView.render();
+      return this.newDebateFormViews.push(formView);
     };
 
     ShowView.prototype.setUpEvents = function() {
       this.$("> .title").bind("click", this.toggleDescription);
       this.$("> .title").bind("dblclick", this.showEditTitleForm);
       this.$("> .description").bind("dblclick", this.showEditDescriptionForm);
-      this.zoomLink.bind("click", this.maximize);
-      return this.setUpHandleKeys();
+      return this.zoomLink.bind("click", this.maximize);
     };
 
     ShowView.prototype.setUpMinimizeEvents = function() {
@@ -1526,13 +1528,17 @@
     ShowView.prototype.handleKeys = function(e) {
       if ($("input:focus, textarea:focus").length > 0) return true;
       if (e.keyCode === 65) {
-        this.$('[debate-type="argumentsAgainst"], [debate-type="answers"]').click();
+        if (this.argumentsForView != null) {
+          this.showNewDebateForm("argumentsAgainst");
+        } else {
+          this.showNewDebateForm("answers");
+        }
         return false;
       } else if (e.keyCode === 70) {
-        this.$('[debate-type="argumentsFor"]').click();
+        this.showNewDebateForm("argumentsFor");
         return false;
       } else if (e.keyCode === 83) {
-        this.$('[debate-type="subdebates"]').click();
+        this.showNewDebateForm("subdebates");
         return false;
       } else if (e.keyCode === 84) {
         this.tagsView.showForm();
@@ -1617,37 +1623,42 @@
     };
 
     ShowView.prototype.showEditTitleForm = function(e) {
-      var editTitleView;
       e.preventDefault();
       e.stopPropagation();
       clearTimeout(this.clickTimeout);
       this.clickTimeout = null;
-      editTitleView = new Gruff.Views.Debates.EditTitleView({
+      this.editTitleView = new Gruff.Views.Debates.EditTitleView({
         'el': e.target,
         'titleEl': e.target,
         'model': this.model
       });
-      return editTitleView.render();
+      return this.editTitleView.render();
     };
 
     ShowView.prototype.showEditDescriptionForm = function(e) {
-      var editDescriptionView;
       e.preventDefault();
       e.stopPropagation();
-      editDescriptionView = new Gruff.Views.Debates.EditDescriptionView({
+      this.editDescriptionView = new Gruff.Views.Debates.EditDescriptionView({
         'el': e.target,
         'descriptionEl': e.target,
         'model': this.model
       });
-      return editDescriptionView.render();
+      return this.editDescriptionView.render();
     };
 
     ShowView.prototype.minimize = function() {
-      var _ref;
+      var _ref, _ref2, _ref3;
       if (this.isOffScreen) this.onScreen();
       if ((_ref = this.parentView) != null) _ref.minimize();
       this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide();
       this.setUpMinimizeEvents();
+      this.tagsView.hideForm();
+      if ((_ref2 = this.editTitleView) != null) _ref2.close();
+      if ((_ref3 = this.editDescriptionView) != null) _ref3.close();
+      _.each(this.newDebateFormViews, function(formView) {
+        return formView.close();
+      });
+      this.newDebateFormViews = [];
       this.status = "minimized";
       return false;
     };
@@ -1720,7 +1731,7 @@
     ShowView.prototype.close = function() {
       var _ref, _ref2, _ref3, _ref4, _ref5;
       if ((_ref = this.childView) != null) _ref.close();
-      if ((_ref2 = this.argumentsForView) != null) _ref2.close();
+      if ((_ref2 = this.argumensForView) != null) _ref2.close();
       if ((_ref3 = this.argumentsAgainstView) != null) _ref3.close();
       if ((_ref4 = this.answersView) != null) _ref4.close();
       if ((_ref5 = this.subdebatesView) != null) _ref5.close();
