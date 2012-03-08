@@ -131,7 +131,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       @argumentsForView?.close()
       @argumentsAgainstView?.close()
     else
-      answersEl = @.$('> div.answers > .debates-list').first()
+      answersEl = @.$('> div.answers').first()
       answersEl.hide()
       @answersView?.close()
 

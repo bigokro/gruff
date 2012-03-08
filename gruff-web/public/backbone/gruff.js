@@ -982,7 +982,7 @@
         if ((_ref = this.argumentsForView) != null) _ref.close();
         return (_ref2 = this.argumentsAgainstView) != null ? _ref2.close() : void 0;
       } else {
-        answersEl = this.$('> div.answers > .debates-list').first();
+        answersEl = this.$('> div.answers').first();
         answersEl.hide();
         return (_ref3 = this.answersView) != null ? _ref3.close() : void 0;
       }
