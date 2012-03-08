@@ -1317,6 +1317,7 @@
     __extends(NewView, _super);
 
     function NewView() {
+      this.handleKeys = __bind(this.handleKeys, this);
       this.save = __bind(this.save, this);
       NewView.__super__.constructor.apply(this, arguments);
     }
@@ -1362,16 +1363,35 @@
       $(this.el).html(this.template(json));
       $(this.el).show();
       Backbone.ModelBinding.bind(this);
+      this.setUpEvents();
       $(this.el).parent().find('.new-debate-link').hide();
       $(this.el).find('#title').focus();
       return this;
     };
 
+    NewView.prototype.setUpEvents = function() {
+      return $(document).bind("keydown", this.handleKeys);
+    };
+
+    NewView.prototype.cancelEvents = function() {
+      return $(document).unbind("keydown", this.handleKeys);
+    };
+
     NewView.prototype.close = function() {
       $(this.el).parent().find('.new-debate-link').show();
       $(this.el).children().remove();
+      this.cancelEvents();
       this.unbind();
       return Backbone.ModelBinding.unbind(this);
+    };
+
+    NewView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 27) {
+        this.close();
+        return false;
+      } else {
+        return true;
+      }
     };
 
     return NewView;
@@ -2094,7 +2114,7 @@
       Backbone.ModelBinding.bind(this);
       this.showFormEl.bind('click', this.showForm);
       this.hideFormEl.bind('click', this.hideForm);
-      this.inputEl.bind('keypress', this.handleKeys);
+      this.inputEl.bind('keydown', this.handleKeys);
       return this.inputEl.autocomplete({
         source: "/rest/tags",
         autoFocus: true
@@ -2102,7 +2122,14 @@
     };
 
     IndexView.prototype.handleKeys = function(e) {
-      if (e.which === 13) return this.save();
+      if (e.keyCode === 13) {
+        this.save();
+        false;
+      } else if (e.keyCode === 27) {
+        this.hideForm();
+        false;
+      }
+      return true;
     };
 
     IndexView.prototype.showForm = function() {
@@ -2114,6 +2141,7 @@
 
     IndexView.prototype.hideForm = function() {
       this.showFormEl.show();
+      this.inputEl.blur();
       this.formEl.hide();
       return false;
     };

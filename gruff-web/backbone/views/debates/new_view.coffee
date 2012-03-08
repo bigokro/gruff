@@ -37,12 +37,27 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     $(@el).html(@template( json ))
     $(@el).show()
     Backbone.ModelBinding.bind @
+    @setUpEvents()
     $(@el).parent().find('.new-debate-link').hide();
     $(@el).find('#title').focus()
     @
 
+  setUpEvents: ->
+    $(document).bind("keydown", @handleKeys)
+
+  cancelEvents: ->
+    $(document).unbind("keydown", @handleKeys)
+
   close: ->
     $(@el).parent().find('.new-debate-link').show();
     $(@el).children().remove()
+    @cancelEvents()
     @unbind()
     Backbone.ModelBinding.unbind @
+
+  handleKeys: (e) =>
+    if e.keyCode == 27
+      @close()
+      false
+    else
+      true

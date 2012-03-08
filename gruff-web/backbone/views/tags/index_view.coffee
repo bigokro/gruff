@@ -34,14 +34,19 @@ class Gruff.Views.Tags.IndexView extends Backbone.View
     Backbone.ModelBinding.bind @
     @showFormEl.bind 'click', @showForm
     @hideFormEl.bind 'click', @hideForm
-    @inputEl.bind 'keypress', @handleKeys
+    @inputEl.bind 'keydown', @handleKeys
     @inputEl.autocomplete
       source: "/rest/tags",
       autoFocus: true
 
   handleKeys: (e) =>
-    if(e.which == 13)
+    if e.keyCode == 13
       @save()
+      false
+    else if e.keyCode == 27
+      @hideForm()
+      false
+    true
 
   showForm: =>
     @formEl.show()
@@ -51,6 +56,7 @@ class Gruff.Views.Tags.IndexView extends Backbone.View
 
   hideForm: =>
     @showFormEl.show()
+    @inputEl.blur()
     @formEl.hide()
     false
 
