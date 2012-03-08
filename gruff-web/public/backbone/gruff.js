@@ -1664,16 +1664,18 @@
     };
 
     ShowView.prototype.maximize = function() {
-      var _this = this;
+      var _ref,
+        _this = this;
       this.status = "maximized";
       if (!this.isDragging()) this.focus();
       if (this.loaded) {
         this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
+        if ((_ref = this.parentView) != null) _ref.childView = this;
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response4) {
-            var json, _ref;
+            var json, _ref2;
             _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
             json = _this.model.fullJSON();
             json.loggedIn = true;
@@ -1681,7 +1683,7 @@
             json.objectid = json.linkableId;
             json.attributetype = "";
             json.attributeid = "";
-            json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
+            json.baseurl = (_ref2 = json.attributetype !== "") != null ? _ref2 : "/" + json.objecttype + "/" + json.objectid + {
               "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
             };
             if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {

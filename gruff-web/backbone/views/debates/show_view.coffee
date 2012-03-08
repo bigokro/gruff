@@ -229,6 +229,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @focus()
     if @loaded
       @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
+      @parentView?.childView = @
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
