@@ -487,7 +487,7 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
 		                {"$addToSet": {answerIds: answerId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, doc)
+		                    else callback(null, doc);
 		                });
             });
         }
@@ -510,7 +510,7 @@ DebateProvider.prototype.addSubdebateToDebate = function(debateId, subdebate, ca
 		                {"$addToSet": {subdebateIds: subdebateId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, doc)
+		                    else callback(null, doc);
 		                });
             });
         }

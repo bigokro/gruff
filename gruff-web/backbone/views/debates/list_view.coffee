@@ -18,7 +18,7 @@ class Gruff.Views.Debates.ListView extends Backbone.View
     _.each @views, (view) ->
       view.close()
 
-  add: (debate) =>
+  add: (debate, collection) =>
     debate.parentCollection = @collection
     itemView = new Gruff.Views.Debates.ListItemView
       'parentEl': @el

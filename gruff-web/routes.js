@@ -384,12 +384,12 @@ exports.postAnswer = function(req, res) {
       date: new Date()
     }],
     date: new Date()
-  }, function( error, docs) {
+  }, function( error, doc) {
     if (handleError(req, res, error, true)) {
       return;
     }
     if (req.xhr) {
-      res.json(docs[0]);
+      res.json(doc);
     } else {
       res.redirect('/debates/' + req.param('_id'));
     }
@@ -412,12 +412,12 @@ exports.postSubdebate = function(req, res) {
       date: new Date()
     }],
     date: new Date()
-  }, function( error, docs) {
+  }, function( error, doc) {
     if (handleError(req, res, error, true)) {
       return;
     }
     if (req.xhr) {
-      res.json(docs[0]);
+      res.json(doc);
     } else {
       res.redirect('/debates/' + req.param('_id'));
     }

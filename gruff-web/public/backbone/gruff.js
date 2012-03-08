@@ -53,6 +53,7 @@
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
       json.titleLink = this.titleLink();
+      json.attributeType = this.attributeType();
       json.DebateTypes = this.DebateTypes;
       return json;
     };
@@ -227,6 +228,23 @@
       vals = {};
       vals[this.getIdListName(debates.type)] = debates.pluck("_id");
       return this.set(vals);
+    };
+
+    Debate.prototype.attributeType = function() {
+      var _ref, _ref2, _ref3, _ref4;
+      if (_.include((_ref = this.parent) != null ? _ref.argumentsFor : void 0, this)) {
+        return "argumentsFor";
+      }
+      if (_.include((_ref2 = this.parent) != null ? _ref2.argumentsAgainst : void 0, this)) {
+        return "argumentsAgainst";
+      }
+      if (_.include((_ref3 = this.parent) != null ? _ref3.answers : void 0, this)) {
+        return "answers";
+      }
+      if (_.include((_ref4 = this.parent) != null ? _ref4.subdebates : void 0, this)) {
+        return "subdebates";
+      }
+      return null;
     };
 
     return Debate;
@@ -1179,7 +1197,7 @@
       });
     };
 
-    ListView.prototype.add = function(debate) {
+    ListView.prototype.add = function(debate, collection) {
       var itemView;
       debate.parentCollection = this.collection;
       itemView = new Gruff.Views.Debates.ListItemView({
@@ -1323,9 +1341,10 @@
       e.preventDefault();
       e.stopPropagation();
       this.model.unset("errors");
-      return this.collection.create(this.model.toJSON(), {
+      this.model.url = this.collection.url;
+      return this.model.save(null, {
         success: function(debate) {
-          _this.model = debate;
+          _this.collection.add(_this.model);
           return _this.close();
         },
         error: function(debate, jqXHR) {
@@ -1343,6 +1362,7 @@
       $(this.el).html(this.template(json));
       $(this.el).show();
       Backbone.ModelBinding.bind(this);
+      $(this.el).parent().find('.new-debate-link').hide();
       $(this.el).find('#title').focus();
       return this;
     };

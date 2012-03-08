@@ -20,9 +20,10 @@ class Gruff.Views.Debates.NewView extends Backbone.View
 
     @model.unset("errors")
 
-    @collection.create(@model.toJSON(),
+    @model.url = @collection.url
+    @model.save(null,
       success: (debate) =>
-        @model = debate
+        @collection.add(@model)
         @close()
       error: (debate, jqXHR) =>
         @handleRemoteError jqXHR, debate
@@ -36,6 +37,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
     $(@el).html(@template( json ))
     $(@el).show()
     Backbone.ModelBinding.bind @
+    $(@el).parent().find('.new-debate-link').hide();
     $(@el).find('#title').focus()
     @
 
