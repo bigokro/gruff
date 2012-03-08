@@ -180,6 +180,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
         @.$('> h4').addClass('over')
         @hoverTimeout = setTimeout( 
           () => 
+            @.$('> h4').removeClass('over')
             @zoom()
           , 500
         )

@@ -1039,6 +1039,7 @@
         over: function(e, ui) {
           _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
+            _this.$('> h4').removeClass('over');
             return _this.zoom();
           }, 500);
         },
