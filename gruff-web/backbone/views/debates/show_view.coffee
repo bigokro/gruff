@@ -43,19 +43,26 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @model.parent = new Gruff.Models.Debate {"_id": parentId}
       @model.parent.fetch
         success: (model, response) =>
-          parentEl = $(@el).clone()
-          parentEl.attr('id', parentId)
-          $(@el).before(parentEl)
-          @parentView = new Gruff.Views.Debates.ShowView 
-            'el': parentEl
-            'model': @model.parent
-            'childView': @
-          @parentView.render()
-          @parentView.minimize()
-          @indentTitle()
+          @createParentView(null)
+    else if @parentView?.model != @model.parent
+      @createParentView(@parentView)
     else
       @parentView?.childView = @
       @indentTitle()
+
+  createParentView: (parentView) =>
+    parentId = @model.get("parentId")
+    parentEl = $(@el).clone()
+    parentEl.attr('id', parentId)
+    $(@el).before(parentEl)
+    @parentView = new Gruff.Views.Debates.ShowView 
+      'el': parentEl
+      'model': @model.parent
+      'childView': @
+      'parentView': @parentView
+    @parentView.render()
+    @parentView.minimize()
+    @indentTitle()
 
   mySubdebateLists: ->
     @.$(@subdebateListsSelector)
@@ -211,6 +218,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   minimize: () =>
     if @isOffScreen
       @onScreen()
+    else if @status == 'hidden'
+      @show()
     @parentView?.minimize()
     @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide()
     @setUpMinimizeEvents()
@@ -225,8 +234,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   maximize: () =>
     @status = "maximized"
-    unless @isDragging()
-      @focus()
+    @focus() unless @isDragging()
     if @loaded
       @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
       @parentView?.childView = @

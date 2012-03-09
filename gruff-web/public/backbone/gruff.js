@@ -1424,6 +1424,7 @@
       this.setUpEvents = __bind(this.setUpEvents, this);
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
       this.indentTitle = __bind(this.indentTitle, this);
+      this.createParentView = __bind(this.createParentView, this);
       this.renderParents = __bind(this.renderParents, this);
       this.renderTags = __bind(this.renderTags, this);
       ShowView.__super__.constructor.apply(this, arguments);
@@ -1471,7 +1472,7 @@
     };
 
     ShowView.prototype.renderParents = function() {
-      var parentId, _ref,
+      var parentId, _ref, _ref2,
         _this = this;
       parentId = this.model.get("parentId");
       if ((parentId != null) && !(this.model.parent != null)) {
@@ -1480,24 +1481,32 @@
         });
         return this.model.parent.fetch({
           success: function(model, response) {
-            var parentEl;
-            parentEl = $(_this.el).clone();
-            parentEl.attr('id', parentId);
-            $(_this.el).before(parentEl);
-            _this.parentView = new Gruff.Views.Debates.ShowView({
-              'el': parentEl,
-              'model': _this.model.parent,
-              'childView': _this
-            });
-            _this.parentView.render();
-            _this.parentView.minimize();
-            return _this.indentTitle();
+            return _this.createParentView(null);
           }
         });
+      } else if (((_ref = this.parentView) != null ? _ref.model : void 0) !== this.model.parent) {
+        return this.createParentView(this.parentView);
       } else {
-        if ((_ref = this.parentView) != null) _ref.childView = this;
+        if ((_ref2 = this.parentView) != null) _ref2.childView = this;
         return this.indentTitle();
       }
+    };
+
+    ShowView.prototype.createParentView = function(parentView) {
+      var parentEl, parentId;
+      parentId = this.model.get("parentId");
+      parentEl = $(this.el).clone();
+      parentEl.attr('id', parentId);
+      $(this.el).before(parentEl);
+      this.parentView = new Gruff.Views.Debates.ShowView({
+        'el': parentEl,
+        'model': this.model.parent,
+        'childView': this,
+        'parentView': this.parentView
+      });
+      this.parentView.render();
+      this.parentView.minimize();
+      return this.indentTitle();
     };
 
     ShowView.prototype.mySubdebateLists = function() {
@@ -1689,7 +1698,11 @@
 
     ShowView.prototype.minimize = function() {
       var _ref, _ref2, _ref3;
-      if (this.isOffScreen) this.onScreen();
+      if (this.isOffScreen) {
+        this.onScreen();
+      } else if (this.status === 'hidden') {
+        this.show();
+      }
       if ((_ref = this.parentView) != null) _ref.minimize();
       this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide();
       this.setUpMinimizeEvents();
