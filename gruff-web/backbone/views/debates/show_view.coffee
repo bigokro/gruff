@@ -59,7 +59,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'el': parentEl
       'model': @model.parent
       'childView': @
-      'parentView': @parentView
+      'parentView': parentView
     @parentView.render()
     @parentView.minimize()
     @indentTitle()
@@ -77,6 +77,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       parents++
       currParent = currParent.parent
     @.$('> div.title').css('margin-left', 5*parents+'%')
+    @childView?.indentTitle()
 
   showNewDebateForm: (e) =>
     debateType = e

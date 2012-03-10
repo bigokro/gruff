@@ -1502,7 +1502,7 @@
         'el': parentEl,
         'model': this.model.parent,
         'childView': this,
-        'parentView': this.parentView
+        'parentView': parentView
       });
       this.parentView.render();
       this.parentView.minimize();
@@ -1518,14 +1518,15 @@
     };
 
     ShowView.prototype.indentTitle = function() {
-      var currParent, parents;
+      var currParent, parents, _ref;
       parents = 0;
       currParent = this.model.parent;
       while (currParent != null) {
         parents++;
         currParent = currParent.parent;
       }
-      return this.$('> div.title').css('margin-left', 5 * parents + '%');
+      this.$('> div.title').css('margin-left', 5 * parents + '%');
+      return (_ref = this.childView) != null ? _ref.indentTitle() : void 0;
     };
 
     ShowView.prototype.showNewDebateForm = function(e) {
