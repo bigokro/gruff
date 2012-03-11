@@ -1,18 +1,6 @@
 <script type="text/x-jquery-tmpl" id="debate-show-template">
   <div class="date"><%= date %></div>
   <div class="title debate-title canvas-title">
-    <%
-      var typeHeading = "";
-      if (attributeType === "argumentsFor") {
-        typeHeading = "For:";
-      } else if (attributeType === "argumentsAgainst") {
-        typeHeading = "Against:";
-      } else if (attributeType === "answers") {
-        typeHeading = "Answer:";
-      } else if (attributeType === "subdebates") {
-        typeHeading = "Sub-debate:";
-      }
-    %>
     <h1>
       <span class="attribute-type"><%= typeHeading %></span>
       <%= bestTitle %>

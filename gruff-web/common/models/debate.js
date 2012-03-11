@@ -34,6 +34,13 @@ Debate.prototype.DebateTypes = {
     DIALECTIC : "Dialectic"
 };
 
+Debate.prototype.AttributeTypes = {
+    ARGUMENT_FOR : "argumentsFor",
+    ARGUMENT_AGAINST : "argumentsAgainst",
+    ANSWER : "answers",
+    SUBDEBATE : "subdebates"
+};
+
 
 Debate.prototype.contributionsCount = function() {
   var describableCount = this.describableContributionsCount();

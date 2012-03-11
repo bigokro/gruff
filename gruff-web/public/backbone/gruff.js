@@ -53,7 +53,7 @@
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
       json.titleLink = this.titleLink();
-      json.attributeType = this.attributeType();
+      json.attributeType = this.get("attributeType");
       json.DebateTypes = this.DebateTypes;
       return json;
     };
@@ -230,23 +230,6 @@
       return this.set(vals);
     };
 
-    Debate.prototype.attributeType = function() {
-      var _ref, _ref2, _ref3, _ref4;
-      if (_.include((_ref = this.parent) != null ? _ref.argumentsFor : void 0, this)) {
-        return "argumentsFor";
-      }
-      if (_.include((_ref2 = this.parent) != null ? _ref2.argumentsAgainst : void 0, this)) {
-        return "argumentsAgainst";
-      }
-      if (_.include((_ref3 = this.parent) != null ? _ref3.answers : void 0, this)) {
-        return "answers";
-      }
-      if (_.include((_ref4 = this.parent) != null ? _ref4.subdebates : void 0, this)) {
-        return "subdebates";
-      }
-      return null;
-    };
-
     return Debate;
 
   })(Backbone.Model);
@@ -256,6 +239,7 @@
     __extends(Debates, _super);
 
     function Debates() {
+      this.add = __bind(this.add, this);
       this.updateUrl = __bind(this.updateUrl, this);
       Debates.__super__.constructor.apply(this, arguments);
     }
@@ -281,6 +265,15 @@
 
     Debates.prototype.updateUrl = function(e) {
       return this.url = "/rest/debates/" + this.parent.id + "/" + this.type;
+    };
+
+    Debates.prototype.add = function(debate) {
+      if (debate.length == null) {
+        debate.set({
+          attributeType: this.type
+        });
+      }
+      return Debates.__super__.add.call(this, debate);
     };
 
     return Debates;
@@ -1407,6 +1400,7 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.getTypeHeading = __bind(this.getTypeHeading, this);
       this.maximize = __bind(this.maximize, this);
       this.minimize = __bind(this.minimize, this);
       this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
@@ -1416,6 +1410,7 @@
       this.disableDragDrop = __bind(this.disableDragDrop, this);
       this.setUpZoomLinkDragDrop = __bind(this.setUpZoomLinkDragDrop, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
+      this.handleModelChanges = __bind(this.handleModelChanges, this);
       this.handleKeys = __bind(this.handleKeys, this);
       this.cancelHandleKeys = __bind(this.cancelHandleKeys, this);
       this.setUpHandleKeys = __bind(this.setUpHandleKeys, this);
@@ -1448,6 +1443,7 @@
       var json;
       json = this.model.fullJSON();
       json.loggedIn = true;
+      json.typeHeading = this.getTypeHeading();
       $(this.el).html(this.template(json));
       this.zoomLink = this.$('> .canvas-title .zoom-link');
       this.renderTags();
@@ -1550,7 +1546,8 @@
       this.$("> .title").bind("click", this.toggleDescription);
       this.$("> .title").bind("dblclick", this.showEditTitleForm);
       this.$("> .description").bind("dblclick", this.showEditDescriptionForm);
-      return this.zoomLink.bind("click", this.maximize);
+      this.zoomLink.bind("click", this.maximize);
+      return this.model.bind("change", this.handleModelChanges);
     };
 
     ShowView.prototype.setUpMinimizeEvents = function() {
@@ -1597,6 +1594,10 @@
       } else {
         return true;
       }
+    };
+
+    ShowView.prototype.handleModelChanges = function(model, options) {
+      return this.$('.attribute-type').html(this.getTypeHeading());
     };
 
     ShowView.prototype.setUpDragDrop = function() {
@@ -1738,6 +1739,7 @@
             json.objectid = json.linkableId;
             json.attributetype = "";
             json.attributeid = "";
+            json.typeHeading = _this.getTypeHeading();
             json.baseurl = (_ref2 = json.attributetype !== "") != null ? _ref2 : "/" + json.objecttype + "/" + json.objectid + {
               "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
             };
@@ -1841,6 +1843,25 @@
         });
         return this.isOffScreen = false;
       }
+    };
+
+    ShowView.prototype.getTypeHeading = function() {
+      var result;
+      result = "";
+      switch (this.model.get("attributeType")) {
+        case "argumentsFor":
+          result = "For:";
+          break;
+        case "argumentsAgainst":
+          result = "Against:";
+          break;
+        case "answers":
+          result = "Answer:";
+          break;
+        case "subdebates":
+          result = "Sub-debate:";
+      }
+      return result;
     };
 
     return ShowView;
@@ -2311,13 +2332,13 @@
           return _this.handleRemoteError(jqXHR);
         },
         success: function() {
-          if (oldCollection.parent !== newCollection.parent) {
-            return debate.save(null, {
-              wait: true,
-              error: function(debate, jqXHR) {
-                return _this.handleRemoteError(jqXHR);
-              },
-              success: function() {
+          return debate.save(null, {
+            wait: true,
+            error: function(debate, jqXHR) {
+              return _this.handleRemoteError(jqXHR);
+            },
+            success: function() {
+              if (oldCollection.parent !== newCollection.parent) {
                 return newCollection.parent.save(null, {
                   wait: true,
                   error: function(debate, jqXHR) {
@@ -2325,8 +2346,8 @@
                   }
                 });
               }
-            });
-          }
+            }
+          });
         }
       });
     },

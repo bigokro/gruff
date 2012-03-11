@@ -26,7 +26,7 @@ class Gruff.Models.Debate extends Backbone.Model
     json.bestDescription = @bestDescriptionText()
     json.linkableId = @linkableId()
     json.titleLink = @titleLink()
-    json.attributeType = @attributeType()
+    json.attributeType = @get("attributeType")
     json.DebateTypes = @DebateTypes
     json
 
@@ -122,13 +122,6 @@ class Gruff.Models.Debate extends Backbone.Model
     vals[@getIdListName(debates.type)] = debates.pluck("_id")
     @set vals
 
-  attributeType: ->
-    return "argumentsFor" if _.include(@parent?.argumentsFor, @)
-    return "argumentsAgainst" if _.include(@parent?.argumentsAgainst, @)
-    return "answers" if _.include(@parent?.answers, @)
-    return "subdebates" if _.include(@parent?.subdebates, @)
-    null
-
 class Gruff.Collections.Debates extends Backbone.Collection
   model: Gruff.Models.Debate
   url: '/rest/debates'
@@ -145,6 +138,12 @@ class Gruff.Collections.Debates extends Backbone.Collection
 
   updateUrl: (e) =>
     @url = "/rest/debates/" + @parent.id + "/" + @type
+
+  add: (debate) =>
+    unless debate.length?
+      debate.set
+        attributeType: @type
+    super debate
 
 classHelper = new exports.ClassHelper()
 classHelper.augmentClass Gruff.Models.Debate, exports.Debate

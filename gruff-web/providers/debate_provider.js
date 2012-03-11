@@ -755,13 +755,13 @@ DebateProvider.prototype.moveTo = function(user, movedId, parentId, moveTo, call
 	      else {
           debate_collection.findOne({_id: movedObjId}, function(error, moved) {
             if (error) {
-              callback(error)
+              callback(error);
             }
             else {
               var oldParentObjId = moved.parentId;
               debate_collection.findOne({_id: oldParentObjId}, function(error, parent) {
                 if (error) {
-                  callback(error)
+                  callback(error);
                 }
                 else {
                   // Save change history
@@ -794,13 +794,15 @@ DebateProvider.prototype.moveTo = function(user, movedId, parentId, moveTo, call
                       addAction = { $addToSet: { argumentsAgainstIds: movedObjId }};
                     } else if (moveTo == 'subdebates') {
                       addAction = { $addToSet: { subdebateIds: movedObjId }};
+                    } else if (moveTo == 'answers') {
+                      addAction = { $addToSet: { answerIds: movedObjId }};
                     }
                     debate_collection.update(
                       {_id: parentObjId}, 
                       addAction,
                       function(error, switched) {
                         if (error) {
-                          callback(error)
+                          callback(error);
                         }
                         else {
                           var targetId = oldParentObjId;
@@ -820,16 +822,16 @@ DebateProvider.prototype.moveTo = function(user, movedId, parentId, moveTo, call
                             updateAction,
                             function(error, updated) {
                               if (error) {
-                                callback(error)
+                                callback(error);
                               }
                               else {
                                 if (oldParentObjId != parentObjId) {
                                   debate_collection.update(
                                     {_id: movedObjId}, 
-                                    { $set: { parentId: parentObjId }},
+                                    { $set: { parentId: parentObjId, attributeType: moveTo }},
                                     function(error, updated) {
                                       if (error) {
-                                        callback(error)
+                                        callback(error);
                                       }
                                       else {
                                         callback(null, augmentDebate(parent));

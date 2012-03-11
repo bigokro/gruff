@@ -290,6 +290,7 @@ exports.postDebate = function(req, res){
       type: req.param('type')
     };
   }
+  debate.attributeType = req.params.attributetype;
   debateProvider.save(debate, function( error, docs) {
     if (handleError(req, res, error, true)) {
       return;
@@ -377,6 +378,7 @@ exports.postAnswer = function(req, res) {
   debateProvider.addAnswerToDebate(parentId, {
     user: req.user.login,
     type: debate.DebateTypes.DIALECTIC,
+    attributeType: Debate.prototype.AttributeTypes.ANSWER,
     desc: req.param('desc'),
     titles: [{
       user: req.user.login,
@@ -406,6 +408,7 @@ exports.postSubdebate = function(req, res) {
     user: req.user.login,
     type: req.param('type'),
     desc: req.param('desc'),
+    attributeType: Debate.prototype.AttributeTypes.SUBDEBATE,
     titles: [{
       user: req.user.login,
       title: req.param('title'),
@@ -432,6 +435,7 @@ exports.postArgument = function(req, res) {
   debateProvider.addArgumentToDebate(parentId, {
     user: req.user.login,
     type: debate.DebateTypes.DIALECTIC,
+    attributeType: req.params.attributetype,
     desc: req.param('desc'),
     titles: [{
       user: req.user.login,

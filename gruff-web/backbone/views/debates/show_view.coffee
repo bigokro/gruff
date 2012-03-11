@@ -18,6 +18,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   render: ->
     json = @model.fullJSON()
     json.loggedIn = true
+    json.typeHeading = @getTypeHeading()
     $(@el).html(@template json)
     @zoomLink = @.$('> .canvas-title .zoom-link')
     @renderTags()
@@ -98,6 +99,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$("> .title").bind "dblclick", @showEditTitleForm
     @.$("> .description").bind "dblclick", @showEditDescriptionForm
     @zoomLink.bind "click", @maximize
+    @model.bind "change", @handleModelChanges
 
   setUpMinimizeEvents: =>
     @.$("> .title").bind "click", @toggleDescription
@@ -138,6 +140,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       false
     else
       true
+
+  handleModelChanges: (model, options) =>
+    @.$('.attribute-type').html @getTypeHeading()
 
   setUpDragDrop: =>
     _this = @
@@ -250,6 +255,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
           json.objectid = json.linkableId
           json.attributetype = ""
           json.attributeid = ""
+          json.typeHeading = @getTypeHeading()
           json.baseurl = (json.attributetype!="") ? "/"+json.objecttype+"/"+json.objectid+"/tag/" : "/"+json.objecttype+"/"+json.objectid+"/"+json.attributetype+"/"+json.attributeid+"/tag/"
   
           if @model.get("type") == @model.DebateTypes.DEBATE
@@ -330,3 +336,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         left: childPos.left
         top: childPos.top + height
       @isOffScreen = false
+
+  getTypeHeading: =>
+    result = ""
+    switch @model.get("attributeType")
+      when "argumentsFor" then result = "For:"
+      when "argumentsAgainst" then result = "Against:"
+      when "answers" then result = "Answer:"
+      when "subdebates" then result = "Sub-debate:"
+    result

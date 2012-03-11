@@ -19,24 +19,21 @@ _.extend(Backbone.View.prototype,
     newCollection.add debate
     debate.parent = newCollection.parent
 
-    oldCollection.parent.save(null,
+    oldCollection.parent.save null,
       wait: true
       error: (debate, jqXHR) =>
         @handleRemoteError(jqXHR)
       success: =>
-        if oldCollection.parent != newCollection.parent
-          debate.save(null,
-            wait: true
-            error: (debate, jqXHR) =>
-              @handleRemoteError(jqXHR)
-            success: =>
-              newCollection.parent.save(null,
+        debate.save null,
+          wait: true
+          error: (debate, jqXHR) =>
+            @handleRemoteError(jqXHR)
+          success: =>
+            if oldCollection.parent != newCollection.parent
+              newCollection.parent.save null,
                 wait: true
                 error: (debate, jqXHR) =>
                   @handleRemoteError(jqXHR)
-              )
-          )
-    )
 
   isDragging: ->
     $('.ui-draggable-dragging').length > 0
