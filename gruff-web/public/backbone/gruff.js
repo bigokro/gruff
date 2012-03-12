@@ -812,6 +812,7 @@
       this.resolveZoom = __bind(this.resolveZoom, this);
       this.zoom = __bind(this.zoom, this);
       this.mergeDebates = __bind(this.mergeDebates, this);
+      this.handleModelChanges = __bind(this.handleModelChanges, this);
       this.setUpDragDrop = __bind(this.setUpDragDrop, this);
       this.openModalView = __bind(this.openModalView, this);
       this.hideDescription = __bind(this.hideDescription, this);
@@ -861,7 +862,8 @@
       this.$("> h4.title a.title-link").bind("dblclick", this.showEditTitleForm);
       this.$("> h4.title a.zoom-link").bind("click", this.zoom);
       this.$("> h4.title a.delete-link").bind("click", this["delete"]);
-      return this.$("> .body").bind("dblclick", this.showEditDescriptionForm);
+      this.$("> .body").bind("dblclick", this.showEditDescriptionForm);
+      return this.model.bind("change", this.handleModelChanges);
     };
 
     ListItemView.prototype.cancelEvents = function() {
@@ -1096,6 +1098,11 @@
       this.$('> h4 a.title-link').droppable("enable");
       this.$('> h4 a.zoom-link').droppable("enable");
       return $(this.el).draggable("enable");
+    };
+
+    ListItemView.prototype.handleModelChanges = function(model, options) {
+      this.$('> h4.title > a.title-link').html(this.model.bestTitleText());
+      return this.$('> .description').html(this.model.bestDescriptionText());
     };
 
     ListItemView.prototype.close = function() {
@@ -1597,7 +1604,9 @@
     };
 
     ShowView.prototype.handleModelChanges = function(model, options) {
-      return this.$('.attribute-type').html(this.getTypeHeading());
+      this.$('> .canvas-title > h1 > .attribute-type').html(this.getTypeHeading());
+      this.$('> .canvas-title > h1 > .title-text').html(this.model.bestTitleText());
+      return this.$('> .description').html(this.model.bestDescriptionText());
     };
 
     ShowView.prototype.setUpDragDrop = function() {

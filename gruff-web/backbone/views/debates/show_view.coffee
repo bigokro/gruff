@@ -142,7 +142,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       true
 
   handleModelChanges: (model, options) =>
-    @.$('.attribute-type').html @getTypeHeading()
+    @.$('> .canvas-title > h1 > .attribute-type').html @getTypeHeading()
+    @.$('> .canvas-title > h1 > .title-text').html @model.bestTitleText()
+    @.$('> .description').html @model.bestDescriptionText()
 
   setUpDragDrop: =>
     _this = @

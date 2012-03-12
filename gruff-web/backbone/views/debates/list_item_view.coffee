@@ -28,6 +28,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @.$("> h4.title a.zoom-link").bind "click", @zoom
     @.$("> h4.title a.delete-link").bind "click", @delete
     @.$("> .body").bind "dblclick", @showEditDescriptionForm
+    @model.bind "change", @handleModelChanges
 
   cancelEvents: =>
     @.$("> h4.title a.title-link").unbind
@@ -220,6 +221,10 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @.$('> h4 a.title-link').droppable("enable")
     @.$('> h4 a.zoom-link').droppable("enable")
     $(@el).draggable("enable")
+
+  handleModelChanges: (model, options) =>
+    @.$('> h4.title > a.title-link').html @model.bestTitleText()
+    @.$('> .description').html @model.bestDescriptionText()
 
   close: ->
     @el.remove()
