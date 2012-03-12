@@ -1,17 +1,17 @@
 <script type="text/x-jquery-tmpl" id="debate-show-template">
   <div class="date"><%= date %></div>
-  <div class="title debate-title canvas-title">
+  <div class="title debate-title canvas-title selectable">
     <h1>
       <span class="attribute-type"><%= typeHeading %></span>
       <span class="title-text"><%= bestTitle %></span>
       <a href="#" class="zoom-link">(zoom)</a>
     </h1>
   </div>
-  <div class="description"><%= bestDescription %></div>
-  <div class="tags"></div>
+  <div class="description selectable"><%= bestDescription %></div>
+  <div class="tags selectable"></div>
   <% if (type === DebateTypes.DIALECTIC) { %>
   <div class="arguments">
-    <div class="for">
+    <div class="for selectable">
       <h3>Arguments in Favor</h3>
       <div class="debates-list"></div>
       <div class="bottom-form">
@@ -23,7 +23,7 @@
       <% } %>
       </div>
     </div>
-    <div class="against">
+    <div class="against selectable">
       <h3>Arguments Against</h3>
       <div class="debates-list"></div>
       <div class="bottom-form">
@@ -39,7 +39,7 @@
   </div>
   <% } %>
   <% if (type === DebateTypes.DEBATE) { %>
-  <div class="answers">
+  <div class="answers selectable">
     <h3>Proposed Answers</h3>
     <div class="debates-list"></div>
     <div class="bottom-form">
@@ -52,7 +52,7 @@
     </div>
   </div>
   <% } %>
-  <div class="subdebates">
+  <div class="subdebates selectable">
     <h3>Sub-debates</h3>
     <div class="debates-list"></div>
     <div class="bottom-form">
@@ -64,5 +64,5 @@
     <% } %>
     </div>
   </div>
-  <div class="comments"></div>
+  <div class="comments selectable"></div>
 </script>

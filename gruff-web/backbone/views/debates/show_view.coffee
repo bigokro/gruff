@@ -138,7 +138,20 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     else if e.keyCode == 84
       @tagsView.showForm()
       false
+    else if e.keyCode == 37
+      @selectLeft()
+      false
+    else if e.keyCode == 38
+      @selectPrevious()
+      false
+    else if e.keyCode == 39
+      @selectRight()
+      false
+    else if e.keyCode == 40
+      @selectNext()
+      false
     else
+      console.log e.keyCode
       true
 
   handleModelChanges: (model, options) =>
@@ -318,6 +331,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @onScreen()
     @childView?.hide()
     @parentView?.minimize()
+    @setSelected()
 
   offScreen: ->
     unless @isOffScreen
@@ -347,3 +361,48 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       when "answers" then result = "Answer:"
       when "subdebates" then result = "Sub-debate:"
     result
+
+  setSelected: =>
+    $('.selected').removeClass('selected')
+    @.$('> .canvas-title').addClass('selected')
+
+  selectPrevious: =>
+    @changeSelection(-1)
+
+  selectNext: =>
+    @changeSelection(1)
+
+  changeSelection: (relativeIdx) =>
+    selected = $('.selected')
+    if selected.length > 0
+      selectables = $('.selectable:visible')
+      nextIdx = 0
+      for selectable, i in selectables
+        if $(selectable).hasClass('selected')
+          nextIdx = i+relativeIdx
+          break
+      next = selectables[nextIdx % selectables.length]
+    else 
+      return @setSelected()
+    selected.removeClass('selected')
+    $(next).addClass('selected')
+
+  selectLeft: =>
+    left = @.$('.for:visible')
+    if left.length > 0 
+      $('.selected').removeClass('selected')
+      left.addClass('selected')
+
+  selectRight: =>
+    right = @.$('.against:visible')
+    if right.length > 0 
+      $('.selected').removeClass('selected')
+      right.addClass('selected')
+
+  selectActions: =>
+    if selected.hasClass('canvas-title')
+      next = selected.siblings('.description')
+    else if selected.hasClass('.description')
+      next = selected.siblings('.tags')
+    else if selected.hasClass('.tags')
+      next = selected.siblings('.tags')

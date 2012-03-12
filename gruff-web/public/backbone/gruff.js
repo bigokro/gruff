@@ -1407,6 +1407,13 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.selectActions = __bind(this.selectActions, this);
+      this.selectRight = __bind(this.selectRight, this);
+      this.selectLeft = __bind(this.selectLeft, this);
+      this.changeSelection = __bind(this.changeSelection, this);
+      this.selectNext = __bind(this.selectNext, this);
+      this.selectPrevious = __bind(this.selectPrevious, this);
+      this.setSelected = __bind(this.setSelected, this);
       this.getTypeHeading = __bind(this.getTypeHeading, this);
       this.maximize = __bind(this.maximize, this);
       this.minimize = __bind(this.minimize, this);
@@ -1598,7 +1605,20 @@
       } else if (e.keyCode === 84) {
         this.tagsView.showForm();
         return false;
+      } else if (e.keyCode === 37) {
+        this.selectLeft();
+        return false;
+      } else if (e.keyCode === 38) {
+        this.selectPrevious();
+        return false;
+      } else if (e.keyCode === 39) {
+        this.selectRight();
+        return false;
+      } else if (e.keyCode === 40) {
+        this.selectNext();
+        return false;
       } else {
+        console.log(e.keyCode);
         return true;
       }
     };
@@ -1823,7 +1843,8 @@
       var _ref, _ref2;
       if (this.isOffScreen) this.onScreen();
       if ((_ref = this.childView) != null) _ref.hide();
-      return (_ref2 = this.parentView) != null ? _ref2.minimize() : void 0;
+      if ((_ref2 = this.parentView) != null) _ref2.minimize();
+      return this.setSelected();
     };
 
     ShowView.prototype.offScreen = function() {
@@ -1871,6 +1892,69 @@
           result = "Sub-debate:";
       }
       return result;
+    };
+
+    ShowView.prototype.setSelected = function() {
+      $('.selected').removeClass('selected');
+      return this.$('> .canvas-title').addClass('selected');
+    };
+
+    ShowView.prototype.selectPrevious = function() {
+      return this.changeSelection(-1);
+    };
+
+    ShowView.prototype.selectNext = function() {
+      return this.changeSelection(1);
+    };
+
+    ShowView.prototype.changeSelection = function(relativeIdx) {
+      var i, next, nextIdx, selectable, selectables, selected, _len;
+      selected = $('.selected');
+      if (selected.length > 0) {
+        selectables = $('.selectable:visible');
+        nextIdx = 0;
+        for (i = 0, _len = selectables.length; i < _len; i++) {
+          selectable = selectables[i];
+          if ($(selectable).hasClass('selected')) {
+            nextIdx = i + relativeIdx;
+            break;
+          }
+        }
+        next = selectables[nextIdx % selectables.length];
+      } else {
+        return this.setSelected();
+      }
+      selected.removeClass('selected');
+      return $(next).addClass('selected');
+    };
+
+    ShowView.prototype.selectLeft = function() {
+      var left;
+      left = this.$('.for:visible');
+      if (left.length > 0) {
+        $('.selected').removeClass('selected');
+        return left.addClass('selected');
+      }
+    };
+
+    ShowView.prototype.selectRight = function() {
+      var right;
+      right = this.$('.against:visible');
+      if (right.length > 0) {
+        $('.selected').removeClass('selected');
+        return right.addClass('selected');
+      }
+    };
+
+    ShowView.prototype.selectActions = function() {
+      var next;
+      if (selected.hasClass('canvas-title')) {
+        return next = selected.siblings('.description');
+      } else if (selected.hasClass('.description')) {
+        return next = selected.siblings('.tags');
+      } else if (selected.hasClass('.tags')) {
+        return next = selected.siblings('.tags');
+      }
     };
 
     return ShowView;

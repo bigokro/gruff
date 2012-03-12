@@ -1,20 +1,20 @@
 <script type="text/x-jquery-tmpl" id="debate-list-item-template">
-  <div class="debate-list-item <%=divClass%>" id="<%=linkableId%>">
+  <div class="debate-list-item selectable <%=divClass%>" id="<%=linkableId%>">
     <h4 class="title">
       <a href="<%=linkableId%>" class="title-link"><%= bestTitle %></a>
       <a href="<%=linkableId%>" class="zoom-link">(zoom)</a>
       <a href="#" class="delete-link">(del)</a>
     </h4>
-    <div class="body description" style="display:none;"><%= bestDescription %></div>
+    <div class="body description selectable" style="display:none;"><%= bestDescription %></div>
   <% if (type === DebateTypes.DIALECTIC) { %>
   <div class="arguments" style="display:none; font-size:80%;">
-    <div class="for">
+    <div class="for selectable">
       <h3>For</h3>
       <div class="debates-list">
       </div>
       <a class="simple-new-debate-link">New entry</a>
     </div>
-    <div class="against">
+    <div class="against selectable">
       <h3>Against</h3>
       <div class="debates-list">
       </div>
@@ -24,13 +24,13 @@
   </div>
   <% } %>
   <% if (type === DebateTypes.DEBATE) { %>
-  <div class="answers" style="display:none; font-size:80%;">
+  <div class="answers selectable" style="display:none; font-size:80%;">
     <h3>Proposed Answers</h3>
     <div class="debates-list">
     </div>
     <a class="simple-new-debate-link">New entry</a>
   </div>
   <% } %>
-    <div class="subdebate-show" id="<%=linkableId%>-subdebate-show" style="display:none;"></div>
+    <div class="subdebate-show selectable" id="<%=linkableId%>-subdebate-show" style="display:none;"></div>
   </div>
 </script>
