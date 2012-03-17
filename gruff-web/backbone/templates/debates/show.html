@@ -16,7 +16,7 @@
       <div class="debates-list"></div>
       <div class="bottom-form">
       <% if (loggedIn) { %>
-        <a class="new-debate-link" debate-type="argumentsFor">Propose Your Own Argument</a>
+        <a class="new-debate-link selected-enter-action" debate-type="argumentsFor">Propose Your Own Argument</a>
         <div id="<%= linkableId %>-new-argumentsFor-div" style="display:none;"></div>
       <% } else { %>
         <a href="/login">Want to contribute? Log in!</a>
@@ -28,7 +28,7 @@
       <div class="debates-list"></div>
       <div class="bottom-form">
       <% if (loggedIn) { %>
-        <a class="new-debate-link" debate-type="argumentsAgainst">Propose Your Own Argument</a>
+        <a class="new-debate-link selected-enter-action" debate-type="argumentsAgainst">Propose Your Own Argument</a>
         <div id="<%= linkableId %>-new-argumentsAgainst-div" style="display:none;"></div>
       <% } else { %>
         <a href="/login">Want to contribute? Log in!</a>
@@ -44,7 +44,7 @@
     <div class="debates-list"></div>
     <div class="bottom-form">
     <% if (loggedIn) { %>
-      <a class="new-debate-link" debate-type="answers">Add a New Answer</a>
+      <a class="new-debate-link selected-enter-action" debate-type="answers">Add a New Answer</a>
       <div id="<%= linkableId %>-new-answers-div" style="display:none;"></div>
     <% } else { %>
       <a href="/login">Want to contribute? Log in!</a>
@@ -57,7 +57,7 @@
     <div class="debates-list"></div>
     <div class="bottom-form">
     <% if (loggedIn) { %>
-      <a class="new-debate-link" debate-type="subdebates">Add a New Sub-debate</a>
+      <a class="new-debate-link selected-enter-action" debate-type="subdebates">Add a New Sub-debate</a>
       <div id="<%= linkableId %>-new-subdebates-div" style="display:none;"></div>
     <% } else { %>
       <a href="/login">Want to contribute? Log in!</a>

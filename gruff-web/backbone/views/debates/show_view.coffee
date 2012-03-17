@@ -123,36 +123,58 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   handleKeys: (e) =>
     if $("input:focus, textarea:focus").length > 0
       return true
-    if e.keyCode == 65
+    if e.keyCode == 65       # a
       if @argumentsForView?
         @showNewDebateForm("argumentsAgainst")
       else
         @showNewDebateForm("answers")
       false
-    else if e.keyCode == 70
+    else if e.keyCode == 70  # f
       @showNewDebateForm("argumentsFor")
       false
-    else if e.keyCode == 83
+    else if e.keyCode == 83  # s
       @showNewDebateForm("subdebates")
       false
-    else if e.keyCode == 84
+    else if e.keyCode == 84  # t
       @tagsView.showForm()
       false
-    else if e.keyCode == 37
+    else if e.keyCode == 90  # z
+      $('.selected > .title > .zoom-link, .selected > h1 > .zoom-link').click()
+      false
+    else if e.keyCode == 68  # d
+      $('.selected > .title > .delete-link').click()
+      false
+    else if e.keyCode == 13  # enter
+      @handleEnter()
+      false
+    else if e.keyCode == 32  # spacebar
+      @handleEnter()
+      false
+    else if e.keyCode == 37  # left arrow
       @selectLeft()
       false
-    else if e.keyCode == 38
+    else if e.keyCode == 38  # up arrow
       @selectPrevious()
       false
-    else if e.keyCode == 39
+    else if e.keyCode == 39  # right arrow
       @selectRight()
       false
-    else if e.keyCode == 40
+    else if e.keyCode == 40  # down arrow
       @selectNext()
       false
     else
       console.log e.keyCode
       true
+
+  handleEnter: ->
+    actionEl = $('.selected .selected-enter-action').first()
+    linkEl = $('.selected > .title > .title-link')
+    if linkEl.length > 0
+      linkEl.click()
+    else if actionEl.length > 0
+      actionEl.click()
+    else
+      $('.selected').dblclick()
 
   handleModelChanges: (model, options) =>
     @.$('> .canvas-title > h1 > .attribute-type').html @getTypeHeading()
@@ -364,7 +386,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   setSelected: =>
     $('.selected').removeClass('selected')
-    @.$('> .canvas-title').addClass('selected')
+    @selectEl @.$('> .canvas-title')
 
   selectPrevious: =>
     @changeSelection(-1)
@@ -381,28 +403,27 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         if $(selectable).hasClass('selected')
           nextIdx = i+relativeIdx
           break
-      next = selectables[nextIdx % selectables.length]
+      nextIdx = (nextIdx + selectables.length) % selectables.length
+      next = selectables[nextIdx]
     else 
       return @setSelected()
     selected.removeClass('selected')
-    $(next).addClass('selected')
+    @selectEl next
 
   selectLeft: =>
-    left = @.$('.for:visible')
+    left = $('.selected').children('.for:visible').first()
     if left.length > 0 
       $('.selected').removeClass('selected')
-      left.addClass('selected')
+      @selectEl left
 
   selectRight: =>
-    right = @.$('.against:visible')
+    right = $('.selected').children('.against:visible').first()
     if right.length > 0 
       $('.selected').removeClass('selected')
-      right.addClass('selected')
+      @selectEl right
 
-  selectActions: =>
-    if selected.hasClass('canvas-title')
-      next = selected.siblings('.description')
-    else if selected.hasClass('.description')
-      next = selected.siblings('.tags')
-    else if selected.hasClass('.tags')
-      next = selected.siblings('.tags')
+  selectEl: (el) =>
+    $(el).addClass('selected')
+    newTop = $(el).position().top - ($(window).height() / 2)
+    $(window).scrollTop newTop
+

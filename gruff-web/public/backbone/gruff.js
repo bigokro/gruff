@@ -1407,7 +1407,7 @@
     __extends(ShowView, _super);
 
     function ShowView() {
-      this.selectActions = __bind(this.selectActions, this);
+      this.selectEl = __bind(this.selectEl, this);
       this.selectRight = __bind(this.selectRight, this);
       this.selectLeft = __bind(this.selectLeft, this);
       this.changeSelection = __bind(this.changeSelection, this);
@@ -1605,6 +1605,18 @@
       } else if (e.keyCode === 84) {
         this.tagsView.showForm();
         return false;
+      } else if (e.keyCode === 90) {
+        $('.selected > .title > .zoom-link, .selected > h1 > .zoom-link').click();
+        return false;
+      } else if (e.keyCode === 68) {
+        $('.selected > .title > .delete-link').click();
+        return false;
+      } else if (e.keyCode === 13) {
+        this.handleEnter();
+        return false;
+      } else if (e.keyCode === 32) {
+        this.handleEnter();
+        return false;
       } else if (e.keyCode === 37) {
         this.selectLeft();
         return false;
@@ -1620,6 +1632,19 @@
       } else {
         console.log(e.keyCode);
         return true;
+      }
+    };
+
+    ShowView.prototype.handleEnter = function() {
+      var actionEl, linkEl;
+      actionEl = $('.selected .selected-enter-action').first();
+      linkEl = $('.selected > .title > .title-link');
+      if (linkEl.length > 0) {
+        return linkEl.click();
+      } else if (actionEl.length > 0) {
+        return actionEl.click();
+      } else {
+        return $('.selected').dblclick();
       }
     };
 
@@ -1896,7 +1921,7 @@
 
     ShowView.prototype.setSelected = function() {
       $('.selected').removeClass('selected');
-      return this.$('> .canvas-title').addClass('selected');
+      return this.selectEl(this.$('> .canvas-title'));
     };
 
     ShowView.prototype.selectPrevious = function() {
@@ -1920,41 +1945,38 @@
             break;
           }
         }
-        next = selectables[nextIdx % selectables.length];
+        nextIdx = (nextIdx + selectables.length) % selectables.length;
+        next = selectables[nextIdx];
       } else {
         return this.setSelected();
       }
       selected.removeClass('selected');
-      return $(next).addClass('selected');
+      return this.selectEl(next);
     };
 
     ShowView.prototype.selectLeft = function() {
       var left;
-      left = this.$('.for:visible');
+      left = $('.selected').children('.for:visible').first();
       if (left.length > 0) {
         $('.selected').removeClass('selected');
-        return left.addClass('selected');
+        return this.selectEl(left);
       }
     };
 
     ShowView.prototype.selectRight = function() {
       var right;
-      right = this.$('.against:visible');
+      right = $('.selected').children('.against:visible').first();
       if (right.length > 0) {
         $('.selected').removeClass('selected');
-        return right.addClass('selected');
+        return this.selectEl(right);
       }
     };
 
-    ShowView.prototype.selectActions = function() {
-      var next;
-      if (selected.hasClass('canvas-title')) {
-        return next = selected.siblings('.description');
-      } else if (selected.hasClass('.description')) {
-        return next = selected.siblings('.tags');
-      } else if (selected.hasClass('.tags')) {
-        return next = selected.siblings('.tags');
-      }
+    ShowView.prototype.selectEl = function(el) {
+      var newTop;
+      $(el).addClass('selected');
+      newTop = $(el).position().top - ($(window).height() / 2);
+      return $(window).scrollTop(newTop);
     };
 
     return ShowView;
