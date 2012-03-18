@@ -1407,6 +1407,7 @@
     __extends(ShowView, _super);
 
     function ShowView() {
+      this.selectClicked = __bind(this.selectClicked, this);
       this.selectEl = __bind(this.selectEl, this);
       this.selectRight = __bind(this.selectRight, this);
       this.selectLeft = __bind(this.selectLeft, this);
@@ -1575,6 +1576,7 @@
       this.zoomLink.hide();
       this.$("> .title").unbind("click", this.toggleDescription);
       this.$(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      this.$(".selectable").bind("click", this.selectClicked);
       this.setUpDragDrop();
       return this.setUpHandleKeys();
     };
@@ -1920,7 +1922,6 @@
     };
 
     ShowView.prototype.setSelected = function() {
-      $('.selected').removeClass('selected');
       return this.selectEl(this.$('> .canvas-title'));
     };
 
@@ -1950,33 +1951,36 @@
       } else {
         return this.setSelected();
       }
-      selected.removeClass('selected');
       return this.selectEl(next);
     };
 
     ShowView.prototype.selectLeft = function() {
-      var left;
-      left = $('.selected').children('.for:visible').first();
-      if (left.length > 0) {
-        $('.selected').removeClass('selected');
-        return this.selectEl(left);
-      }
+      var left, right;
+      right = $('.against.selected:visible');
+      if (!(right.length > 0)) right = $('.selected').parents('.against');
+      left = right.siblings('.for');
+      if (left.length > 0) return this.selectEl(left);
     };
 
     ShowView.prototype.selectRight = function() {
-      var right;
-      right = $('.selected').children('.against:visible').first();
-      if (right.length > 0) {
-        $('.selected').removeClass('selected');
-        return this.selectEl(right);
-      }
+      var left, right;
+      left = $('.for.selected:visible');
+      if (!(left.length > 0)) left = $('.selected').parents('.for');
+      right = left.siblings('.against');
+      if (right.length > 0) return this.selectEl(right);
     };
 
     ShowView.prototype.selectEl = function(el) {
       var newTop;
+      $('.selected').removeClass('selected');
       $(el).addClass('selected');
       newTop = $(el).position().top - ($(window).height() / 2);
       return $(window).scrollTop(newTop);
+    };
+
+    ShowView.prototype.selectClicked = function(e) {
+      this.selectEl(e.currentTarget);
+      return false;
     };
 
     return ShowView;

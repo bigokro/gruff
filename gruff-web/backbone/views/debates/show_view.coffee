@@ -111,6 +111,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @zoomLink.hide()
     @.$("> .title").unbind "click", @toggleDescription
     @.$(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @.$(".selectable").bind "click", @selectClicked
     @setUpDragDrop()
     @setUpHandleKeys()
 
@@ -385,7 +386,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     result
 
   setSelected: =>
-    $('.selected').removeClass('selected')
     @selectEl @.$('> .canvas-title')
 
   selectPrevious: =>
@@ -407,23 +407,30 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       next = selectables[nextIdx]
     else 
       return @setSelected()
-    selected.removeClass('selected')
     @selectEl next
 
   selectLeft: =>
-    left = $('.selected').children('.for:visible').first()
+    right = $('.against.selected:visible')
+    unless right.length > 0 
+      right = $('.selected').parents('.against')
+    left = right.siblings('.for')
     if left.length > 0 
-      $('.selected').removeClass('selected')
       @selectEl left
 
   selectRight: =>
-    right = $('.selected').children('.against:visible').first()
+    left = $('.for.selected:visible')
+    unless left.length > 0 
+      left = $('.selected').parents('.for')
+    right = left.siblings('.against')
     if right.length > 0 
-      $('.selected').removeClass('selected')
       @selectEl right
 
   selectEl: (el) =>
+    $('.selected').removeClass('selected')
     $(el).addClass('selected')
     newTop = $(el).position().top - ($(window).height() / 2)
     $(window).scrollTop newTop
 
+  selectClicked: (e) =>
+    @selectEl e.currentTarget
+    false
