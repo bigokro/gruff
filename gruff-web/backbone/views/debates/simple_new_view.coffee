@@ -20,12 +20,20 @@ class Gruff.Views.Debates.SimpleNewView extends Gruff.Views.Debates.NewView
     @titleEl = $(@formEl).find('> #title')
     @formEl.bind("submit", @save)
     @formEl.bind("blur", @close)
+    @setUpEvents()
     @titleEl.focus()
     @
 
   close: ->
     $(@formEl).remove()
     @parentView.linkEl.show()
+    @cancelEvents()
     @unbind()
     Backbone.ModelBinding.unbind @
+
+  setUpEvents: ->
+    $(@titleEl).bind("keydown", @handleKeys)
+
+  cancelEvents: ->
+    $(@titleEl).unbind("keydown", @handleKeys)
 

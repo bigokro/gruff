@@ -460,5 +460,10 @@ h4.title a.zoom-link, h4.title a.delete-link, .canvas-title a.zoom-link
   font-size .75em
 .ui-icon-zoomin
   background-image url(/images/modal-bg.png) !important
-.selected, .selected > h4, .selected > h4 > a
-  background-image url(/images/modal-bg.png) !important
+.selected, .selected > h4.title, .selected h4.title a
+  background-color #DDD
+.selected, .selected > h4.title
+  border 2px dashed #A3181E
+  padding 0px
+.selected.argument
+  border none

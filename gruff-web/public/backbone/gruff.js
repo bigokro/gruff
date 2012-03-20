@@ -2020,6 +2020,7 @@
       this.titleEl = $(this.formEl).find('> #title');
       this.formEl.bind("submit", this.save);
       this.formEl.bind("blur", this.close);
+      this.setUpEvents();
       this.titleEl.focus();
       return this;
     };
@@ -2027,8 +2028,17 @@
     SimpleNewView.prototype.close = function() {
       $(this.formEl).remove();
       this.parentView.linkEl.show();
+      this.cancelEvents();
       this.unbind();
       return Backbone.ModelBinding.unbind(this);
+    };
+
+    SimpleNewView.prototype.setUpEvents = function() {
+      return $(this.titleEl).bind("keydown", this.handleKeys);
+    };
+
+    SimpleNewView.prototype.cancelEvents = function() {
+      return $(this.titleEl).unbind("keydown", this.handleKeys);
     };
 
     return SimpleNewView;
