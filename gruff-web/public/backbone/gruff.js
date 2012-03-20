@@ -1608,7 +1608,7 @@
         this.tagsView.showForm();
         return false;
       } else if (e.keyCode === 90) {
-        $('.selected > .title > .zoom-link, .selected > h1 > .zoom-link').click();
+        $('.selected > .title > .zoom-link, .selected > .zoom-link').click();
         return false;
       } else if (e.keyCode === 68) {
         $('.selected > .title > .delete-link').click();

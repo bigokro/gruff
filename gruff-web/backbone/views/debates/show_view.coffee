@@ -140,7 +140,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @tagsView.showForm()
       false
     else if e.keyCode == 90  # z
-      $('.selected > .title > .zoom-link, .selected > h1 > .zoom-link').click()
+      $('.selected > .title > .zoom-link, .selected > .zoom-link').click()
       false
     else if e.keyCode == 68  # d
       $('.selected > .title > .delete-link').click()
