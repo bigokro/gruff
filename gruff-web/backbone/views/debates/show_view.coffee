@@ -345,6 +345,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @childView?.hide()
     $(@el).hide()
     @status = "hidden"
+    @cancelHandleKeys()
 
   show: ->
     $(@el).show(200)

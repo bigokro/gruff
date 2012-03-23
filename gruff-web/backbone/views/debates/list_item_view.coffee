@@ -9,6 +9,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @attributeType = options.attributeType
     @dontShowInfo = false
     @model.parent = @model.collection.parent
+    @loaded = false
 
   render: ->
     json = @model.fullJSON()
@@ -63,7 +64,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       @clickTimeout = setTimeout( () =>
         @doToggleInfo(e)
         @clickTimeout = null
-      , 500
+      , 300
       )
       false
 
@@ -82,48 +83,55 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     if @dontShowInfo
       @dontShowInfo = false
       return false
+    if @loaded
+      @renderSublists()
+    else
+      @model.fetchSubdebates(
+        error: (debate, jqXHR) =>
+          @handleRemoteError jqXHR, debate
+        success: (subdebates, response4) =>
+          @renderSublists()
+      )
+
+  renderSublists: =>
     if @model.get("type") == @model.DebateTypes.DIALECTIC
       containerEl = @.$('> div.arguments')
     else
       containerEl = @.$('> div.answers')
-    @model.fetchSubdebates(
-      error: (debate, jqXHR) =>
-        @handleRemoteError jqXHR, debate
-      success: (subdebates, response4) =>
-        json = @model.fullJSON()
-        json.loggedIn = true
-        unless $(@el).hasClass('ui-draggable-dragging')
-          if @model.get("type") == @model.DebateTypes.DIALECTIC
-            @.$('div.arguments').show()
-            forEl = @.$('> div.arguments > .for .debates-list').first()
-            againstEl = @.$('> div.arguments > .against .debates-list').first()
-            @argumentsForView = new Gruff.Views.Debates.MiniListView
-              'el': forEl
-              'collection': @model.argumentsFor
-              'attributeType': 'argumentsFor'
-              'parentView': @
-              'showView': @showView
-            @argumentsForView.render()
-            @argumentsAgainstView = new Gruff.Views.Debates.MiniListView
-              'el': againstEl
-              'collection': @model.argumentsAgainst
-              'attributeType': 'argumentsAgainst'
-              'parentView': @
-              'showView': @showView
-            @argumentsAgainstView.render()
-          else
-            answersEl = @.$('> div.answers > .debates-list').first()
-            answersEl.show()
-            @answersView = new Gruff.Views.Debates.MiniListView
-              'el': answersEl
-              'collection': @model.answers
-              'attributeType': 'answers'
-              'parentView': @
-              'showView': @showView
-            @answersView.render()
-          @showDescription()
-          containerEl.show()
-    )
+    json = @model.fullJSON()
+    json.loggedIn = true
+    unless $(@el).hasClass('ui-draggable-dragging')
+      if @model.get("type") == @model.DebateTypes.DIALECTIC
+        @.$('div.arguments').show()
+        forEl = @.$('> div.arguments > .for .debates-list').first()
+        againstEl = @.$('> div.arguments > .against .debates-list').first()
+        @argumentsForView = new Gruff.Views.Debates.MiniListView
+          'el': forEl
+          'collection': @model.argumentsFor
+          'attributeType': 'argumentsFor'
+          'parentView': @
+          'showView': @showView
+        @argumentsForView.render()
+        @argumentsAgainstView = new Gruff.Views.Debates.MiniListView
+          'el': againstEl
+          'collection': @model.argumentsAgainst
+          'attributeType': 'argumentsAgainst'
+          'parentView': @
+          'showView': @showView
+        @argumentsAgainstView.render()
+      else
+        answersEl = @.$('> div.answers > .debates-list').first()
+        answersEl.show()
+        @answersView = new Gruff.Views.Debates.MiniListView
+          'el': answersEl
+          'collection': @model.answers
+          'attributeType': 'answers'
+          'parentView': @
+          'showView': @showView
+        @answersView.render()
+      @showDescription()
+      containerEl.show(200)
+      @loaded = true
 
   hideInfo: =>
     @hideDescription()
