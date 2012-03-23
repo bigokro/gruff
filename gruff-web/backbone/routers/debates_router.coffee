@@ -1,20 +1,11 @@
 class Gruff.Routers.DebatesRouter extends Backbone.Router
-  initialize: (options) ->
-    @model = new Gruff.Models.Debate {"_id": options.id}
-    @model.fetch
-      success: (model, response) =>
-        @view = new Gruff.Views.Debates.ShowView 'el': $('#'+model.linkableId()), 'model': model
-        @view.render()
-        @view.maximize()
-        
 
   routes:
-    "/new"      : "newDebate"
-    "/index"    : "index"
-    "/:id/edit" : "edit"
-    "/:id"      : "show"
-    "/:id#"     : "show"
-    ".*"        : "index"
+    "canvas/new"      : "newDebate"
+    "canvas/index"    : "index"
+    "canvas/:id/edit" : "edit"
+    "canvas/:id"      : "show"
+    "canvas/.*"       : "index"
 
   newDebate: ->
     @view = new Gruff.Views.Debates.NewView(collection: @debates)
@@ -25,10 +16,12 @@ class Gruff.Routers.DebatesRouter extends Backbone.Router
     $("#debates").html(@view.render().el)
 
   show: (id) ->
-    debate = @debates.get(id)
-
-    @view = new Gruff.Views.Debates.ShowView(model: debate)
-    $("#debates").html(@view.render().el)
+    @model = new Gruff.Models.Debate {"_id": id}
+    @model.fetch
+      success: (model, response) =>
+        @view = new Gruff.Views.Debates.ShowView 'el': $('#'+model.linkableId()), 'model': model
+        @view.render()
+        @view.maximize()
 
   edit: (id) ->
     debate = @debates.get(id)

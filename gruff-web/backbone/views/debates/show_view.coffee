@@ -279,6 +279,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   maximize: () =>
     @status = "maximized"
     @focus() unless @isDragging()
+    router.navigate 'canvas/'+@model.id
     if @loaded
       @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
       @parentView?.childView = @

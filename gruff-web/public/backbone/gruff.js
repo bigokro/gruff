@@ -381,30 +381,12 @@
       DebatesRouter.__super__.constructor.apply(this, arguments);
     }
 
-    DebatesRouter.prototype.initialize = function(options) {
-      var _this = this;
-      this.model = new Gruff.Models.Debate({
-        "_id": options.id
-      });
-      return this.model.fetch({
-        success: function(model, response) {
-          _this.view = new Gruff.Views.Debates.ShowView({
-            'el': $('#' + model.linkableId()),
-            'model': model
-          });
-          _this.view.render();
-          return _this.view.maximize();
-        }
-      });
-    };
-
     DebatesRouter.prototype.routes = {
-      "/new": "newDebate",
-      "/index": "index",
-      "/:id/edit": "edit",
-      "/:id": "show",
-      "/:id#": "show",
-      ".*": "index"
+      "canvas/new": "newDebate",
+      "canvas/index": "index",
+      "canvas/:id/edit": "edit",
+      "canvas/:id": "show",
+      "canvas/.*": "index"
     };
 
     DebatesRouter.prototype.newDebate = function() {
@@ -422,12 +404,20 @@
     };
 
     DebatesRouter.prototype.show = function(id) {
-      var debate;
-      debate = this.debates.get(id);
-      this.view = new Gruff.Views.Debates.ShowView({
-        model: debate
+      var _this = this;
+      this.model = new Gruff.Models.Debate({
+        "_id": id
       });
-      return $("#debates").html(this.view.render().el);
+      return this.model.fetch({
+        success: function(model, response) {
+          _this.view = new Gruff.Views.Debates.ShowView({
+            'el': $('#' + model.linkableId()),
+            'model': model
+          });
+          _this.view.render();
+          return _this.view.maximize();
+        }
+      });
     };
 
     DebatesRouter.prototype.edit = function(id) {
@@ -1790,6 +1780,7 @@
         _this = this;
       this.status = "maximized";
       if (!this.isDragging()) this.focus();
+      router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
         this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
         if ((_ref = this.parentView) != null) _ref.childView = this;
