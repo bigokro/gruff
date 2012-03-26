@@ -303,20 +303,33 @@ exports.postDebate = function(req, res){
   });
 };
 
-exports.postDebateComment = function(req, res) {
+exports.postComment = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  describableProvider.addComment('debates', req.param('_id'), {
-    user: req.user.login,
-    comment: req.param('comment'),
-    date: new Date()
-  } , function( error, docs) {
-    if (handleError(req, res, error, true)) {
-      return;
-    }
-    res.redirect('/debates/' + req.param('_id'));
-  });
+  if (req.xhr) {
+    var comment = req.body;
+    comment.user = req.user.login;
+    comment.date = new Date();
+    var parentId = req.params.objectid;
+  } else {
+    var comment = {
+      comment: req.param('comment'),
+      date: new Date()
+    };
+    var parentId = req.param('_id');
+  }
+  describableProvider.addComment(req.params.objecttype, parentId, comment, 
+    function( error, doc) {
+      if (handleError(req, res, error, true)) {
+        return;
+      }
+      if (req.xhr) {
+        res.json(comment);
+      } else {
+        res.redirect('/'+ req.params.objecttype + '/' + req.param('_id'));
+      }
+    });
 };
 
 exports.postDebateTitle = function(req, res) {
@@ -491,22 +504,6 @@ exports.postReference = function(req, res) {
       return;
     }
     res.redirect('/debates/' + req.param('_id'));
-  });
-};
-
-exports.postReferenceComment = function(req, res) {
-  if (bounceAnonymous(req, res)) {
-    return;
-  }
-  describableProvider.addComment('references', req.param('_id'), {
-    user: req.user.login,
-    comment: req.param('comment'),
-    date: new Date()
-  } , function( error, docs) {
-    if (handleError(req, res, error, true)) {
-      return;
-    }
-    res.redirect('/references/' + req.param('_id'));
   });
 };
 

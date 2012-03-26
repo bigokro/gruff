@@ -95,14 +95,12 @@ app.get('/404', routes.handle404);
 app.get('/500', routes.handle500);
 
 app.post('/debates/new', routes.postDebate);
-app.post('/debates/comments/new', routes.postDebateComment);
 app.post('/debates/titles/new', routes.postDebateTitle);
 app.post('/debates/descriptions/new', routes.postDebateDescription);
 app.post('/debates/answers/new', routes.postAnswer);
 app.post('/debates/subdebates/new', routes.postSubdebate);
 app.post('/debates/arguments/new', routes.postArgument);
 app.post('/references/new', routes.postReference);
-app.post('/references/comments/new', routes.postReferenceComment);
 app.post('/references/titles/new', routes.postReferenceTitle);
 app.post('/references/descriptions/new', routes.postReferenceDescription);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/vote', routes.postDescriptorVote);
@@ -110,6 +108,7 @@ app.get('/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag', routes.postTag);
 app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
+app.post('/:objecttype/comments/new', routes.postComment);
 
 // json
 app.get('/rest/tags', routes.getTagSearch);
@@ -118,6 +117,8 @@ app.get('/rest/:objecttype/:objectid/tag/:tag', routes.getTag);
 app.post('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.put('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.delete('/rest/:objecttype/:objectid/tag/:tag', routes.removeTag);
+app.post('/rest/:objecttype/:objectid/comments', routes.postComment);
+app.post('/rest/:objecttype/:objectid/comments/:date', routes.postComment);
 app.get('/rest/debates', routes.getJSONDebates);
 app.get('/rest/debates/:id', routes.getJSONDebate);
 app.get('/rest/debates/:id/:attributetype', routes.getJSONDebates);

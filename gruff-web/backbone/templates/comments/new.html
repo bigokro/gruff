@@ -1,0 +1,16 @@
+<script type="text/x-jquery-tmpl" id="comment-new-template">
+<form id="new-comment" method="post">
+  <input type="hidden" name="id" value="<%=id%>"/>
+  <fieldset>
+    <legend>Add a comment</legend>
+    <div>
+      <label for="comment">Comment<em>*</em></label>
+      <textarea name="comment" rows="5" id="comment"></textarea>
+    </div>
+    <div id="addCommentSubmit">
+      <input type="submit" value="Send it"/>
+      <input type="button" class="cancel_button" value="Cancel"/>
+    </div>
+  </fieldset>
+</form>
+</script>

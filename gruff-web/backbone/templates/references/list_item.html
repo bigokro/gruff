@@ -1,0 +1,36 @@
+<script type="text/x-jquery-tmpl" id="reference-list-item-template">
+  <div class="reference-list-item selectable <%=divClass%>" id="<%=linkableId%>">
+    <h4 class="title">
+      <a href="<%=linkableId%>" class="title-link"><%= bestTitle %></a>
+      <a href="<%=linkableId%>" class="zoom-link">(zoom)</a>
+      <a href="#" class="delete-link">(del)</a>
+    </h4>
+    <div class="body description selectable" style="display:none;"><%= bestDescription %></div>
+  <% if (type === ReferenceTypes.DIALECTIC) { %>
+  <div class="arguments" style="display:none; font-size:80%;">
+    <div class="for selectable">
+      <h3>For</h3>
+      <div class="references-list">
+      </div>
+      <a class="simple-new-reference-link selected-enter-action">New entry</a>
+    </div>
+    <div class="against selectable">
+      <h3>Against</h3>
+      <div class="references-list">
+      </div>
+      <a class="simple-new-reference-link selected-enter-action">New entry</a>
+    </div>
+    <div class="clear"></div>
+  </div>
+  <% } %>
+  <% if (type === ReferenceTypes.REFERENCE) { %>
+  <div class="answers selectable" style="display:none; font-size:80%;">
+    <h3>Proposed Answers</h3>
+    <div class="references-list">
+    </div>
+    <a class="simple-new-reference-link">New entry</a>
+  </div>
+  <% } %>
+    <div class="subreference-show selectable" id="<%=linkableId%>-subcommen-show" style="display:none;"></div>
+  </div>
+</script>

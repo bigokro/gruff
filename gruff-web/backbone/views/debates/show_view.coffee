@@ -22,6 +22,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     $(@el).html(@template json)
     @zoomLink = @.$('> .canvas-title .zoom-link')
     @renderTags()
+    @renderComments()
     @renderParents()
     @setUpEvents()
     @zoomLink.hide()
@@ -37,6 +38,16 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       collection: @model.tags
       parentView: @
     @tagsView.render()
+
+  renderComments: =>
+    @model.comments = new Gruff.Collections.Comments
+      parent: @model
+    @model.comments.reset @model.get("comments")
+    @commentsView = new Gruff.Views.Comments.IndexView
+      el: @.$('> .comments')
+      collection: @model.comments
+      parentView: @
+    @commentsView.render()
 
   renderParents: =>
     parentId = @model.get("parentId")
@@ -94,6 +105,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
     @newDebateFormViews.push formView
 
+  showNewCommentForm: (e) =>
+    $('.new-comment-link:visible').click()
+
   setUpEvents: =>
     @.$("> .title").bind "click", @toggleDescription
     @.$("> .title").bind "dblclick", @showEditTitleForm
@@ -129,6 +143,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         @showNewDebateForm("argumentsAgainst")
       else
         @showNewDebateForm("answers")
+      false
+    else if e.keyCode == 67  # c
+      @showNewCommentForm()
       false
     else if e.keyCode == 70  # f
       @showNewDebateForm("argumentsFor")
