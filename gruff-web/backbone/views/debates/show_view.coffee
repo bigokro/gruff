@@ -282,7 +282,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     else if @status == 'hidden'
       @show()
     @parentView?.minimize()
-    @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide()
+    @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide()
     @setUpMinimizeEvents()
     @tagsView.hideForm()
     @editTitleView?.close()
@@ -298,13 +298,13 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @focus() unless @isDragging()
     router.navigate 'canvas/'+@model.id
     if @loaded
-      @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
+      @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
       @parentView?.childView = @
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
         success: (subdebates, response4) =>
-          @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200)
+          @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
           json = @model.fullJSON()
           json.loggedIn = true
           json.objecttype = "debates"

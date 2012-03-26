@@ -2373,7 +2373,7 @@
         this.show();
       }
       if ((_ref = this.parentView) != null) _ref.minimize();
-      this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').hide();
+      this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide();
       this.setUpMinimizeEvents();
       this.tagsView.hideForm();
       if ((_ref2 = this.editTitleView) != null) _ref2.close();
@@ -2393,14 +2393,14 @@
       if (!this.isDragging()) this.focus();
       router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
-        this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
+        this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
         if ((_ref = this.parentView) != null) _ref.childView = this;
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response4) {
             var json, _ref2;
-            _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments').show(200);
+            _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
             json = _this.model.fullJSON();
             json.loggedIn = true;
             json.objecttype = "debates";
