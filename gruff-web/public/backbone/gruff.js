@@ -3018,13 +3018,11 @@
     };
 
     ShowView.prototype.showDelete = function() {
-      this.deleteEl.show();
-      return $(this.el).removeClass('spacer');
+      return this.$('a.delete-tag').addClass('hover');
     };
 
     ShowView.prototype.hideDelete = function() {
-      this.deleteEl.hide();
-      return $(this.el).addClass('spacer');
+      return this.$('a.delete-tag').removeClass('hover');
     };
 
     ShowView.prototype.removeTag = function() {

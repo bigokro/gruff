@@ -23,12 +23,10 @@ class Gruff.Views.Tags.ShowView extends Backbone.View
     @deleteEl.bind("click", @removeTag)
 
   showDelete: =>
-    @deleteEl.show()
-    $(@el).removeClass('spacer')
+    @.$('a.delete-tag').addClass('hover')
 
   hideDelete: =>
-    @deleteEl.hide()
-    $(@el).addClass('spacer')
+    @.$('a.delete-tag').removeClass('hover')
 
   removeTag: =>
     @model.destroy(
