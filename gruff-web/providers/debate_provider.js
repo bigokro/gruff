@@ -556,7 +556,7 @@ DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, ca
 		                {"$addToSet": {referenceIds: referenceId}},
 		                function(error, debate){
 		                    if( error ) callback(error);
-		                    else callback(null, debate);
+		                    else callback(null, references[0]);
 		                });
             });
         }

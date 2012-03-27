@@ -1,8 +1,8 @@
 <script type="text/x-jquery-tmpl" id="references-index-template">
     <h3>References</h3>
     <% if (loggedIn) { %>
-      <a class="new-reference-link selected-enter-action" debate-type="answers">Add a reference</a>
-      <div id="<%= linkableId %>-new-reference-div" style="display:none;"></div>
+      <a class="new-reference-link selected-enter-action">Add a reference</a>
+      <div id="<%= id %>-new-reference-div" style="display:none;"></div>
     <% } else { %>
       <a href="/login">Want to contribute? Log in!</a>
     <% } %>

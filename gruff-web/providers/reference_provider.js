@@ -47,28 +47,28 @@ ReferenceProvider.prototype.findByObjID = function(objId, callback) {
   var provider = this;
   this.getCollection(function(error, reference_collection) {
     if (error) {
-      callback(error)
+      callback(error);
     }
     else {
       reference_collection.findOne({_id: objId}, function(error, result) {
         if (error) {
-          callback(error)
+          callback(error);
         }
         else if (!result) {
-          callback(null, null)
+          callback(null, null);
         }
         else {
           // Pre-load the debate reference
           provider.getDebateCollection(function(error, debate_collection) {
             if (error) {
-              callback(error)
+              callback(error);
             }
             debate_collection.findOne({_id: result.debateId}, function(error, debate) {
               if (error) {
-                callback(error)
+                callback(error);
               }
               else if (!result) {
-                callback(null, null)
+                callback(null, null);
               }
               else {
                 result.debate = debate;
@@ -88,11 +88,11 @@ ReferenceProvider.prototype.findAllById = function(debate, ids, callback) {
         objIds[objIds.length] = reference_collection.db.bson_serializer.ObjectID.createFromHexString(id);
     }
     this.findAllByObjID(debate, objIds, callback);
-}
+};
 
 ReferenceProvider.prototype.findAllByObjID = function(debate, objIds, callback) {
     this.getCollection(function(error, reference_collection) {
-	      if( error ) callback(error)
+	      if( error ) callback(error);
 	      else {
             if (objIds == null || objIds === undefined) callback(null, null);
             else if (objIds.length == 0) callback(null, []);
@@ -111,10 +111,32 @@ ReferenceProvider.prototype.findAllByObjID = function(debate, objIds, callback) 
     });
 };
 
+ReferenceProvider.prototype.findAllByDebateId = function(debateId, callback) {
+  provider = this;
+  provider.getDebateCollection(function(error, debate_collection) {
+    if (error) {
+      callback(error);
+    } else {
+      var objId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+      debate_collection.findOne({_id: objId}, function(error, debate) {
+        if (error) {
+          callback(error);
+        }
+        else if (!debate || debate === null) {
+          callback(null, null);
+        }
+        else {
+          provider.findAllByObjID(debate, debate.referenceIds, callback);
+        }
+      });
+    }
+  });
+};
+
 ReferenceProvider.prototype.findByTag = function(tag, callback) {
   this.getCollection(function(error, reference_collection) {
     if (error) {
-      callback(error)
+      callback(error);
     }
     else {
       reference_collection.find({ tags: tag }).toArray(function(error, results) {
@@ -242,7 +264,7 @@ function augmentReference(result) {
 }
 
 function augmentReferences(debate, results) {
-  if (!results || results == null) return null;
+  if (!results || results == null) return [];
   var references = [];
   for (var i=0; i < results.length; i++) {
 		references[i] = augmentReference(results[i]);

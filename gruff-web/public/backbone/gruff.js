@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -371,7 +371,6 @@
     __extends(Reference, _super);
 
     function Reference() {
-      this.initializeReferences = __bind(this.initializeReferences, this);
       Reference.__super__.constructor.apply(this, arguments);
     }
 
@@ -387,12 +386,7 @@
     };
 
     Reference.prototype.initialize = function(options) {
-      this.normalize();
-      this.answers = this.initializeReferences("answers");
-      this.argumentsFor = this.initializeReferences("argumentsFor");
-      this.argumentsAgainst = this.initializeReferences("argumentsAgainst");
-      this.subreferences = this.initializeReferences("subreferences");
-      this.parentCollection = options.parentCollection;
+      this.collection = options.collection;
       this.updateGlobalHash();
       return this.bind('change', this.updateGlobalHash);
     };
@@ -404,182 +398,15 @@
       if (json.bestTitle == null) json.bestTitle = "(no title)";
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
-      json.titleLink = this.titleLink();
-      json.attributeType = this.get("attributeType");
-      json.ReferenceTypes = this.ReferenceTypes;
       return json;
-    };
-
-    Reference.prototype.normalize = function() {
-      if (typeof (this.get("answerIds")) === 'undefined' || this.get("answerIds") === null) {
-        this.set({
-          answerIds: []
-        });
-      }
-      if (typeof (this.get("argumentsForIds")) === 'undefined' || this.get("argumentsForIds") === null) {
-        this.set({
-          argumentsForIds: []
-        });
-      }
-      if (typeof (this.get("argumentsAgainstIds")) === 'undefined' || this.get("argumentsAgainstIds") === null) {
-        this.set({
-          argumentsAgainstIds: []
-        });
-      }
-      if (typeof (this.get("subreferenceIds")) === 'undefined' || this.get("subreferenceIds") === null) {
-        return this.set({
-          subreferenceIds: []
-        });
-      }
-    };
-
-    Reference.prototype.initializeReferences = function(type) {
-      var references;
-      references = new Gruff.Collections.References;
-      references.url = "/rest/references/" + this.id + "/" + type;
-      references.setParent(this);
-      references.type = type;
-      references.bind("add", this.makeAddToCollectionEvent(references));
-      references.bind("remove", this.makeRemoveFromCollectionEvent(references));
-      return references;
     };
 
     Reference.prototype.updateGlobalHash = function() {
       return Gruff.Models.References[this.linkableId()] = this;
     };
 
-    Reference.prototype.fetchSubreferences = function(options) {
-      var _this = this;
-      return this.answers.fetch({
-        success: function(answers, response1) {
-          return _this.argumentsFor.fetch({
-            success: function(argumentsFor, response2) {
-              return _this.argumentsAgainst.fetch({
-                success: function(argumentsAgainst, response3) {
-                  return _this.subreferences.fetch({
-                    success: function(subreferences, response4) {
-                      if (options != null) {
-                        if (typeof options.success === "function") {
-                          options.success(subreferences, response4);
-                        }
-                      }
-                      return _this.trigger("fetched-subreferences");
-                    }
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-    };
-
     Reference.prototype.findReference = function(id) {
-      var root;
       return Gruff.Models.References[id];
-      root = this.findRootReference();
-      return root.findSubreference(id);
-    };
-
-    Reference.prototype.findRootReference = function() {
-      if (this.parent != null) {
-        return this.parent.findRootReference();
-      } else {
-        return this;
-      }
-    };
-
-    Reference.prototype.findSubreference = function(id) {
-      var result;
-      if (this.linkableId() === id) return this;
-      result = null;
-      _.each([this.answers, this.argumentsFor, this.argumentsAgainst, this.subreferences], function(coll) {
-        if (coll !== null && result === null) {
-          return coll.each(function(reference) {
-            if (result === null) return result = reference.findSubreference(id);
-          });
-        }
-      });
-      return result;
-    };
-
-    Reference.prototype.getCollectionByName = function(nameStr) {
-      var result,
-        _this = this;
-      result = null;
-      _.each(nameStr.split(" "), function(name) {
-        switch (name) {
-          case "answer":
-          case "answers":
-            return result = _this.answers;
-          case "argumentFor":
-          case "argumentsFor":
-          case "for":
-            return result = _this.argumentsFor;
-          case "argumentAgainst":
-          case "argumentsAgainst":
-          case "against":
-            return result = _this.argumentsAgainst;
-          case "subreference":
-          case "subreferences":
-            return result = _this.subreferences;
-        }
-      });
-      return result;
-    };
-
-    Reference.prototype.getIdListName = function(nameStr) {
-      var result,
-        _this = this;
-      result = null;
-      _.each(nameStr.split(" "), function(name) {
-        switch (name) {
-          case "answer":
-          case "answers":
-            return result = "answerIds";
-          case "argumentFor":
-          case "argumentsFor":
-          case "for":
-            return result = "argumentsForIds";
-          case "argumentAgainst":
-          case "argumentsAgainst":
-          case "against":
-            return result = "argumentsAgainstIds";
-          case "subreference":
-          case "subreferences":
-            return result = "subreferenceIds";
-        }
-      });
-      return result;
-    };
-
-    Reference.prototype.makeAddToCollectionEvent = function(coll) {
-      var _this = this;
-      return function(reference) {
-        reference.parentCollection = coll;
-        reference.set({
-          parentId: _this.linkableId()
-        });
-        return _this.updateReferenceIds(coll);
-      };
-    };
-
-    Reference.prototype.makeRemoveFromCollectionEvent = function(coll) {
-      var _this = this;
-      return function(reference) {
-        reference.parentCollection = null;
-        reference.set({
-          parentId: null
-        });
-        return _this.updateReferenceIds(coll);
-      };
-    };
-
-    Reference.prototype.updateReferenceIds = function(references) {
-      var vals;
-      vals = {};
-      vals[this.getIdListName(references.type)] = references.pluck("_id");
-      return this.set(vals);
     };
 
     return Reference;
@@ -591,7 +418,6 @@
     __extends(References, _super);
 
     function References() {
-      this.add = __bind(this.add, this);
       this.updateUrl = __bind(this.updateUrl, this);
       References.__super__.constructor.apply(this, arguments);
     }
@@ -612,20 +438,12 @@
 
     References.prototype.setParent = function(parent) {
       this.parent = parent;
+      this.updateUrl();
       return this.parent.bind("change", this.updateUrl);
     };
 
     References.prototype.updateUrl = function(e) {
-      return this.url = "/rest/references/" + this.parent.id + "/" + this.type;
-    };
-
-    References.prototype.add = function(reference) {
-      if (reference.length == null) {
-        reference.set({
-          attributeType: this.type
-        });
-      }
-      return References.__super__.add.call(this, reference);
+      return this.url = "/rest/debates/" + this.parent.id + "/references";
     };
 
     return References;
@@ -2021,11 +1839,13 @@
       this.setUpMinimizeEvents = __bind(this.setUpMinimizeEvents, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       this.showNewCommentForm = __bind(this.showNewCommentForm, this);
+      this.showNewReferenceForm = __bind(this.showNewReferenceForm, this);
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
       this.indentTitle = __bind(this.indentTitle, this);
       this.createParentView = __bind(this.createParentView, this);
       this.renderParents = __bind(this.renderParents, this);
       this.renderComments = __bind(this.renderComments, this);
+      this.renderReferences = __bind(this.renderReferences, this);
       this.renderTags = __bind(this.renderTags, this);
       ShowView.__super__.constructor.apply(this, arguments);
     }
@@ -2052,6 +1872,7 @@
       $(this.el).html(this.template(json));
       this.zoomLink = this.$('> .canvas-title .zoom-link');
       this.renderTags();
+      this.renderReferences();
       this.renderComments();
       this.renderParents();
       this.setUpEvents();
@@ -2071,6 +1892,22 @@
         parentView: this
       });
       return this.tagsView.render();
+    };
+
+    ShowView.prototype.renderReferences = function() {
+      var _this = this;
+      this.model.references = new Gruff.Collections.References;
+      this.model.references.setParent(this.model);
+      return this.model.references.fetch({
+        success: function(references, response) {
+          _this.referencesView = new Gruff.Views.References.IndexView({
+            el: _this.$('> .references'),
+            collection: _this.model.references,
+            parentView: _this
+          });
+          return _this.referencesView.render();
+        }
+      });
     };
 
     ShowView.prototype.renderComments = function() {
@@ -2161,6 +1998,10 @@
       return this.newDebateFormViews.push(formView);
     };
 
+    ShowView.prototype.showNewReferenceForm = function(e) {
+      return $('.new-reference-link:visible').click();
+    };
+
     ShowView.prototype.showNewCommentForm = function(e) {
       return $('.new-comment-link:visible').click();
     };
@@ -2211,6 +2052,9 @@
         return false;
       } else if (e.keyCode === 70) {
         this.showNewDebateForm("argumentsFor");
+        return false;
+      } else if (e.keyCode === 82) {
+        this.showNewReferenceForm();
         return false;
       } else if (e.keyCode === 83) {
         this.showNewDebateForm("subdebates");
@@ -2398,7 +2242,7 @@
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
-          success: function(subdebates, response4) {
+          success: function(subdebates, response) {
             var json, _ref2;
             _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
             json = _this.model.fullJSON();
@@ -2835,7 +2679,263 @@
 
   })(Gruff.Views.ModalView);
 
-  (_base22 = Gruff.Views).Tags || (_base22.Tags = {});
+  (_base22 = Gruff.Views).References || (_base22.References = {});
+
+  Gruff.Views.References.IndexView = (function(_super) {
+
+    __extends(IndexView, _super);
+
+    function IndexView() {
+      this.remove = __bind(this.remove, this);
+      this.add = __bind(this.add, this);
+      this.close = __bind(this.close, this);
+      this.hideForm = __bind(this.hideForm, this);
+      this.showForm = __bind(this.showForm, this);
+      IndexView.__super__.constructor.apply(this, arguments);
+    }
+
+    IndexView.prototype.initialize = function(options) {
+      this.template = _.template($('#references-index-template').text());
+      this.collection.bind('add', this.add);
+      this.collection.bind('remove', this.remove);
+      this.parentView = options.parentView;
+      return this.parentModel = this.collection.parent;
+    };
+
+    IndexView.prototype.render = function() {
+      var json,
+        _this = this;
+      json = {};
+      json.id = this.parentModel.id;
+      json.loggedIn = true;
+      $(this.el).html(this.template(json));
+      this.showFormEl = this.$(".new-reference-link");
+      this.formEl = $('#' + this.parentModel.id + '-new-reference-div');
+      this.views = [];
+      this.collection.each(function(reference) {
+        return _this.add(reference);
+      });
+      this.initializeForm();
+      this.setUpEvents();
+      this.hideForm();
+      return this;
+    };
+
+    IndexView.prototype.initializeForm = function() {
+      this.model = new this.collection.model();
+      this.model.collection = this.collection;
+      return this.model.parent = this.parentModel;
+    };
+
+    IndexView.prototype.setUpEvents = function() {
+      return this.showFormEl.bind('click', this.showForm);
+    };
+
+    IndexView.prototype.showForm = function() {
+      this.showFormEl.hide();
+      this.formEl.show();
+      this.formView = new Gruff.Views.References.NewView({
+        'el': this.formEl,
+        'collection': this.collection
+      });
+      this.formView.render();
+      return false;
+    };
+
+    IndexView.prototype.hideForm = function() {
+      var _ref;
+      if ((_ref = this.formView) != null) _ref.close();
+      this.showFormEl.show();
+      return false;
+    };
+
+    IndexView.prototype.close = function() {
+      _.each(this.views, function(view) {
+        return view.close();
+      });
+      $(this.el).html('');
+      return this.unbind();
+    };
+
+    IndexView.prototype.add = function(reference) {
+      var referenceView;
+      reference.collection = this.collection;
+      referenceView = new Gruff.Views.References.ListItemView({
+        'parentEl': this.el,
+        'model': reference,
+        'parentView': this
+      });
+      this.views.push(referenceView);
+      return referenceView.render();
+    };
+
+    IndexView.prototype.remove = function(reference) {
+      var viewToRemove,
+        _this = this;
+      viewToRemove = _.select(this.views, function(view) {
+        var _ref;
+        return ((_ref = view.model) != null ? _ref.name : void 0) === reference.name;
+      })[0];
+      this.views = _.without(this.views, viewToRemove);
+      return viewToRemove.close();
+    };
+
+    return IndexView;
+
+  })(Backbone.View);
+
+  (_base23 = Gruff.Views).References || (_base23.References = {});
+
+  Gruff.Views.References.ListItemView = (function(_super) {
+
+    __extends(ListItemView, _super);
+
+    function ListItemView() {
+      this.close = __bind(this.close, this);
+      this.removeReference = __bind(this.removeReference, this);
+      this.hideDelete = __bind(this.hideDelete, this);
+      this.showDelete = __bind(this.showDelete, this);
+      this.setUpEvents = __bind(this.setUpEvents, this);
+      ListItemView.__super__.constructor.apply(this, arguments);
+    }
+
+    ListItemView.prototype.initialize = function(options) {
+      var _ref;
+      this.template = _.template($('#references-list-item-template').text());
+      this.parentEl = options.parentEl;
+      this.parentView = options.parentView;
+      this.parentModel = options.parentModel;
+      return this.parentModel || (this.parentModel = (_ref = this.parentView) != null ? _ref.parentModel : void 0);
+    };
+
+    ListItemView.prototype.render = function() {
+      var json;
+      json = this.model.fullJSON();
+      json.loggedIn = true;
+      $(this.parentEl).find('h3').after(this.template(json));
+      this.el = $(this.parentEl).find('#' + this.model.id.replace(" ", "\\ ") + '-reference');
+      this.deleteEl = this.$("> a.delete-reference");
+      this.setUpEvents();
+      return this;
+    };
+
+    ListItemView.prototype.setUpEvents = function() {
+      return this.deleteEl.bind("click", this.removeReference);
+    };
+
+    ListItemView.prototype.showDelete = function() {
+      return this.deleteEl.show();
+    };
+
+    ListItemView.prototype.hideDelete = function() {
+      return this.deleteEl.hide();
+    };
+
+    ListItemView.prototype.removeReference = function() {
+      var _this = this;
+      return this.model.destroy({
+        success: function(reference) {
+          return _this.close();
+        },
+        error: function(reference, jqXHR) {
+          return _this.handleRemoteError(jqXHR, reference);
+        }
+      });
+    };
+
+    ListItemView.prototype.close = function() {
+      this.el.remove();
+      return this.unbind();
+    };
+
+    return ListItemView;
+
+  })(Backbone.View);
+
+  (_base24 = Gruff.Views).References || (_base24.References = {});
+
+  Gruff.Views.References.NewView = (function(_super) {
+
+    __extends(NewView, _super);
+
+    function NewView() {
+      this.handleKeys = __bind(this.handleKeys, this);
+      this.save = __bind(this.save, this);
+      NewView.__super__.constructor.apply(this, arguments);
+    }
+
+    NewView.prototype.initialize = function(options) {
+      var _this = this;
+      this.template = _.template($('#reference-new-template').text());
+      this.attributeType = options.attributeType;
+      this.model = new this.collection.model();
+      this.model.collection = this.collection;
+      this.parentModel = this.collection.parent;
+      return this.model.bind("change:errors", function() {
+        return _this.render();
+      });
+    };
+
+    NewView.prototype.save = function(e) {
+      var _this = this;
+      e.preventDefault();
+      e.stopPropagation();
+      this.model.unset("errors");
+      return this.model.save(null, {
+        success: function(reference) {
+          _this.collection.add(reference);
+          return _this.close();
+        },
+        error: function(reference, jqXHR) {
+          return _this.handleRemoteError(jqXHR, reference);
+        }
+      });
+    };
+
+    NewView.prototype.render = function() {
+      var json;
+      json = this.model.fullJSON();
+      $(this.el).html(this.template(json));
+      $(this.el).show();
+      Backbone.ModelBinding.bind(this);
+      this.setUpEvents();
+      $(this.el).parent().find('.new-reference-link').hide();
+      $(this.el).find('input').first().focus();
+      return this;
+    };
+
+    NewView.prototype.setUpEvents = function() {
+      $(document).bind("keydown", this.handleKeys);
+      this.$("input[type='submit']:visible").bind('click', this.save);
+      return this.$('.cancel_button:visible').bind('click', this.close);
+    };
+
+    NewView.prototype.cancelEvents = function() {
+      return $(document).unbind("keydown", this.handleKeys);
+    };
+
+    NewView.prototype.close = function() {
+      $(this.el).parent().find('.new-reference-link').show();
+      $(this.el).children().remove();
+      this.cancelEvents();
+      this.unbind();
+      return Backbone.ModelBinding.unbind(this);
+    };
+
+    NewView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 27) {
+        this.close();
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    return NewView;
+
+  })(Backbone.View);
+
+  (_base25 = Gruff.Views).Tags || (_base25.Tags = {});
 
   Gruff.Views.Tags.IndexView = (function(_super) {
 
@@ -2976,7 +3076,7 @@
 
   })(Backbone.View);
 
-  (_base23 = Gruff.Views).Tags || (_base23.Tags = {});
+  (_base26 = Gruff.Views).Tags || (_base26.Tags = {});
 
   Gruff.Views.Tags.ShowView = (function(_super) {
 

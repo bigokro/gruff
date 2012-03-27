@@ -119,6 +119,8 @@ app.put('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.delete('/rest/:objecttype/:objectid/tag/:tag', routes.removeTag);
 app.post('/rest/:objecttype/:objectid/comments', routes.postComment);
 app.post('/rest/:objecttype/:objectid/comments/:date', routes.postComment);
+app.get('/rest/debates/:id/references', routes.getReferences);
+app.post('/rest/debates/:id/references', routes.postReference);
 app.get('/rest/debates', routes.getJSONDebates);
 app.get('/rest/debates/:id', routes.getJSONDebate);
 app.get('/rest/debates/:id/:attributetype', routes.getJSONDebates);
@@ -130,6 +132,7 @@ app.put('/rest/debates/:id', routes.putDebate);
 app.put('/rest/debates/:parentid/:attributetype/:id', routes.putDebate);
 app.delete('/rest/debates/:id', routes.deleteDebate);
 app.delete('/rest/debates/:parentid/:attributetype/:id', routes.deleteDebate);
+app.get('/rest/references/:id', routes.getReference);
 app.post('/rest/login', routes.postJSONLogin);
 
 // default

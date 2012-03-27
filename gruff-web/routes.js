@@ -43,7 +43,7 @@ exports.feed = function(req, res){
         , now: date.toString()
       }
     });
-  })
+  });
 };
 
 exports.getSearch = function(req, res){
@@ -86,18 +86,12 @@ exports.getDebate = function(req, res) {
   });
 };
 
-exports.getReference = function(req, res) {
-  referenceProvider.findById(req.params.id, function(error, reference) {
-    if (handleError(req, res, error, reference)) {
+exports.getReferences = function(req, res) {
+  referenceProvider.findAllByDebateId(req.params.id, function(error, references) {
+    if (handleError(req, res, error, references)) {
       return;
     }
-    res.render('reference_show.jade', { locals: {
-        title: reference.debate.bestTitleText() + " - " + reference.bestTitleText()
-        , reference: reference
-        , type: 'reference'
-        , describable: reference
-        , linkToMe: false
-    }});
+    res.json(references);
   });
 };
 
@@ -482,28 +476,46 @@ exports.addDebateToDebate = function(req, res) {
   } else {
     exports.handle404(req, res);
   }
-}
+};
 
 exports.postReference = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  debateProvider.addReferenceToDebate(req.param('_id'), {
-    user: req.user.login,
-    url: req.param('url'),
-    desc: req.param('desc'),
-    titles: [{
+  if (req.xhr) {
+    var reference = req.body;
+    reference.user = req.user.login;
+    reference.titles = [{
       user: req.user.login,
-      title: req.param('title'),
+      title: reference.title,
       date: new Date()
     }],
-    date: new Date()
-  },
-  function( error, docs) {
+    reference.date = new Date();
+    var parentId = req.params.id;
+  } else {
+    var reference = {
+      user: req.user.login,
+      url: req.param('url'),
+      desc: req.param('desc'),
+      titles: [{
+        user: req.user.login,
+        title: req.param('title'),
+        date: new Date()
+      }],
+      date: new Date()
+    };
+    var parentId = req.param('_id');
+  }
+  debateProvider.addReferenceToDebate(parentId, reference,
+  function( error, doc) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.redirect('/debates/' + req.param('_id'));
+    if (req.xhr) {
+      res.json(doc);
+    } else {
+      res.redirect('/debates/' + req.param('_id'));
+    }
   });
 };
 

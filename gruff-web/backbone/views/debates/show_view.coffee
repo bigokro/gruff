@@ -22,6 +22,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     $(@el).html(@template json)
     @zoomLink = @.$('> .canvas-title .zoom-link')
     @renderTags()
+    @renderReferences()
     @renderComments()
     @renderParents()
     @setUpEvents()
@@ -38,6 +39,17 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       collection: @model.tags
       parentView: @
     @tagsView.render()
+
+  renderReferences: =>
+    @model.references = new Gruff.Collections.References
+    @model.references.setParent @model
+    @model.references.fetch
+      success: (references, response) =>
+        @referencesView = new Gruff.Views.References.IndexView
+          el: @.$('> .references')
+          collection: @model.references
+          parentView: @
+        @referencesView.render()
 
   renderComments: =>
     @model.comments = new Gruff.Collections.Comments
@@ -105,6 +117,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     formView.render()
     @newDebateFormViews.push formView
 
+  showNewReferenceForm: (e) =>
+    $('.new-reference-link:visible').click()
+
   showNewCommentForm: (e) =>
     $('.new-comment-link:visible').click()
 
@@ -149,6 +164,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       false
     else if e.keyCode == 70  # f
       @showNewDebateForm("argumentsFor")
+      false
+    else if e.keyCode == 82  # s
+      @showNewReferenceForm()
       false
     else if e.keyCode == 83  # s
       @showNewDebateForm("subdebates")
@@ -303,7 +321,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
-        success: (subdebates, response4) =>
+        success: (subdebates, response) =>
           @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
           json = @model.fullJSON()
           json.loggedIn = true
