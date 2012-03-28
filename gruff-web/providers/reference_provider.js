@@ -94,7 +94,7 @@ ReferenceProvider.prototype.findAllByObjID = function(debate, objIds, callback) 
     this.getCollection(function(error, reference_collection) {
 	      if( error ) callback(error);
 	      else {
-            if (objIds == null || objIds === undefined) callback(null, null);
+            if (objIds == null || objIds === undefined) callback(null, []);
             else if (objIds.length == 0) callback(null, []);
             else {
                 reference_collection.find(
