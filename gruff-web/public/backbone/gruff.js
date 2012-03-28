@@ -2793,6 +2793,7 @@
     function ListItemView() {
       this.close = __bind(this.close, this);
       this.removeReference = __bind(this.removeReference, this);
+      this.openExternalPage = __bind(this.openExternalPage, this);
       this.hideDelete = __bind(this.hideDelete, this);
       this.showDelete = __bind(this.showDelete, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
@@ -2813,13 +2814,16 @@
       json = this.model.fullJSON();
       json.loggedIn = true;
       $(this.parentEl).find('h3').after(this.template(json));
-      this.el = $(this.parentEl).find('#' + this.model.id.replace(" ", "\\ ") + '-reference');
+      this.el = $(this.parentEl).find('#' + this.model.id);
+      this.externalEl = this.$("> h4.title a.external-link");
       this.deleteEl = this.$("> a.delete-reference");
+      this.selectableEl = this.el;
       this.setUpEvents();
       return this;
     };
 
     ListItemView.prototype.setUpEvents = function() {
+      this.externalEl.bind("click", this.openExternalPage);
       return this.deleteEl.bind("click", this.removeReference);
     };
 
@@ -2829,6 +2833,12 @@
 
     ListItemView.prototype.hideDelete = function() {
       return this.deleteEl.hide();
+    };
+
+    ListItemView.prototype.openExternalPage = function() {
+      var url;
+      url = this.externalEl.attr('href');
+      return window.open(url, "_blank");
     };
 
     ListItemView.prototype.removeReference = function() {
