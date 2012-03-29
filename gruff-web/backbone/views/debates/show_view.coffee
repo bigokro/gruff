@@ -470,4 +470,4 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   selectClicked: (e) =>
     @selectEl e.currentTarget
-    false
+    true

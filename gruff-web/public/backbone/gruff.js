@@ -2437,7 +2437,7 @@
 
     ShowView.prototype.selectClicked = function(e) {
       this.selectEl(e.currentTarget);
-      return false;
+      return true;
     };
 
     return ShowView;
