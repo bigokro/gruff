@@ -139,7 +139,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   setUpMaximizeEvents: =>
     @zoomLink.hide()
     @.$("> .title").unbind "click", @toggleDescription
-    @.$(".bottom-form .new-debate-link").bind "click", @showNewDebateForm
+    @.$(".new-debate-link").bind "click", @showNewDebateForm
     @.$(".selectable").bind "click", @selectClicked
     @setUpDragDrop()
     @setUpHandleKeys()

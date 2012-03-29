@@ -2024,7 +2024,7 @@
     ShowView.prototype.setUpMaximizeEvents = function() {
       this.zoomLink.hide();
       this.$("> .title").unbind("click", this.toggleDescription);
-      this.$(".bottom-form .new-debate-link").bind("click", this.showNewDebateForm);
+      this.$(".new-debate-link").bind("click", this.showNewDebateForm);
       this.$(".selectable").bind("click", this.selectClicked);
       this.setUpDragDrop();
       return this.setUpHandleKeys();
