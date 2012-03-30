@@ -4,6 +4,7 @@ class Gruff.Views.Debates.NewView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#debate-new-template').text()
     @attributeType = options.attributeType
+    @showView = options.showView
     @model = new @collection.model()
 
     @model.bind("change:errors", () =>
@@ -47,13 +48,15 @@ class Gruff.Views.Debates.NewView extends Backbone.View
 
   cancelEvents: ->
     $(document).unbind("keydown", @handleKeys)
+    $('#new-debate').unbind "submit", @save
 
   close: ->
-    $(@el).parent().find('.new-debate-link').show();
-    $(@el).children().remove()
     @cancelEvents()
     @unbind()
     Backbone.ModelBinding.unbind @
+    $(@el).parent().find('.new-debate-link').show();
+    $(@el).children().remove()
+    @showView.closeNewDebateForm @
 
   handleKeys: (e) =>
     if e.keyCode == 27

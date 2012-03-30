@@ -78,6 +78,7 @@
     __extends(Debate, _super);
 
     function Debate() {
+      this.updateUrl = __bind(this.updateUrl, this);
       this.initializeDebates = __bind(this.initializeDebates, this);
       Debate.__super__.constructor.apply(this, arguments);
     }
@@ -289,6 +290,10 @@
       return this.set(vals);
     };
 
+    Debate.prototype.updateUrl = function(e) {
+      return this.url = "/rest/debates/" + this.id;
+    };
+
     return Debate;
 
   })(Backbone.Model);
@@ -331,6 +336,7 @@
         debate.set({
           attributeType: this.type
         });
+        debate.updateUrl();
       }
       return Debates.__super__.add.call(this, debate);
     };
@@ -1732,6 +1738,7 @@
       var _this = this;
       this.template = _.template($('#debate-new-template').text());
       this.attributeType = options.attributeType;
+      this.showView = options.showView;
       this.model = new this.collection.model();
       return this.model.bind("change:errors", function() {
         return _this.render();
@@ -1780,15 +1787,17 @@
     };
 
     NewView.prototype.cancelEvents = function() {
-      return $(document).unbind("keydown", this.handleKeys);
+      $(document).unbind("keydown", this.handleKeys);
+      return $('#new-debate').unbind("submit", this.save);
     };
 
     NewView.prototype.close = function() {
-      $(this.el).parent().find('.new-debate-link').show();
-      $(this.el).children().remove();
       this.cancelEvents();
       this.unbind();
-      return Backbone.ModelBinding.unbind(this);
+      Backbone.ModelBinding.unbind(this);
+      $(this.el).parent().find('.new-debate-link').show();
+      $(this.el).children().remove();
+      return this.showView.closeNewDebateForm(this);
     };
 
     NewView.prototype.handleKeys = function(e) {
@@ -1840,6 +1849,7 @@
       this.setUpEvents = __bind(this.setUpEvents, this);
       this.showNewCommentForm = __bind(this.showNewCommentForm, this);
       this.showNewReferenceForm = __bind(this.showNewReferenceForm, this);
+      this.closeNewDebateForm = __bind(this.closeNewDebateForm, this);
       this.showNewDebateForm = __bind(this.showNewDebateForm, this);
       this.indentTitle = __bind(this.indentTitle, this);
       this.createParentView = __bind(this.createParentView, this);
@@ -1992,10 +2002,15 @@
       formView = new Gruff.Views.Debates.NewView({
         'el': formDiv,
         'collection': collection,
-        'attributeType': debateType
+        'attributeType': debateType,
+        'showView': this
       });
       formView.render();
       return this.newDebateFormViews.push(formView);
+    };
+
+    ShowView.prototype.closeNewDebateForm = function(view) {
+      return this.newDebateFormViews = _.without(this.newDebateFormViews, view);
     };
 
     ShowView.prototype.showNewReferenceForm = function(e) {

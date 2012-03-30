@@ -122,6 +122,9 @@ class Gruff.Models.Debate extends Backbone.Model
     vals[@getIdListName(debates.type)] = debates.pluck("_id")
     @set vals
 
+  updateUrl: (e) =>
+    @url = "/rest/debates/" + @id
+
 class Gruff.Collections.Debates extends Backbone.Collection
   model: Gruff.Models.Debate
   url: '/rest/debates'
@@ -143,6 +146,7 @@ class Gruff.Collections.Debates extends Backbone.Collection
     unless debate.length?
       debate.set
         attributeType: @type
+      debate.updateUrl()
     super debate
 
 classHelper = new exports.ClassHelper()

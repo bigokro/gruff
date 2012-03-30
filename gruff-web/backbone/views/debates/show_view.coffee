@@ -114,8 +114,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'el': formDiv
       'collection': collection
       'attributeType': debateType
+      'showView': @
     formView.render()
     @newDebateFormViews.push formView
+
+  closeNewDebateForm: (view) =>
+   @newDebateFormViews = _.without @newDebateFormViews, view
 
   showNewReferenceForm: (e) =>
     $('.new-reference-link:visible').click()
