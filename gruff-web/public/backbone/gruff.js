@@ -2395,7 +2395,7 @@
     };
 
     ShowView.prototype.setSelected = function() {
-      return this.selectEl(this.$('> .canvas-title'));
+      return this.selectEl(this.$('> .canvas-title > h1'));
     };
 
     ShowView.prototype.selectPrevious = function() {

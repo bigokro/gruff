@@ -429,7 +429,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     result
 
   setSelected: =>
-    @selectEl @.$('> .canvas-title')
+    @selectEl @.$('> .canvas-title > h1')
 
   selectPrevious: =>
     @changeSelection(-1)
