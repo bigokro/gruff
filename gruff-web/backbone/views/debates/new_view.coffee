@@ -21,14 +21,14 @@ class Gruff.Views.Debates.NewView extends Backbone.View
 
     @model.unset("errors")
 
-    @model.url = @collection.url
-    @model.save(null,
-      success: (debate) =>
-        @collection.add(@model)
-        @close()
-      error: (debate, jqXHR) =>
-        @handleRemoteError jqXHR, debate
-    )
+    unless @model.id
+      @model.url = @collection.url
+      @model.save null,
+        success: (debate) =>
+          @collection.add(@model)
+          @close()
+        error: (debate, jqXHR) =>
+          @handleRemoteError jqXHR, debate
 
   render: ->
     json = @model.fullJSON()

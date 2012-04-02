@@ -1755,16 +1755,18 @@
       e.preventDefault();
       e.stopPropagation();
       this.model.unset("errors");
-      this.model.url = this.collection.url;
-      return this.model.save(null, {
-        success: function(debate) {
-          _this.collection.add(_this.model);
-          return _this.close();
-        },
-        error: function(debate, jqXHR) {
-          return _this.handleRemoteError(jqXHR, debate);
-        }
-      });
+      if (!this.model.id) {
+        this.model.url = this.collection.url;
+        return this.model.save(null, {
+          success: function(debate) {
+            _this.collection.add(_this.model);
+            return _this.close();
+          },
+          error: function(debate, jqXHR) {
+            return _this.handleRemoteError(jqXHR, debate);
+          }
+        });
+      }
     };
 
     NewView.prototype.render = function() {
