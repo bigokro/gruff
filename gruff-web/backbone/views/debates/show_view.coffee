@@ -7,7 +7,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @childView = options.childView
     @childView.parentView = @ if @childView?
     @parentView = options.parentView
-    @parentView.childView = @ if @parentView?
+    @parentView.setChildView @ if @parentView?
     @loaded = false
     @status = "unrendered"
     @subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers"
@@ -71,7 +71,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     else if @parentView?.model != @model.parent
       @createParentView(@parentView)
     else
-      @parentView?.childView = @
+      @parentView?.setChildView @
       @indentTitle()
 
   createParentView: (parentView) =>
@@ -227,6 +227,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     _this = @
     @mySubdebateLists().droppable(
       accept: '.subdebate, .argument, .debate, .answer'
+      tolerance: 'pointer'
       drop: ( event, ui ) ->
         dragged = ui.draggable[0]
         $(this).removeClass('over')
@@ -246,6 +247,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$('> .canvas-title').add(@zoomLink).droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       greedy: true
+      tolerance: 'pointer'
       over: (e, ui) =>
         @.$('> .canvas-title').addClass('over')
         @hoverTimeout = setTimeout( 
@@ -305,6 +307,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @onScreen()
     else if @status == 'hidden'
       @show()
+    @parentView?.setChildView @
     @parentView?.minimize()
     @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide()
     @setUpMinimizeEvents()
@@ -319,11 +322,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
 
   maximize: () =>
     @status = "maximized"
-    @focus() unless @isDragging()
+    @focus()
     router.navigate 'canvas/'+@model.id
     if @loaded
       @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
-      @parentView?.childView = @
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
@@ -373,6 +375,11 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       )
       false
 
+  setChildView: (view) =>
+    if @childView && @childView != view
+      @childView?.hide() 
+    @childView = view
+
   close: ->
     @childView?.close()
     @argumensForView?.close()
@@ -395,7 +402,9 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   focus: ->
     if @isOffScreen
       @onScreen()
+    @show()
     @childView?.hide()
+    @parentView?.setChildView @
     @parentView?.minimize()
     @setSelected()
 

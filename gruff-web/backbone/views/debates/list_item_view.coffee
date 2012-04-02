@@ -167,6 +167,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       accept: '.subdebate, .argument, .debate, .answer'
       hoverClass: 'over'
       greedy: true
+      tolerance: 'pointer'
       over: (e, ui) =>
         @.$('> h4').addClass('over')
         @hoverTimeout = setTimeout( 
@@ -185,6 +186,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     @.$('> h4 a.zoom-link').droppable(
       accept: '.subdebate, .argument, .debate, .answer'
       greedy: true
+      tolerance: 'pointer'
       over: (e, ui) =>
         @.$('> h4').addClass('over')
         @hoverTimeout = setTimeout( 
@@ -205,6 +207,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
       refreshPositions: true
       distance: 5
       helper: 'clone'
+      appendTo: "body"
       cursorAt:
         left: 0
       start: (e, ui) =>
@@ -214,6 +217,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
         cloneEl = ui.helper
         cloneEl.find('div, a.zoom-link').remove()
+        cloneEl.find('div, a.delete-link').remove()
         cloneEl.attr('id', @model.id)
       stop: (e, ui) =>
         @resolveZoom()
@@ -264,7 +268,6 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   resolveZoom: =>
     @showView.maximize()
-    @showView.focus()
 
   delete: =>
     @model.destroy

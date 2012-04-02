@@ -1442,6 +1442,7 @@
         accept: '.subdebate, .argument, .debate, .answer',
         hoverClass: 'over',
         greedy: true,
+        tolerance: 'pointer',
         over: function(e, ui) {
           _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
@@ -1461,6 +1462,7 @@
       this.$('> h4 a.zoom-link').droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         greedy: true,
+        tolerance: 'pointer',
         over: function(e, ui) {
           _this.$('> h4').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
@@ -1481,6 +1483,7 @@
         refreshPositions: true,
         distance: 5,
         helper: 'clone',
+        appendTo: "body",
         cursorAt: {
           left: 0
         },
@@ -1491,6 +1494,7 @@
           _this.$('> h4').css('opacity', 0);
           cloneEl = ui.helper;
           cloneEl.find('div, a.zoom-link').remove();
+          cloneEl.find('div, a.delete-link').remove();
           return cloneEl.attr('id', _this.model.id);
         },
         stop: function(e, ui) {
@@ -1553,8 +1557,7 @@
     };
 
     ListItemView.prototype.resolveZoom = function() {
-      this.showView.maximize();
-      return this.showView.focus();
+      return this.showView.maximize();
     };
 
     ListItemView.prototype["delete"] = function() {
@@ -1833,6 +1836,7 @@
       this.selectPrevious = __bind(this.selectPrevious, this);
       this.setSelected = __bind(this.setSelected, this);
       this.getTypeHeading = __bind(this.getTypeHeading, this);
+      this.setChildView = __bind(this.setChildView, this);
       this.maximize = __bind(this.maximize, this);
       this.minimize = __bind(this.minimize, this);
       this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
@@ -1867,7 +1871,7 @@
       this.childView = options.childView;
       if (this.childView != null) this.childView.parentView = this;
       this.parentView = options.parentView;
-      if (this.parentView != null) this.parentView.childView = this;
+      if (this.parentView != null) this.parentView.setChildView(this);
       this.loaded = false;
       this.status = "unrendered";
       this.subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers";
@@ -1951,7 +1955,7 @@
       } else if (((_ref = this.parentView) != null ? _ref.model : void 0) !== this.model.parent) {
         return this.createParentView(this.parentView);
       } else {
-        if ((_ref2 = this.parentView) != null) _ref2.childView = this;
+        if ((_ref2 = this.parentView) != null) _ref2.setChildView(this);
         return this.indentTitle();
       }
     };
@@ -2134,6 +2138,7 @@
       _this = this;
       return this.mySubdebateLists().droppable({
         accept: '.subdebate, .argument, .debate, .answer',
+        tolerance: 'pointer',
         drop: function(event, ui) {
           var dragged;
           dragged = ui.draggable[0];
@@ -2162,6 +2167,7 @@
       return this.$('> .canvas-title').add(this.zoomLink).droppable({
         accept: '.subdebate, .argument, .debate, .answer',
         greedy: true,
+        tolerance: 'pointer',
         over: function(e, ui) {
           _this.$('> .canvas-title').addClass('over');
           return _this.hoverTimeout = setTimeout(function() {
@@ -2228,18 +2234,19 @@
     };
 
     ShowView.prototype.minimize = function() {
-      var _ref, _ref2, _ref3;
+      var _ref, _ref2, _ref3, _ref4;
       if (this.isOffScreen) {
         this.onScreen();
       } else if (this.status === 'hidden') {
         this.show();
       }
-      if ((_ref = this.parentView) != null) _ref.minimize();
+      if ((_ref = this.parentView) != null) _ref.setChildView(this);
+      if ((_ref2 = this.parentView) != null) _ref2.minimize();
       this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide();
       this.setUpMinimizeEvents();
       this.tagsView.hideForm();
-      if ((_ref2 = this.editTitleView) != null) _ref2.close();
-      if ((_ref3 = this.editDescriptionView) != null) _ref3.close();
+      if ((_ref3 = this.editTitleView) != null) _ref3.close();
+      if ((_ref4 = this.editDescriptionView) != null) _ref4.close();
       _.each(this.newDebateFormViews, function(formView) {
         return formView.close();
       });
@@ -2249,19 +2256,17 @@
     };
 
     ShowView.prototype.maximize = function() {
-      var _ref,
-        _this = this;
+      var _this = this;
       this.status = "maximized";
-      if (!this.isDragging()) this.focus();
+      this.focus();
       router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
         this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
-        if ((_ref = this.parentView) != null) _ref.childView = this;
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response) {
-            var json, _ref2;
+            var json, _ref;
             _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
             json = _this.model.fullJSON();
             json.loggedIn = true;
@@ -2270,7 +2275,7 @@
             json.attributetype = "";
             json.attributeid = "";
             json.typeHeading = _this.getTypeHeading();
-            json.baseurl = (_ref2 = json.attributetype !== "") != null ? _ref2 : "/" + json.objecttype + "/" + json.objectid + {
+            json.baseurl = (_ref = json.attributetype !== "") != null ? _ref : "/" + json.objecttype + "/" + json.objectid + {
               "/tag/": "/" + json.objecttype + "/" + json.objectid + "/" + json.attributetype + "/" + json.attributeid + "/tag/"
             };
             if (_this.model.get("type") === _this.model.DebateTypes.DEBATE) {
@@ -2317,6 +2322,14 @@
       }
     };
 
+    ShowView.prototype.setChildView = function(view) {
+      var _ref;
+      if (this.childView && this.childView !== view) {
+        if ((_ref = this.childView) != null) _ref.hide();
+      }
+      return this.childView = view;
+    };
+
     ShowView.prototype.close = function() {
       var _ref, _ref2, _ref3, _ref4, _ref5;
       if ((_ref = this.childView) != null) _ref.close();
@@ -2342,10 +2355,12 @@
     };
 
     ShowView.prototype.focus = function() {
-      var _ref, _ref2;
+      var _ref, _ref2, _ref3;
       if (this.isOffScreen) this.onScreen();
+      this.show();
       if ((_ref = this.childView) != null) _ref.hide();
-      if ((_ref2 = this.parentView) != null) _ref2.minimize();
+      if ((_ref2 = this.parentView) != null) _ref2.setChildView(this);
+      if ((_ref3 = this.parentView) != null) _ref3.minimize();
       return this.setSelected();
     };
 
