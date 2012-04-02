@@ -2055,6 +2055,7 @@
 
     ShowView.prototype.handleKeys = function(e) {
       if ($("input:focus, textarea:focus").length > 0) return true;
+      if (e.ctrlKey || e.metaKey) return true;
       if (e.keyCode === 65) {
         if (this.argumentsForView != null) {
           this.showNewDebateForm("argumentsAgainst");

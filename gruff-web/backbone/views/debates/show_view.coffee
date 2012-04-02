@@ -157,6 +157,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   handleKeys: (e) =>
     if $("input:focus, textarea:focus").length > 0
       return true
+    if e.ctrlKey || e.metaKey
+      return true
     if e.keyCode == 65       # a
       if @argumentsForView?
         @showNewDebateForm("argumentsAgainst")
@@ -169,7 +171,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     else if e.keyCode == 70  # f
       @showNewDebateForm("argumentsFor")
       false
-    else if e.keyCode == 82  # s
+    else if e.keyCode == 82  # r
       @showNewReferenceForm()
       false
     else if e.keyCode == 83  # s
