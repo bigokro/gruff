@@ -2,7 +2,6 @@ Gruff.Models.Comments ||= {}
 
 class Gruff.Models.Comment extends Backbone.Model
   paramRoot: ''
-  idAttribute: "date"
 
   defaults:
     user: null
@@ -26,3 +25,6 @@ class Gruff.Collections.Comments extends Backbone.Collection
   initialize: (options) ->
     @parent = options.parent
     @url = "/rest/debates/" + @parent?.id + "/comments"
+
+classHelper = new exports.ClassHelper()
+classHelper.augmentClass Gruff.Models.Comment, exports.Comment

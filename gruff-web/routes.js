@@ -302,15 +302,10 @@ exports.postComment = function(req, res) {
     return;
   }
   if (req.xhr) {
-    var comment = req.body;
-    comment.user = req.user.login;
-    comment.date = new Date();
+    var comment = new Comment(req.user.login, req.body.comment, false);
     var parentId = req.params.objectid;
   } else {
-    var comment = {
-      comment: req.param('comment'),
-      date: new Date()
-    };
+    var comment = new Comment(req.user.login, req.param('comment'), false);
     var parentId = req.param('_id');
   }
   describableProvider.addComment(req.params.objecttype, parentId, comment, 

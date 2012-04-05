@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -23,8 +23,6 @@
     }
 
     Comment.prototype.paramRoot = '';
-
-    Comment.prototype.idAttribute = "date";
 
     Comment.prototype.defaults = {
       user: null,
@@ -70,6 +68,10 @@
     return Comments;
 
   })(Backbone.Collection);
+
+  classHelper = new exports.ClassHelper();
+
+  classHelper.augmentClass(Gruff.Models.Comment, exports.Comment);
 
   (_base2 = Gruff.Models).Debates || (_base2.Debates = {});
 
@@ -702,6 +704,8 @@
     function ListItemView() {
       this.close = __bind(this.close, this);
       this.removeComment = __bind(this.removeComment, this);
+      this.reindex = __bind(this.reindex, this);
+      this.addNewSegment = __bind(this.addNewSegment, this);
       this.hideDelete = __bind(this.hideDelete, this);
       this.showDelete = __bind(this.showDelete, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
@@ -718,12 +722,24 @@
     };
 
     ListItemView.prototype.render = function() {
-      var json;
+      var json,
+        _this = this;
+      if (!this.model.id) {
+        this.model.set({
+          id: this.model.nextId()
+        });
+      }
       json = this.model.toJSON();
       json.loggedIn = true;
       $(this.parentEl).find('h3').after(this.template(json));
-      this.el = $(this.parentEl).find('#' + this.model.id.replace(" ", "\\ ") + '-comment');
+      this.el = $(this.parentEl).find('#' + this.model.id + '-comment');
+      this.bodyEl = this.$('> .comment');
       this.deleteEl = this.$("> a.delete-comment");
+      this.body = this.model.get("body");
+      this.segmentViews = [];
+      _.each(this.body, function(segment, index) {
+        return _this.addNewSegment(segment, index);
+      });
       this.setUpEvents();
       return this;
     };
@@ -740,6 +756,30 @@
       return this.deleteEl.hide();
     };
 
+    ListItemView.prototype.addNewSegment = function(segment, index) {
+      var segmentView;
+      segmentView = new Gruff.Views.Comments.SegmentView({
+        'parentEl': this.bodyEl,
+        'model': this.model,
+        'segment': segment,
+        'parentView': this,
+        'index': index
+      });
+      segmentView.render();
+      if (index === this.segmentViews.length) {
+        return this.segmentViews.push(segmentView);
+      } else {
+        return this.segmentViews = _.first(this.segmentViews, index - 1).concat(segmentView).concat(_.rest(this.segmentViews, index));
+      }
+    };
+
+    ListItemView.prototype.reindex = function() {
+      var _this = this;
+      return _.each(this.segmentViews, function(sv, index) {
+        return sv.index = index;
+      });
+    };
+
     ListItemView.prototype.removeComment = function() {
       var _this = this;
       return this.model.destroy({
@@ -753,6 +793,10 @@
     };
 
     ListItemView.prototype.close = function() {
+      var _this = this;
+      _.each(this.segmentViews, function(segmentView) {
+        return segmentView.close();
+      });
       this.el.remove();
       return this.unbind();
     };
@@ -845,6 +889,100 @@
 
   })(Backbone.View);
 
+  (_base8 = Gruff.Views).Comments || (_base8.Comments = {});
+
+  Gruff.Views.Comments.SegmentView = (function(_super) {
+
+    __extends(SegmentView, _super);
+
+    function SegmentView() {
+      this.close = __bind(this.close, this);
+      this.getClickIdx = __bind(this.getClickIdx, this);
+      this.showNewCommentForm = __bind(this.showNewCommentForm, this);
+      this.setUpEvents = __bind(this.setUpEvents, this);
+      SegmentView.__super__.constructor.apply(this, arguments);
+    }
+
+    SegmentView.prototype.initialize = function(options) {
+      this.template = _.template($('#comments-segment-template').text());
+      this.parentEl = options.parentEl;
+      this.parentView = options.parentView;
+      this.segment = options.segment;
+      return this.index = options.index;
+    };
+
+    SegmentView.prototype.render = function() {
+      var json,
+        _this = this;
+      json = {};
+      json.text = this.segment.text;
+      json.loggedIn = true;
+      if ($(this.parentEl).children().length === 0 || this.index === 0) {
+        $(this.parentEl).prepend(this.template(json));
+      } else {
+        $($(this.parentEl).children()[this.index - 1]).after(this.template(json));
+      }
+      this.el = $($(this.parentEl).children()[this.index]);
+      this.commentViews = [];
+      _.each(this.segment.comments, function(comment) {
+        var c, commentView;
+        c = new Gruff.Models.Comment(comment);
+        commentView = new Gruff.Views.Comments.ListItemView({
+          'parentEl': _this.el,
+          'model': c,
+          'parentView': _this
+        });
+        commentView.render();
+        return _this.commentViews.push(commentView);
+      });
+      this.setUpEvents();
+      return this;
+    };
+
+    SegmentView.prototype.setUpEvents = function() {
+      return this.$('> .text').click(this.showNewCommentForm);
+    };
+
+    SegmentView.prototype.showNewCommentForm = function(e) {
+      var idx, newSegment;
+      idx = this.getClickIdx(e);
+      newSegment = {
+        text: this.segment.text.substring(0, idx),
+        comments: []
+      };
+      this.parentView.addNewSegment(newSegment, this.index);
+      this.parentView.reindex();
+      this.segment.text = this.segment.text.substring(idx);
+      return this.$('> .text').html(this.segment.text);
+    };
+
+    SegmentView.prototype.getClickIdx = function(e) {
+      var clicked, idx;
+      clicked = null;
+      if (window.getSelection) {
+        clicked = window.getSelection();
+      } else if (document.getSelection) {
+        clicked = document.getSelection();
+      } else if (document.selection) {
+        clicked = document.selection.createRange();
+      }
+      idx = clicked.focusOffset;
+      return idx;
+    };
+
+    SegmentView.prototype.close = function() {
+      var _this = this;
+      _.each(this.commentViews, function(commentView) {
+        return commentView.close();
+      });
+      this.el.remove();
+      return this.unbind();
+    };
+
+    return SegmentView;
+
+  })(Backbone.View);
+
   Gruff.Views || (Gruff.Views = {});
 
   Gruff.Views.ModalView = (function(_super) {
@@ -918,7 +1056,7 @@
 
   })(Backbone.View);
 
-  (_base8 = Gruff.Views).Debates || (_base8.Debates = {});
+  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
 
   Gruff.Views.Debates.DebateView = (function(_super) {
 
@@ -951,7 +1089,7 @@
 
   })(Backbone.View);
 
-  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
+  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
   Gruff.Views.Debates.EditDescriptionView = (function(_super) {
 
@@ -1035,7 +1173,7 @@
 
   })(Backbone.View);
 
-  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
 
   Gruff.Views.Debates.EditTitleView = (function(_super) {
 
@@ -1122,7 +1260,7 @@
 
   })(Backbone.View);
 
-  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
+  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
 
   Gruff.Views.Debates.EditView = (function(_super) {
 
@@ -1160,7 +1298,7 @@
 
   })(Backbone.View);
 
-  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
+  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -1203,7 +1341,7 @@
 
   })(Backbone.View);
 
-  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
+  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -1577,7 +1715,7 @@
 
   })(Backbone.View);
 
-  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
+  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -1653,7 +1791,7 @@
 
   })(Backbone.View);
 
-  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
+  (_base16 = Gruff.Views).Debates || (_base16.Debates = {});
 
   Gruff.Views.Debates.MiniListView = (function(_super) {
 
@@ -1725,7 +1863,7 @@
 
   })(Gruff.Views.Debates.ListView);
 
-  (_base16 = Gruff.Views).Debates || (_base16.Debates = {});
+  (_base17 = Gruff.Views).Debates || (_base17.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -1818,9 +1956,9 @@
 
   })(Backbone.View);
 
-  (_base17 = Gruff.Views).Debates || (_base17.Debates = {});
+  (_base18 = Gruff.Views).Debates || (_base18.Debates = {});
 
-  (_base18 = Gruff.Views.Debates).ShowViews || (_base18.ShowViews = {});
+  (_base19 = Gruff.Views.Debates).ShowViews || (_base19.ShowViews = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -2477,7 +2615,7 @@
 
   })(Backbone.View);
 
-  (_base19 = Gruff.Views).Debates || (_base19.Debates = {});
+  (_base20 = Gruff.Views).Debates || (_base20.Debates = {});
 
   Gruff.Views.Debates.SimpleNewView = (function(_super) {
 
@@ -2535,7 +2673,7 @@
 
   })(Gruff.Views.Debates.NewView);
 
-  (_base20 = Gruff.Views).Debates || (_base20.Debates = {});
+  (_base21 = Gruff.Views).Debates || (_base21.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -2656,7 +2794,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base21 = Gruff.Views).Login || (_base21.Login = {});
+  (_base22 = Gruff.Views).Login || (_base22.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 
@@ -2712,7 +2850,7 @@
 
   })(Gruff.Views.ModalView);
 
-  (_base22 = Gruff.Views).References || (_base22.References = {});
+  (_base23 = Gruff.Views).References || (_base23.References = {});
 
   Gruff.Views.References.IndexView = (function(_super) {
 
@@ -2817,7 +2955,7 @@
 
   })(Backbone.View);
 
-  (_base23 = Gruff.Views).References || (_base23.References = {});
+  (_base24 = Gruff.Views).References || (_base24.References = {});
 
   Gruff.Views.References.ListItemView = (function(_super) {
 
@@ -2895,7 +3033,7 @@
 
   })(Backbone.View);
 
-  (_base24 = Gruff.Views).References || (_base24.References = {});
+  (_base25 = Gruff.Views).References || (_base25.References = {});
 
   Gruff.Views.References.NewView = (function(_super) {
 
@@ -2978,7 +3116,7 @@
 
   })(Backbone.View);
 
-  (_base25 = Gruff.Views).Tags || (_base25.Tags = {});
+  (_base26 = Gruff.Views).Tags || (_base26.Tags = {});
 
   Gruff.Views.Tags.IndexView = (function(_super) {
 
@@ -3119,7 +3257,7 @@
 
   })(Backbone.View);
 
-  (_base26 = Gruff.Views).Tags || (_base26.Tags = {});
+  (_base27 = Gruff.Views).Tags || (_base27.Tags = {});
 
   Gruff.Views.Tags.ShowView = (function(_super) {
 

@@ -22,6 +22,7 @@ var express = require('express')
   , ReferenceProvider = require('./providers/reference_provider').ReferenceProvider
   , UserProvider = require('./providers/user_provider').UserProvider
   , TagProvider = require('./providers/tag_provider').TagProvider
+  , Comment = require('./common/models/comment').Comment
   , Debate = require('./common/models/debate').Debate
   , everyauth = require('./everyauth').everyauth
   , fs = require('fs')
