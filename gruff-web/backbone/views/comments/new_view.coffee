@@ -3,7 +3,6 @@ Gruff.Views.Comments ||= {}
 class Gruff.Views.Comments.NewView extends Backbone.View
   initialize: (options) ->
     @template = _.template $('#comment-new-template').text()
-    @attributeType = options.attributeType
     @model = new @collection.model()
     @model.collection = @collection
     @parentModel = @collection.parent
@@ -34,7 +33,7 @@ class Gruff.Views.Comments.NewView extends Backbone.View
     Backbone.ModelBinding.bind @
     @setUpEvents()
     $(@el).parent().find('.new-comment-link').hide();
-    $(@el).find('#comment').focus()
+    @.$('#comment').focus()
     @
 
   setUpEvents: ->

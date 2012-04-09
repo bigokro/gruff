@@ -304,11 +304,19 @@ exports.postComment = function(req, res) {
   if (req.xhr) {
     var comment = new Comment(req.user.login, req.body.comment, false);
     var parentId = req.params.objectid;
+    var commentId = req.params.commentid;
+    var txtIdx = req.params.textidx;
+    console.log("Parent ID: " + parentId);
+    console.log("Comment ID: " + commentId);
+    console.log("Text index: " + txtIdx);
+    console.log(JSON.stringify(comment));
   } else {
     var comment = new Comment(req.user.login, req.param('comment'), false);
     var parentId = req.param('_id');
+    var commentId = req.param('commentId');
+    var txtIdx = req.param('textIndex');
   }
-  describableProvider.addComment(req.params.objecttype, parentId, comment, 
+  describableProvider.addComment(req.params.objecttype, parentId, commentId, txtIdx, comment, 
     function( error, doc) {
       if (handleError(req, res, error, true)) {
         return;

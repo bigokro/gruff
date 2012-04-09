@@ -119,6 +119,7 @@ app.post('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.put('/rest/:objecttype/:objectid/tag/:tag', routes.postTag);
 app.delete('/rest/:objecttype/:objectid/tag/:tag', routes.removeTag);
 app.post('/rest/:objecttype/:objectid/comments', routes.postComment);
+app.post('/rest/:objecttype/:objectid/comments/:commentid/:textidx', routes.postComment);
 app.post('/rest/:objecttype/:objectid/comments/:date', routes.postComment);
 app.get('/rest/debates/:id/references', routes.getReferences);
 app.post('/rest/debates/:id/references', routes.postReference);

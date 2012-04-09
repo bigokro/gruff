@@ -7,6 +7,7 @@ class Gruff.Views.Comments.IndexView extends Backbone.View
     @collection.bind('remove', @remove);
     @parentView = options.parentView
     @parentModel = @collection.parent
+    @debate = options.debate
 
   render: ->
     json = {}
@@ -14,6 +15,7 @@ class Gruff.Views.Comments.IndexView extends Backbone.View
     json.loggedIn = true
     $(@el).html(@template json)
     @showFormEl = @.$(".new-comment-link")
+    @listEl = @.$('.comments-list')
     @formEl = $('#'+@parentModel.id+'-new-comment-div')
     @views = []
     @collection.each (comment) =>
@@ -37,6 +39,7 @@ class Gruff.Views.Comments.IndexView extends Backbone.View
     @formView = new Gruff.Views.Comments.NewView
       'el': @formEl
       'collection': @collection
+      'debate': @debate
     @formView.render()
     false
 
@@ -54,7 +57,8 @@ class Gruff.Views.Comments.IndexView extends Backbone.View
   add: (comment) =>
     comment.collection = @collection
     commentView = new Gruff.Views.Comments.ListItemView
-      'parentEl': @el
+      'parentEl': @listEl
+      'debate': @debate
       'model': comment
       'parentView': @
     @views.push commentView

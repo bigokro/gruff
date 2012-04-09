@@ -5,6 +5,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
     @template = _.template $('#comments-segment-template').text()
     @parentEl = options.parentEl
     @parentView = options.parentView
+    @debate = options.debate
     @segment = options.segment
     @index = options.index
 
@@ -22,6 +23,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
       c = new Gruff.Models.Comment comment
       commentView = new Gruff.Views.Comments.ListItemView
         'parentEl': @el
+        'debate': @debate
         'model': c
         'parentView': @
       commentView.render()
@@ -37,10 +39,23 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
     newSegment = 
       text: @segment.text.substring(0, idx),
       comments: []
-    @parentView.addNewSegment newSegment, @index
+    @previousView = @parentView.addNewSegment newSegment, @index
     @parentView.reindex()
     @segment.text = @segment.text.substring(idx)
+    @updateText()
+    @previousView.renderForm()
+
+  updateText: =>
     @.$('> .text').html @segment.text
+
+  renderForm: =>
+    @newView = new Gruff.Views.Comments.NewSubcommentView
+      'parentEl': @.$('> .comments')
+      'debate': @debate
+      'model': @model
+      'segment': @segment
+      'parentView': @
+    @newView.render()
 
   getClickIdx: (e) =>
     clicked = null
@@ -52,6 +67,12 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
       clicked = document.selection.createRange()
     idx = clicked.focusOffset
     idx
+
+  mergeBack: =>
+    @parentView.mergeSegments @index
+
+  textIndex: =>
+    @parentView.textIndex @index
 
   close: =>
     _.each @commentViews, (commentView) =>

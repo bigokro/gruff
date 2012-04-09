@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base28, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -610,7 +610,8 @@
       this.collection.bind('add', this.add);
       this.collection.bind('remove', this.remove);
       this.parentView = options.parentView;
-      return this.parentModel = this.collection.parent;
+      this.parentModel = this.collection.parent;
+      return this.debate = options.debate;
     };
 
     IndexView.prototype.render = function() {
@@ -621,6 +622,7 @@
       json.loggedIn = true;
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".new-comment-link");
+      this.listEl = this.$('.comments-list');
       this.formEl = $('#' + this.parentModel.id + '-new-comment-div');
       this.views = [];
       this.collection.each(function(comment) {
@@ -647,7 +649,8 @@
       this.formEl.show();
       this.formView = new Gruff.Views.Comments.NewView({
         'el': this.formEl,
-        'collection': this.collection
+        'collection': this.collection,
+        'debate': this.debate
       });
       this.formView.render();
       return false;
@@ -672,7 +675,8 @@
       var commentView;
       comment.collection = this.collection;
       commentView = new Gruff.Views.Comments.ListItemView({
-        'parentEl': this.el,
+        'parentEl': this.listEl,
+        'debate': this.debate,
         'model': comment,
         'parentView': this
       });
@@ -704,7 +708,9 @@
     function ListItemView() {
       this.close = __bind(this.close, this);
       this.removeComment = __bind(this.removeComment, this);
+      this.textIndex = __bind(this.textIndex, this);
       this.reindex = __bind(this.reindex, this);
+      this.mergeSegments = __bind(this.mergeSegments, this);
       this.addNewSegment = __bind(this.addNewSegment, this);
       this.hideDelete = __bind(this.hideDelete, this);
       this.showDelete = __bind(this.showDelete, this);
@@ -718,7 +724,8 @@
       this.parentEl = options.parentEl;
       this.parentView = options.parentView;
       this.parentModel = options.parentModel;
-      return this.parentModel || (this.parentModel = (_ref = this.parentView) != null ? _ref.parentModel : void 0);
+      this.parentModel || (this.parentModel = (_ref = this.parentView) != null ? _ref.parentModel : void 0);
+      return this.debate = options.debate;
     };
 
     ListItemView.prototype.render = function() {
@@ -731,7 +738,7 @@
       }
       json = this.model.toJSON();
       json.loggedIn = true;
-      $(this.parentEl).find('h3').after(this.template(json));
+      $(this.parentEl).append(this.template(json));
       this.el = $(this.parentEl).find('#' + this.model.id + '-comment');
       this.bodyEl = this.$('> .comment');
       this.deleteEl = this.$("> a.delete-comment");
@@ -763,14 +770,28 @@
         'model': this.model,
         'segment': segment,
         'parentView': this,
-        'index': index
+        'index': index,
+        'debate': this.debate
       });
       segmentView.render();
       if (index === this.segmentViews.length) {
-        return this.segmentViews.push(segmentView);
+        this.segmentViews.push(segmentView);
       } else {
-        return this.segmentViews = _.first(this.segmentViews, index - 1).concat(segmentView).concat(_.rest(this.segmentViews, index));
+        this.segmentViews = _.first(this.segmentViews, index - 1).concat(segmentView).concat(_.rest(this.segmentViews, index));
       }
+      return segmentView;
+    };
+
+    ListItemView.prototype.mergeSegments = function(index) {
+      var first, second;
+      first = this.segmentViews[index];
+      second = this.segmentViews[index + 1];
+      second.segment.text = first.segment.text + second.segment.text;
+      second.segment.comments = first.segment.comments.concat(second.segment.comments);
+      second.updateText();
+      first.close();
+      this.segmentViews = _.without(this.segmentViews, first);
+      return this.reindex();
     };
 
     ListItemView.prototype.reindex = function() {
@@ -778,6 +799,20 @@
       return _.each(this.segmentViews, function(sv, index) {
         return sv.index = index;
       });
+    };
+
+    ListItemView.prototype.textIndex = function(index) {
+      var idx, _i, _results,
+        _this = this;
+      idx = 0;
+      _.each((function() {
+        _results = [];
+        for (var _i = 0; 0 <= index ? _i <= index : _i >= index; 0 <= index ? _i++ : _i--){ _results.push(_i); }
+        return _results;
+      }).apply(this), function(i) {
+        return idx += _this.segmentViews[i].segment.text.length;
+      });
+      return idx;
     };
 
     ListItemView.prototype.removeComment = function() {
@@ -807,6 +842,104 @@
 
   (_base7 = Gruff.Views).Comments || (_base7.Comments = {});
 
+  Gruff.Views.Comments.NewSubcommentView = (function(_super) {
+
+    __extends(NewSubcommentView, _super);
+
+    function NewSubcommentView() {
+      this.handleKeys = __bind(this.handleKeys, this);
+      this.close = __bind(this.close, this);
+      this.cancel = __bind(this.cancel, this);
+      this.save = __bind(this.save, this);
+      this.cancelEvents = __bind(this.cancelEvents, this);
+      this.setUpEvents = __bind(this.setUpEvents, this);
+      this.render = __bind(this.render, this);
+      NewSubcommentView.__super__.constructor.apply(this, arguments);
+    }
+
+    NewSubcommentView.prototype.initialize = function(options) {
+      this.template = _.template($('#comment-new-subcomment-template').text());
+      this.segment = options.segment;
+      this.parentEl = options.parentEl;
+      this.parentView = options.parentView;
+      return this.debate = options.debate;
+    };
+
+    NewSubcommentView.prototype.render = function() {
+      var json;
+      json = {};
+      $(this.parentEl).append(this.template(json));
+      this.el = $(this.parentEl).find('#new-subcomment-form');
+      this.formEl = this.$('#subcomment');
+      this.setUpEvents();
+      this.formEl.focus();
+      return this;
+    };
+
+    NewSubcommentView.prototype.setUpEvents = function() {
+      $(document).bind("keydown", this.handleKeys);
+      this.$("input[type='submit']:visible").bind('click', this.save);
+      return this.$('.cancel_button:visible').bind('click', this.cancel);
+    };
+
+    NewSubcommentView.prototype.cancelEvents = function() {
+      return $(document).unbind("keydown", this.handleKeys);
+    };
+
+    NewSubcommentView.prototype.save = function(e) {
+      var _this = this;
+      e.preventDefault();
+      e.stopPropagation();
+      return $.ajax({
+        type: "POST",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.model.id + "/" + this.parentView.textIndex(),
+        data: {
+          comment: this.formEl.val()
+        },
+        success: function() {
+          var comment, commentView;
+          _this.close();
+          comment = new Gruff.Models.Comment(new exports.Comment("testuser", _this.formEl.val(), false));
+          commentView = new Gruff.Views.Comments.ListItemView({
+            'parentEl': _this.parentView.el,
+            'debate': _this.debate,
+            'model': comment,
+            'parentView': _this.parentView
+          });
+          return commentView.render();
+        },
+        error: function(jqXHR, data) {
+          return _this.handleRemoteError(jqXHR, data);
+        }
+      });
+    };
+
+    NewSubcommentView.prototype.cancel = function() {
+      this.close();
+      return this.parentView.mergeBack();
+    };
+
+    NewSubcommentView.prototype.close = function() {
+      $(this.el).remove();
+      this.cancelEvents();
+      return this.unbind();
+    };
+
+    NewSubcommentView.prototype.handleKeys = function(e) {
+      if (e.keyCode === 27) {
+        this.cancel();
+        return false;
+      } else {
+        return true;
+      }
+    };
+
+    return NewSubcommentView;
+
+  })(Backbone.View);
+
+  (_base8 = Gruff.Views).Comments || (_base8.Comments = {});
+
   Gruff.Views.Comments.NewView = (function(_super) {
 
     __extends(NewView, _super);
@@ -820,7 +953,6 @@
     NewView.prototype.initialize = function(options) {
       var _this = this;
       this.template = _.template($('#comment-new-template').text());
-      this.attributeType = options.attributeType;
       this.model = new this.collection.model();
       this.model.collection = this.collection;
       this.parentModel = this.collection.parent;
@@ -854,7 +986,7 @@
       Backbone.ModelBinding.bind(this);
       this.setUpEvents();
       $(this.el).parent().find('.new-comment-link').hide();
-      $(this.el).find('#comment').focus();
+      this.$('#comment').focus();
       return this;
     };
 
@@ -889,7 +1021,7 @@
 
   })(Backbone.View);
 
-  (_base8 = Gruff.Views).Comments || (_base8.Comments = {});
+  (_base9 = Gruff.Views).Comments || (_base9.Comments = {});
 
   Gruff.Views.Comments.SegmentView = (function(_super) {
 
@@ -897,7 +1029,11 @@
 
     function SegmentView() {
       this.close = __bind(this.close, this);
+      this.textIndex = __bind(this.textIndex, this);
+      this.mergeBack = __bind(this.mergeBack, this);
       this.getClickIdx = __bind(this.getClickIdx, this);
+      this.renderForm = __bind(this.renderForm, this);
+      this.updateText = __bind(this.updateText, this);
       this.showNewCommentForm = __bind(this.showNewCommentForm, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       SegmentView.__super__.constructor.apply(this, arguments);
@@ -907,6 +1043,7 @@
       this.template = _.template($('#comments-segment-template').text());
       this.parentEl = options.parentEl;
       this.parentView = options.parentView;
+      this.debate = options.debate;
       this.segment = options.segment;
       return this.index = options.index;
     };
@@ -929,6 +1066,7 @@
         c = new Gruff.Models.Comment(comment);
         commentView = new Gruff.Views.Comments.ListItemView({
           'parentEl': _this.el,
+          'debate': _this.debate,
           'model': c,
           'parentView': _this
         });
@@ -950,10 +1088,26 @@
         text: this.segment.text.substring(0, idx),
         comments: []
       };
-      this.parentView.addNewSegment(newSegment, this.index);
+      this.previousView = this.parentView.addNewSegment(newSegment, this.index);
       this.parentView.reindex();
       this.segment.text = this.segment.text.substring(idx);
+      this.updateText();
+      return this.previousView.renderForm();
+    };
+
+    SegmentView.prototype.updateText = function() {
       return this.$('> .text').html(this.segment.text);
+    };
+
+    SegmentView.prototype.renderForm = function() {
+      this.newView = new Gruff.Views.Comments.NewSubcommentView({
+        'parentEl': this.$('> .comments'),
+        'debate': this.debate,
+        'model': this.model,
+        'segment': this.segment,
+        'parentView': this
+      });
+      return this.newView.render();
     };
 
     SegmentView.prototype.getClickIdx = function(e) {
@@ -968,6 +1122,14 @@
       }
       idx = clicked.focusOffset;
       return idx;
+    };
+
+    SegmentView.prototype.mergeBack = function() {
+      return this.parentView.mergeSegments(this.index);
+    };
+
+    SegmentView.prototype.textIndex = function() {
+      return this.parentView.textIndex(this.index);
     };
 
     SegmentView.prototype.close = function() {
@@ -1056,7 +1218,7 @@
 
   })(Backbone.View);
 
-  (_base9 = Gruff.Views).Debates || (_base9.Debates = {});
+  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
 
   Gruff.Views.Debates.DebateView = (function(_super) {
 
@@ -1089,7 +1251,7 @@
 
   })(Backbone.View);
 
-  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
 
   Gruff.Views.Debates.EditDescriptionView = (function(_super) {
 
@@ -1173,7 +1335,7 @@
 
   })(Backbone.View);
 
-  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
+  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
 
   Gruff.Views.Debates.EditTitleView = (function(_super) {
 
@@ -1260,7 +1422,7 @@
 
   })(Backbone.View);
 
-  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
+  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
 
   Gruff.Views.Debates.EditView = (function(_super) {
 
@@ -1298,7 +1460,7 @@
 
   })(Backbone.View);
 
-  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
+  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -1341,7 +1503,7 @@
 
   })(Backbone.View);
 
-  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
+  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -1715,7 +1877,7 @@
 
   })(Backbone.View);
 
-  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
+  (_base16 = Gruff.Views).Debates || (_base16.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -1791,7 +1953,7 @@
 
   })(Backbone.View);
 
-  (_base16 = Gruff.Views).Debates || (_base16.Debates = {});
+  (_base17 = Gruff.Views).Debates || (_base17.Debates = {});
 
   Gruff.Views.Debates.MiniListView = (function(_super) {
 
@@ -1863,7 +2025,7 @@
 
   })(Gruff.Views.Debates.ListView);
 
-  (_base17 = Gruff.Views).Debates || (_base17.Debates = {});
+  (_base18 = Gruff.Views).Debates || (_base18.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -1956,9 +2118,9 @@
 
   })(Backbone.View);
 
-  (_base18 = Gruff.Views).Debates || (_base18.Debates = {});
+  (_base19 = Gruff.Views).Debates || (_base19.Debates = {});
 
-  (_base19 = Gruff.Views.Debates).ShowViews || (_base19.ShowViews = {});
+  (_base20 = Gruff.Views.Debates).ShowViews || (_base20.ShowViews = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -2072,7 +2234,8 @@
       this.commentsView = new Gruff.Views.Comments.IndexView({
         el: this.$('> .comments'),
         collection: this.model.comments,
-        parentView: this
+        parentView: this,
+        debate: this.model
       });
       return this.commentsView.render();
     };
@@ -2615,7 +2778,7 @@
 
   })(Backbone.View);
 
-  (_base20 = Gruff.Views).Debates || (_base20.Debates = {});
+  (_base21 = Gruff.Views).Debates || (_base21.Debates = {});
 
   Gruff.Views.Debates.SimpleNewView = (function(_super) {
 
@@ -2673,7 +2836,7 @@
 
   })(Gruff.Views.Debates.NewView);
 
-  (_base21 = Gruff.Views).Debates || (_base21.Debates = {});
+  (_base22 = Gruff.Views).Debates || (_base22.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -2794,7 +2957,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base22 = Gruff.Views).Login || (_base22.Login = {});
+  (_base23 = Gruff.Views).Login || (_base23.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 
@@ -2850,7 +3013,7 @@
 
   })(Gruff.Views.ModalView);
 
-  (_base23 = Gruff.Views).References || (_base23.References = {});
+  (_base24 = Gruff.Views).References || (_base24.References = {});
 
   Gruff.Views.References.IndexView = (function(_super) {
 
@@ -2955,7 +3118,7 @@
 
   })(Backbone.View);
 
-  (_base24 = Gruff.Views).References || (_base24.References = {});
+  (_base25 = Gruff.Views).References || (_base25.References = {});
 
   Gruff.Views.References.ListItemView = (function(_super) {
 
@@ -3033,7 +3196,7 @@
 
   })(Backbone.View);
 
-  (_base25 = Gruff.Views).References || (_base25.References = {});
+  (_base26 = Gruff.Views).References || (_base26.References = {});
 
   Gruff.Views.References.NewView = (function(_super) {
 
@@ -3116,7 +3279,7 @@
 
   })(Backbone.View);
 
-  (_base26 = Gruff.Views).Tags || (_base26.Tags = {});
+  (_base27 = Gruff.Views).Tags || (_base27.Tags = {});
 
   Gruff.Views.Tags.IndexView = (function(_super) {
 
@@ -3257,7 +3420,7 @@
 
   })(Backbone.View);
 
-  (_base27 = Gruff.Views).Tags || (_base27.Tags = {});
+  (_base28 = Gruff.Views).Tags || (_base28.Tags = {});
 
   Gruff.Views.Tags.ShowView = (function(_super) {
 

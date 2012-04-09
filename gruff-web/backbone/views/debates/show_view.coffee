@@ -59,6 +59,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       el: @.$('> .comments')
       collection: @model.comments
       parentView: @
+      debate: @model
     @commentsView.render()
 
   renderParents: =>

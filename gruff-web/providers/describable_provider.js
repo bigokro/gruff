@@ -12,6 +12,10 @@ var Connection = require('mongodb').Connection;
 var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
+var Describable = require('../common/models/describable').Describable;
+var Comment = require('../common/models/comment').Comment;
+var ClassHelper = require('../common/lib/class_helper').ClassHelper;
+var classHelper = new ClassHelper();
 
 DescribableProvider = function(host, port) {
   this.db= new Db(process.env.DBNAME, new Server(host, port, {auto_reconnect: true}, {}));
@@ -25,17 +29,52 @@ DescribableProvider.prototype.getCollection= function(name, callback) {
   });
 };
 
-DescribableProvider.prototype.addComment = function(type, describableId, comment, callback) {
+DescribableProvider.prototype.addComment = function(type, describableId, commentId, txtIdx, comment, callback) {
   this.getCollection(type, function(error, describable_collection) {
 	  if( error ) callback( error );
 	  else {
-	    describable_collection.update(
-		    {_id: describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId)},
-		    {"$push": {comments: comment}},
-		    function(error, describable){
-		      if( error ) callback(error);
-		      else callback(null, describable)
-		    });
+      var objId = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      if (commentId === null) {
+        console.log("no comment id - adding to list of debate comments");
+  	    describable_collection.update(
+	  	    {_id: objId },
+		      {"$push": {comments: comment}},
+		      function(error, describable){
+		        if( error ) callback(error);
+		        else callback(null, describable);
+		      });
+      } else {
+        console.log("comment id provided - loading debate");
+        describable_collection.findOne({_id: objId}, function(error, result) {
+          if( error ) callback(error);
+	        else {
+            classHelper.augment(result, Describable);
+            var parentComment = result.findComment(commentId);
+            if (parentComment === null) {
+              console.log("couldn't find a matching subcomment");
+              callback(null, null);
+            } else {
+                console.log("subcomment found: " + parentComment.mongoIdx);
+                parentComment.addComment(commentId, txtIdx, comment);
+                console.log("finished add comment");
+                console.log(JSON.stringify(parentComment));
+                var updateCmd = {};
+                updateCmd["$set"] = {};
+                updateCmd["$set"][parentComment.mongoIdx] = parentComment;
+                describable_collection.update(
+                {_id: objId},
+                    updateCmd,
+                    function(error, updateResult) {
+                        if( error ) callback(error);
+	                      else {
+                            callback(null, parentComment);
+                        }                    
+                    }
+                );
+            }
+          }
+        });
+      }
 	  }
   });
 };

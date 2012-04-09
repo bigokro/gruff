@@ -1,9 +1,18 @@
-(function(exports){
+(function(isClient, exports){
 
 /* 
  * Provides functions for all domain model classes that can be "described"
  * (that is, they have a title and a description that can be chosen by popular vote)
  */
+
+    if (isClient) {
+var Comment = exports.Comment;
+var ClassHelper = exports.ClassHelper;
+    } else {
+var Comment = require('./comment').Comment;
+var ClassHelper = require('../lib/class_helper').ClassHelper;
+    }
+var classHelper = new ClassHelper();
 
 Describable = function() {
 };
@@ -155,7 +164,27 @@ Describable.prototype.setDescription = function(newDesc) {
     });
 };
 
+Describable.prototype.findComment = function(id) {
+    var comment = null;
+    var comments = this.safeGet("comments") || [];
+    for (var i=0; i<comments.length && comment === null; i++) {
+        var c = comments[i];
+        classHelper.augment(c, Comment);
+        c.mongoIdx = "comments." + i;
+        comment = c.findComment(id);
+    }
+    return comment;
+};
+
+Describable.prototype.augmentDescribable = function(describable) {
+    classHelper.augment(describable, Describable);
+    return describable;
+};
+
 
 exports.Describable = Describable;
 
-})(typeof exports === 'undefined'? this["GruffShared"] = {} : exports);
+})(
+   (typeof window !== 'undefined'),
+   (typeof exports === 'undefined' || typeof exports === 'DOMWindow') ? this["GruffShared"] = {} : exports
+  );

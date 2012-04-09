@@ -135,19 +135,26 @@ Comment.prototype.nextId = function() {
 };
 
 Comment.prototype.addComment = function(id, txtIdx, newComment) {
+    var textIndex = parseInt(txtIdx);
+    console.log("addComment("+id+", "+textIndex+", <newcomment>");
     var comment = this.findComment(id);
-    var bodyArr = comment.safeGet("body");
+    console.log("found comment with id "+comment.id);
+    var bodyArr = comment.safeGet("body") || [];
     var i = 0;
     var chars = 0;
     var segment = null;
-    for (; i < bodyArr.length && chars < txtIdx; i++) {
+    for (; i < bodyArr.length && chars < textIndex; i++) {
+        console.log("checking segment "+i);
         segment = bodyArr[i];
         chars += segment.text.length;
     }
-    if (chars === txtIdx) {
+    var segmentIdx = i-1;
+    if (chars === textIndex) {
+        console.log("adding comment to segment "+segmentIdx);
         segment.comments = segment.comments.concat(newComment);
     } else {
-        var newIdx = txtIdx - (chars - segment.text.length);
+        console.log("splitting segment "+segmentIdx);
+        var newIdx = textIndex - (chars - segment.text.length);
         var firstText = segment.text.substring(0, newIdx);
         var secondText = segment.text.substring(newIdx);
         var firstSegment = {
@@ -158,15 +165,15 @@ Comment.prototype.addComment = function(id, txtIdx, newComment) {
             text: secondText,
             comments: segment.comments
         };
-        var newBodyArr = bodyArr.slice(0, i).concat([firstSegment, secondSegment]).concat(bodyArr.slice(i+1));
+        var newBodyArr = bodyArr.slice(0, segmentIdx).concat([firstSegment, secondSegment]).concat(bodyArr.slice(segmentIdx+1));
         comment.safeSet({ body: newBodyArr });
     }
 };
 
 Comment.prototype.findComment = function(id) {
-    if (this.safeGet("id") === id) return this;
+    if (this.safeGet("id")+"" === id+"") return this;
     var subComments = this.subComments();
-    for (i=0; i < subComments.length; i++) {
+    for (var i=0; i < subComments.length; i++) {
         var subComment = this.augmentComment(subComments[i]);
         var result = subComment.findComment(id);
         if (result !== null) return result;
@@ -175,10 +182,17 @@ Comment.prototype.findComment = function(id) {
 };
 
 Comment.prototype.subComments = function() {
-    var bodyArr = this.safeGet("body");
+    if (typeof(this.mongoIdx) === 'undefined') {
+      this.mongoIdx = "";
+    }
+    var bodyArr = this.safeGet("body") || [];
     var comments = [];
-    for (i=0; i < bodyArr.length; i++) {
-        comments = comments.concat(bodyArr[i].comments);
+    for (var i=0; i < bodyArr.length; i++) {
+        for (var j=0; j < bodyArr[i].comments.length; j++) {
+            var comment = bodyArr[i].comments[j];
+            comment.mongoIdx = this.mongoIdx + ".body." + i + ".comments." + j;
+            comments.push(comment);
+        }
     }
     return comments;
 };
