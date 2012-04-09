@@ -34,9 +34,9 @@ class Gruff.Views.Comments.NewSubcommentView extends Backbone.View
       url: "/rest/debates/"+@debate.id+"/comments/"+@model.id+"/"+@parentView.textIndex()
       data:
         comment: @formEl.val()
-      success: =>
+      success: (data) =>
         @close()
-        comment = new Gruff.Models.Comment(new exports.Comment("testuser", @formEl.val(), false))
+        comment = new Gruff.Models.Comment(data)
         commentView = new Gruff.Views.Comments.ListItemView
           'parentEl': @parentView.el
           'debate': @debate

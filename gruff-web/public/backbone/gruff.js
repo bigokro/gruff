@@ -896,10 +896,10 @@
         data: {
           comment: this.formEl.val()
         },
-        success: function() {
+        success: function(data) {
           var comment, commentView;
           _this.close();
-          comment = new Gruff.Models.Comment(new exports.Comment("testuser", _this.formEl.val(), false));
+          comment = new Gruff.Models.Comment(data);
           commentView = new Gruff.Views.Comments.ListItemView({
             'parentEl': _this.parentView.el,
             'debate': _this.debate,
@@ -1092,7 +1092,8 @@
       this.parentView.reindex();
       this.segment.text = this.segment.text.substring(idx);
       this.updateText();
-      return this.previousView.renderForm();
+      this.previousView.renderForm();
+      return false;
     };
 
     SegmentView.prototype.updateText = function() {

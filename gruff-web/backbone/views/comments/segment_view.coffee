@@ -44,6 +44,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
     @segment.text = @segment.text.substring(idx)
     @updateText()
     @previousView.renderForm()
+    false
 
   updateText: =>
     @.$('> .text').html @segment.text
