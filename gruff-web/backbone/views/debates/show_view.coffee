@@ -17,7 +17,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     
   render: ->
     json = @model.fullJSON()
-    json.loggedIn = true
     json.typeHeading = @getTypeHeading()
     $(@el).html(@template json)
     @zoomLink = @.$('> .canvas-title .zoom-link')
@@ -333,7 +332,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         success: (subdebates, response) =>
           @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
           json = @model.fullJSON()
-          json.loggedIn = true
           json.objecttype = "debates"
           json.objectid = json.linkableId
           json.attributetype = ""

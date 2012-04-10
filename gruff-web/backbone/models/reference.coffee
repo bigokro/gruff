@@ -20,6 +20,7 @@ class Gruff.Models.Reference extends Backbone.Model
     json.bestTitle = "(no title)" unless json.bestTitle?
     json.bestDescription = @bestDescriptionText()
     json.linkableId = @linkableId()
+    json.user = Gruff.User.fullJSON()
     json
 
   updateGlobalHash: ->

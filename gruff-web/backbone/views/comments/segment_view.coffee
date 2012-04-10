@@ -12,7 +12,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
   render: ->
     json = {}
     json.text = @segment.text
-    json.loggedIn = true
+    json.user = Gruff.User.fullJSON()
     if $(@parentEl).children().length == 0 || @index == 0
       $(@parentEl).prepend(@template json)
     else

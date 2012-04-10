@@ -28,6 +28,7 @@ class Gruff.Models.Debate extends Backbone.Model
     json.titleLink = @titleLink()
     json.attributeType = @get("attributeType")
     json.DebateTypes = @DebateTypes
+    json.user = Gruff.User.fullJSON()
     json
 
   normalize: ->

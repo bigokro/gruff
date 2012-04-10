@@ -1,5 +1,5 @@
 (function() {
-  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base28, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+  var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base28, _base29, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -43,6 +43,13 @@
     Comment.prototype.save = function() {
       this.updateUrl();
       return Comment.__super__.save.apply(this, arguments);
+    };
+
+    Comment.prototype.fullJSON = function() {
+      var json;
+      json = this.toJSON();
+      json.user = Gruff.User.fullJSON();
+      return json;
     };
 
     return Comment;
@@ -117,6 +124,7 @@
       json.titleLink = this.titleLink();
       json.attributeType = this.get("attributeType");
       json.DebateTypes = this.DebateTypes;
+      json.user = Gruff.User.fullJSON();
       return json;
     };
 
@@ -406,6 +414,7 @@
       if (json.bestTitle == null) json.bestTitle = "(no title)";
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
+      json.user = Gruff.User.fullJSON();
       return json;
     };
 
@@ -495,6 +504,13 @@
       return Tag.__super__.save.apply(this, arguments);
     };
 
+    Tag.prototype.fullJSON = function() {
+      var json;
+      json = this.toJSON();
+      json.user = Gruff.User.fullJSON();
+      return json;
+    };
+
     return Tag;
 
   })(Backbone.Model);
@@ -529,6 +545,40 @@
     return Tags;
 
   })(Backbone.Collection);
+
+  (_base5 = Gruff.Models).Users || (_base5.Users = {});
+
+  Gruff.Models.User = (function(_super) {
+
+    __extends(User, _super);
+
+    function User() {
+      this.fullJSON = __bind(this.fullJSON, this);
+      User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.paramRoot = '';
+
+    User.prototype.idAttribute = '_id';
+
+    User.prototype.url = '/rest/user';
+
+    User.prototype.initialize = function(options) {};
+
+    User.prototype.fullJSON = function() {
+      var json;
+      json = this.toJSON();
+      json.curator = json.login === 'thigh' || json.login === 'biggusgruffus';
+      return json;
+    };
+
+    return User;
+
+  })(Backbone.Model);
+
+  Gruff.User = new Gruff.Models.User();
+
+  Gruff.User.fetch();
 
   Gruff.Routers.DebatesRouter = (function(_super) {
 
@@ -590,7 +640,7 @@
 
   })(Backbone.Router);
 
-  (_base5 = Gruff.Views).Comments || (_base5.Comments = {});
+  (_base6 = Gruff.Views).Comments || (_base6.Comments = {});
 
   Gruff.Views.Comments.IndexView = (function(_super) {
 
@@ -619,7 +669,7 @@
         _this = this;
       json = {};
       json.id = this.parentModel.id;
-      json.loggedIn = true;
+      json.user = Gruff.User.fullJSON();
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".new-comment-link");
       this.listEl = this.$('.comments-list');
@@ -699,7 +749,7 @@
 
   })(Backbone.View);
 
-  (_base6 = Gruff.Views).Comments || (_base6.Comments = {});
+  (_base7 = Gruff.Views).Comments || (_base7.Comments = {});
 
   Gruff.Views.Comments.ListItemView = (function(_super) {
 
@@ -736,8 +786,7 @@
           id: this.model.nextId()
         });
       }
-      json = this.model.toJSON();
-      json.loggedIn = true;
+      json = this.model.fullJSON();
       $(this.parentEl).append(this.template(json));
       this.el = $(this.parentEl).find('#' + this.model.id + '-comment');
       this.bodyEl = this.$('> .comment');
@@ -840,7 +889,7 @@
 
   })(Backbone.View);
 
-  (_base7 = Gruff.Views).Comments || (_base7.Comments = {});
+  (_base8 = Gruff.Views).Comments || (_base8.Comments = {});
 
   Gruff.Views.Comments.NewSubcommentView = (function(_super) {
 
@@ -938,7 +987,7 @@
 
   })(Backbone.View);
 
-  (_base8 = Gruff.Views).Comments || (_base8.Comments = {});
+  (_base9 = Gruff.Views).Comments || (_base9.Comments = {});
 
   Gruff.Views.Comments.NewView = (function(_super) {
 
@@ -1021,7 +1070,7 @@
 
   })(Backbone.View);
 
-  (_base9 = Gruff.Views).Comments || (_base9.Comments = {});
+  (_base10 = Gruff.Views).Comments || (_base10.Comments = {});
 
   Gruff.Views.Comments.SegmentView = (function(_super) {
 
@@ -1053,7 +1102,7 @@
         _this = this;
       json = {};
       json.text = this.segment.text;
-      json.loggedIn = true;
+      json.user = Gruff.User.fullJSON();
       if ($(this.parentEl).children().length === 0 || this.index === 0) {
         $(this.parentEl).prepend(this.template(json));
       } else {
@@ -1219,7 +1268,7 @@
 
   })(Backbone.View);
 
-  (_base10 = Gruff.Views).Debates || (_base10.Debates = {});
+  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
 
   Gruff.Views.Debates.DebateView = (function(_super) {
 
@@ -1252,7 +1301,7 @@
 
   })(Backbone.View);
 
-  (_base11 = Gruff.Views).Debates || (_base11.Debates = {});
+  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
 
   Gruff.Views.Debates.EditDescriptionView = (function(_super) {
 
@@ -1336,7 +1385,7 @@
 
   })(Backbone.View);
 
-  (_base12 = Gruff.Views).Debates || (_base12.Debates = {});
+  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
 
   Gruff.Views.Debates.EditTitleView = (function(_super) {
 
@@ -1423,7 +1472,7 @@
 
   })(Backbone.View);
 
-  (_base13 = Gruff.Views).Debates || (_base13.Debates = {});
+  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
 
   Gruff.Views.Debates.EditView = (function(_super) {
 
@@ -1461,7 +1510,7 @@
 
   })(Backbone.View);
 
-  (_base14 = Gruff.Views).Debates || (_base14.Debates = {});
+  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
 
   Gruff.Views.Debates.IndexView = (function(_super) {
 
@@ -1504,7 +1553,7 @@
 
   })(Backbone.View);
 
-  (_base15 = Gruff.Views).Debates || (_base15.Debates = {});
+  (_base16 = Gruff.Views).Debates || (_base16.Debates = {});
 
   Gruff.Views.Debates.ListItemView = (function(_super) {
 
@@ -1660,7 +1709,6 @@
         containerEl = this.$('> div.answers');
       }
       json = this.model.fullJSON();
-      json.loggedIn = true;
       if (!$(this.el).hasClass('ui-draggable-dragging')) {
         if (this.model.get("type") === this.model.DebateTypes.DIALECTIC) {
           this.$('div.arguments').show();
@@ -1878,7 +1926,7 @@
 
   })(Backbone.View);
 
-  (_base16 = Gruff.Views).Debates || (_base16.Debates = {});
+  (_base17 = Gruff.Views).Debates || (_base17.Debates = {});
 
   Gruff.Views.Debates.ListView = (function(_super) {
 
@@ -1954,7 +2002,7 @@
 
   })(Backbone.View);
 
-  (_base17 = Gruff.Views).Debates || (_base17.Debates = {});
+  (_base18 = Gruff.Views).Debates || (_base18.Debates = {});
 
   Gruff.Views.Debates.MiniListView = (function(_super) {
 
@@ -2026,7 +2074,7 @@
 
   })(Gruff.Views.Debates.ListView);
 
-  (_base18 = Gruff.Views).Debates || (_base18.Debates = {});
+  (_base19 = Gruff.Views).Debates || (_base19.Debates = {});
 
   Gruff.Views.Debates.NewView = (function(_super) {
 
@@ -2119,9 +2167,9 @@
 
   })(Backbone.View);
 
-  (_base19 = Gruff.Views).Debates || (_base19.Debates = {});
+  (_base20 = Gruff.Views).Debates || (_base20.Debates = {});
 
-  (_base20 = Gruff.Views.Debates).ShowViews || (_base20.ShowViews = {});
+  (_base21 = Gruff.Views.Debates).ShowViews || (_base21.ShowViews = {});
 
   Gruff.Views.Debates.ShowView = (function(_super) {
 
@@ -2184,7 +2232,6 @@
     ShowView.prototype.render = function() {
       var json;
       json = this.model.fullJSON();
-      json.loggedIn = true;
       json.typeHeading = this.getTypeHeading();
       $(this.el).html(this.template(json));
       this.zoomLink = this.$('> .canvas-title .zoom-link');
@@ -2571,7 +2618,6 @@
             var json, _ref;
             _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
             json = _this.model.fullJSON();
-            json.loggedIn = true;
             json.objecttype = "debates";
             json.objectid = json.linkableId;
             json.attributetype = "";
@@ -2779,7 +2825,7 @@
 
   })(Backbone.View);
 
-  (_base21 = Gruff.Views).Debates || (_base21.Debates = {});
+  (_base22 = Gruff.Views).Debates || (_base22.Debates = {});
 
   Gruff.Views.Debates.SimpleNewView = (function(_super) {
 
@@ -2837,7 +2883,7 @@
 
   })(Gruff.Views.Debates.NewView);
 
-  (_base22 = Gruff.Views).Debates || (_base22.Debates = {});
+  (_base23 = Gruff.Views).Debates || (_base23.Debates = {});
 
   Gruff.Views.Debates.SubdebateView = (function(_super) {
 
@@ -2958,7 +3004,7 @@
 
   })(Gruff.Views.Debates.ShowView);
 
-  (_base23 = Gruff.Views).Login || (_base23.Login = {});
+  (_base24 = Gruff.Views).Login || (_base24.Login = {});
 
   Gruff.Views.Login.LoginView = (function(_super) {
 
@@ -2998,6 +3044,7 @@
       e.stopPropagation();
       return this.model.save(null, {
         success: function() {
+          Gruff.User.fetch();
           return _this.close();
         },
         error: function(data, jqXHR) {
@@ -3014,7 +3061,7 @@
 
   })(Gruff.Views.ModalView);
 
-  (_base24 = Gruff.Views).References || (_base24.References = {});
+  (_base25 = Gruff.Views).References || (_base25.References = {});
 
   Gruff.Views.References.IndexView = (function(_super) {
 
@@ -3042,7 +3089,7 @@
         _this = this;
       json = {};
       json.id = this.parentModel.id;
-      json.loggedIn = true;
+      json.user = Gruff.User.fullJSON();
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".new-reference-link");
       this.formEl = $('#' + this.parentModel.id + '-new-reference-div');
@@ -3119,7 +3166,7 @@
 
   })(Backbone.View);
 
-  (_base25 = Gruff.Views).References || (_base25.References = {});
+  (_base26 = Gruff.Views).References || (_base26.References = {});
 
   Gruff.Views.References.ListItemView = (function(_super) {
 
@@ -3147,7 +3194,6 @@
     ListItemView.prototype.render = function() {
       var json;
       json = this.model.fullJSON();
-      json.loggedIn = true;
       $(this.parentEl).find('h3').after(this.template(json));
       this.el = $(this.parentEl).find('#' + this.model.id);
       this.externalEl = this.$("> h4.title a.external-link");
@@ -3197,7 +3243,7 @@
 
   })(Backbone.View);
 
-  (_base26 = Gruff.Views).References || (_base26.References = {});
+  (_base27 = Gruff.Views).References || (_base27.References = {});
 
   Gruff.Views.References.NewView = (function(_super) {
 
@@ -3280,7 +3326,7 @@
 
   })(Backbone.View);
 
-  (_base27 = Gruff.Views).Tags || (_base27.Tags = {});
+  (_base28 = Gruff.Views).Tags || (_base28.Tags = {});
 
   Gruff.Views.Tags.IndexView = (function(_super) {
 
@@ -3310,7 +3356,7 @@
         _this = this;
       json = {};
       json.id = this.parentModel.id;
-      json.loggedIn = true;
+      json.user = Gruff.User.fullJSON();
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".show-add-tag-form a");
       this.formEl = this.$(".add-tag-form");
@@ -3421,7 +3467,7 @@
 
   })(Backbone.View);
 
-  (_base28 = Gruff.Views).Tags || (_base28.Tags = {});
+  (_base29 = Gruff.Views).Tags || (_base29.Tags = {});
 
   Gruff.Views.Tags.ShowView = (function(_super) {
 
@@ -3447,8 +3493,7 @@
 
     ShowView.prototype.render = function() {
       var json;
-      json = this.model.toJSON();
-      json.loggedIn = true;
+      json = this.model.fullJSON();
       $(this.parentEl).find('.label').after(this.template(json));
       this.el = $(this.parentEl).find('#' + this.model.get("name").replace(" ", "\\ ") + '-tag');
       this.deleteEl = this.$("> a.delete-tag");

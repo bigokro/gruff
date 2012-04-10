@@ -86,6 +86,18 @@ exports.getDebate = function(req, res) {
   });
 };
 
+exports.getCurrentUser = function(req, res) {
+  if (req.loggedIn) {
+    res.json({
+      _id: req.user._id
+      , login: req.user.login
+      , email: req.user.email
+    });
+  } else {
+    res.json({});
+  }
+};
+
 exports.getReferences = function(req, res) {
   referenceProvider.findAllByDebateId(req.params.id, function(error, references) {
     if (handleError(req, res, error, references)) {

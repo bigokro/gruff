@@ -99,7 +99,6 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
     else
       containerEl = @.$('> div.answers')
     json = @model.fullJSON()
-    json.loggedIn = true
     unless $(@el).hasClass('ui-draggable-dragging')
       if @model.get("type") == @model.DebateTypes.DIALECTIC
         @.$('div.arguments').show()

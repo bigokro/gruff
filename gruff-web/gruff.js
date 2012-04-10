@@ -125,6 +125,7 @@ app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', ro
 app.post('/:objecttype/comments/new', routes.postComment);
 
 // json
+app.get('/rest/user', routes.getCurrentUser);
 app.get('/rest/tags', routes.getTagSearch);
 app.get('/rest/tags/counts', routes.getTagCounts);
 app.get('/rest/:objecttype/:objectid/tag/:tag', routes.getTag);
@@ -158,4 +159,3 @@ app.get('*', routes.handle404);
 everyauth.helpExpress(app);
 app.listen(port);
 console.log('Gruff listening on port ' + app.address().port + ' in ' + app.settings.env + ' mode');
-console.log(everyauth.facebook.configurable());

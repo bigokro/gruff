@@ -9,8 +9,7 @@ class Gruff.Views.Tags.ShowView extends Backbone.View
     @parentModel ||= @parentView?.parentModel
 
   render: ->
-    json = @model.toJSON()
-    json.loggedIn = true
+    json = @model.fullJSON()
     $(@parentEl).find('.label').after(@template json)
     @el = $(@parentEl).find('#'+@model.get("name").replace(" ", "\\ ")+'-tag')
     @deleteEl = @.$("> a.delete-tag")

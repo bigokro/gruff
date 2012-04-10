@@ -26,6 +26,7 @@ class Gruff.Views.Login.LoginView extends Gruff.Views.ModalView
     e.stopPropagation()
     @model.save(null,
       success: =>
+        Gruff.User.fetch()
         @close()
       error: (data, jqXHR) =>
         if jqXHR.responseText.indexOf('Login failed') > 0

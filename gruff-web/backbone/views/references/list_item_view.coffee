@@ -10,7 +10,6 @@ class Gruff.Views.References.ListItemView extends Backbone.View
 
   render: ->
     json = @model.fullJSON()
-    json.loggedIn = true
     $(@parentEl).find('h3').after(@template json)
     @el = $(@parentEl).find('#'+@model.id)
     @externalEl = @.$("> h4.title a.external-link")

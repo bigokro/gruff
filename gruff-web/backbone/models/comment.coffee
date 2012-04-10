@@ -19,6 +19,11 @@ class Gruff.Models.Comment extends Backbone.Model
     @updateUrl()
     super
 
+  fullJSON: () ->
+    json = @toJSON()
+    json.user = Gruff.User.fullJSON()
+    json
+
 class Gruff.Collections.Comments extends Backbone.Collection
   model: Gruff.Models.Comment
 

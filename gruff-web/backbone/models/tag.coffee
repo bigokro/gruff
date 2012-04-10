@@ -18,6 +18,11 @@ class Gruff.Models.Tag extends Backbone.Model
     @updateUrl()
     super
 
+  fullJSON: () ->
+    json = @toJSON()
+    json.user = Gruff.User.fullJSON()
+    json
+
 class Gruff.Collections.Tags extends Backbone.Collection
   model: Gruff.Models.Tag
 

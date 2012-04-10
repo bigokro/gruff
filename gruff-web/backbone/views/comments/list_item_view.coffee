@@ -11,8 +11,7 @@ class Gruff.Views.Comments.ListItemView extends Backbone.View
 
   render: ->
     @model.set({ id: @model.nextId()}) unless @model.id
-    json = @model.toJSON()
-    json.loggedIn = true
+    json = @model.fullJSON()
     $(@parentEl).append(@template json)
     @el = $(@parentEl).find('#'+@model.id+'-comment')
     @bodyEl = @.$('> .comment')

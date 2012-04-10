@@ -11,7 +11,7 @@ class Gruff.Views.References.IndexView extends Backbone.View
   render: ->
     json = {}
     json.id = @parentModel.id
-    json.loggedIn = true
+    json.user = Gruff.User.fullJSON()
     $(@el).html(@template json)
     @showFormEl = @.$(".new-reference-link")
     @formEl = $('#'+@parentModel.id+'-new-reference-div')

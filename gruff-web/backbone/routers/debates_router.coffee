@@ -1,3 +1,6 @@
+Gruff.User = new Gruff.Models.User()
+Gruff.User.fetch()
+
 class Gruff.Routers.DebatesRouter extends Backbone.Router
 
   routes:
