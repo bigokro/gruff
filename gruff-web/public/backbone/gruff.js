@@ -553,6 +553,8 @@
     __extends(User, _super);
 
     function User() {
+      this.isLogged = __bind(this.isLogged, this);
+      this.isCurator = __bind(this.isCurator, this);
       this.fullJSON = __bind(this.fullJSON, this);
       User.__super__.constructor.apply(this, arguments);
     }
@@ -568,9 +570,19 @@
     User.prototype.fullJSON = function() {
       var json;
       json = this.toJSON();
-      if (json._id) json.logged = true;
-      json.curator = json.login === 'thigh' || json.login === 'biggusgruffus';
+      json.logged = this.isLogged();
+      json.curator = this.isCurator();
       return json;
+    };
+
+    User.prototype.isCurator = function() {
+      var login;
+      login = this.get("login");
+      return login === 'thigh' || login === 'biggusgruffus';
+    };
+
+    User.prototype.isLogged = function() {
+      return this.id != null;
     };
 
     return User;
@@ -1788,82 +1800,88 @@
 
     ListItemView.prototype.setUpDragDrop = function() {
       var _this = this;
-      this.$('> h4 a.title-link').droppable({
-        accept: '.subdebate, .argument, .debate, .answer',
-        hoverClass: 'over',
-        greedy: true,
-        tolerance: 'pointer',
-        over: function(e, ui) {
-          _this.$('> h4').addClass('over');
-          return _this.hoverTimeout = setTimeout(function() {
-            return _this.doToggleInfo(e, ui);
-          }, 500);
-        },
-        out: function(e, ui) {
-          clearTimeout(_this.hoverTimeout);
-          return _this.$('> h4').removeClass('over');
-        },
-        drop: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          return _this.mergeDebates(dragged, event.target);
-        }
-      });
-      this.$('> h4 a.zoom-link').droppable({
-        accept: '.subdebate, .argument, .debate, .answer',
-        greedy: true,
-        tolerance: 'pointer',
-        over: function(e, ui) {
-          _this.$('> h4').addClass('over');
-          return _this.hoverTimeout = setTimeout(function() {
-            _this.$('> h4').removeClass('over');
-            return _this.zoom();
-          }, 500);
-        },
-        out: function(e, ui) {
-          clearTimeout(_this.hoverTimeout);
-          return _this.$('> h4').removeClass('over');
-        },
-        drop: function(event, ui) {
-          return alert("Dropping a debate onto the zoom link does nothing");
-        }
-      });
-      return $(this.el).draggable({
-        revert: true,
-        refreshPositions: true,
-        distance: 5,
-        helper: 'clone',
-        appendTo: "body",
-        cursorAt: {
-          left: 0
-        },
-        start: function(e, ui) {
-          var cloneEl;
-          _this.dontShowInfo = true;
-          _this.hideInfo();
-          _this.$('> h4').css('opacity', 0);
-          cloneEl = ui.helper;
-          cloneEl.find('div, a.zoom-link').remove();
-          cloneEl.find('div, a.delete-link').remove();
-          return cloneEl.attr('id', _this.model.id);
-        },
-        stop: function(e, ui) {
-          _this.resolveZoom();
-          return _this.$('> h4').css('opacity', 1);
-        }
-      });
+      if (Gruff.User.isCurator()) {
+        this.$('> h4 a.title-link').droppable({
+          accept: '.subdebate, .argument, .debate, .answer',
+          hoverClass: 'over',
+          greedy: true,
+          tolerance: 'pointer',
+          over: function(e, ui) {
+            _this.$('> h4').addClass('over');
+            return _this.hoverTimeout = setTimeout(function() {
+              return _this.doToggleInfo(e, ui);
+            }, 500);
+          },
+          out: function(e, ui) {
+            clearTimeout(_this.hoverTimeout);
+            return _this.$('> h4').removeClass('over');
+          },
+          drop: function(event, ui) {
+            var dragged;
+            dragged = ui.draggable[0];
+            return _this.mergeDebates(dragged, event.target);
+          }
+        });
+        this.$('> h4 a.zoom-link').droppable({
+          accept: '.subdebate, .argument, .debate, .answer',
+          greedy: true,
+          tolerance: 'pointer',
+          over: function(e, ui) {
+            _this.$('> h4').addClass('over');
+            return _this.hoverTimeout = setTimeout(function() {
+              _this.$('> h4').removeClass('over');
+              return _this.zoom();
+            }, 500);
+          },
+          out: function(e, ui) {
+            clearTimeout(_this.hoverTimeout);
+            return _this.$('> h4').removeClass('over');
+          },
+          drop: function(event, ui) {
+            return alert("Dropping a debate onto the zoom link does nothing");
+          }
+        });
+        return $(this.el).draggable({
+          revert: true,
+          refreshPositions: true,
+          distance: 5,
+          helper: 'clone',
+          appendTo: "body",
+          cursorAt: {
+            left: 0
+          },
+          start: function(e, ui) {
+            var cloneEl;
+            _this.dontShowInfo = true;
+            _this.hideInfo();
+            _this.$('> h4').css('opacity', 0);
+            cloneEl = ui.helper;
+            cloneEl.find('div, a.zoom-link').remove();
+            cloneEl.find('div, a.delete-link').remove();
+            return cloneEl.attr('id', _this.model.id);
+          },
+          stop: function(e, ui) {
+            _this.resolveZoom();
+            return _this.$('> h4').css('opacity', 1);
+          }
+        });
+      }
     };
 
     ListItemView.prototype.disableDragDrop = function() {
-      this.$('> h4 a.title-link').droppable("disable");
-      this.$('> h4 a.zoom-link').droppable("disable");
-      return $(this.el).draggable("disable");
+      if (Gruff.User.isCurator()) {
+        this.$('> h4 a.title-link').droppable("disable");
+        this.$('> h4 a.zoom-link').droppable("disable");
+        return $(this.el).draggable("disable");
+      }
     };
 
     ListItemView.prototype.enableDragDrop = function() {
-      this.$('> h4 a.title-link').droppable("enable");
-      this.$('> h4 a.zoom-link').droppable("enable");
-      return $(this.el).draggable("enable");
+      if (Gruff.User.isCurator()) {
+        this.$('> h4 a.title-link').droppable("enable");
+        this.$('> h4 a.zoom-link').droppable("enable");
+        return $(this.el).draggable("enable");
+      }
     };
 
     ListItemView.prototype.handleModelChanges = function(model, options) {
@@ -2485,55 +2503,59 @@
 
     ShowView.prototype.setUpDragDrop = function() {
       var _this;
-      _this = this;
-      return this.mySubdebateLists().droppable({
-        accept: '.subdebate, .argument, .debate, .answer',
-        tolerance: 'pointer',
-        drop: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          $(this).removeClass('over');
-          if ($(dragged).parent().parent()[0] !== this) {
-            _this.moveDebate(dragged, $(this));
-            ui.helper.hide();
-            return _this.focus();
+      if (Gruff.User.isCurator()) {
+        _this = this;
+        return this.mySubdebateLists().droppable({
+          accept: '.subdebate, .argument, .debate, .answer',
+          tolerance: 'pointer',
+          drop: function(event, ui) {
+            var dragged;
+            dragged = ui.draggable[0];
+            $(this).removeClass('over');
+            if ($(dragged).parent().parent()[0] !== this) {
+              _this.moveDebate(dragged, $(this));
+              ui.helper.hide();
+              return _this.focus();
+            }
+          },
+          over: function(event, ui) {
+            var dragged;
+            dragged = ui.draggable[0];
+            if ($(dragged).parent().parent()[0] !== this) {
+              return $(this).addClass('over');
+            }
+          },
+          out: function(event, ui) {
+            return $(this).removeClass('over');
           }
-        },
-        over: function(event, ui) {
-          var dragged;
-          dragged = ui.draggable[0];
-          if ($(dragged).parent().parent()[0] !== this) {
-            return $(this).addClass('over');
-          }
-        },
-        out: function(event, ui) {
-          return $(this).removeClass('over');
-        }
-      });
+        });
+      }
     };
 
     ShowView.prototype.setUpZoomLinkDragDrop = function() {
       var _this = this;
-      return this.$('> .canvas-title').add(this.zoomLink).droppable({
-        accept: '.subdebate, .argument, .debate, .answer',
-        greedy: true,
-        tolerance: 'pointer',
-        over: function(e, ui) {
-          _this.$('> .canvas-title').addClass('over');
-          return _this.hoverTimeout = setTimeout(function() {
-            _this.maximize();
-            ui.helper.show();
-            return ui.draggable.show();
-          }, 500);
-        },
-        out: function(e, ui) {
-          _this.$('> .canvas-title').removeClass('over');
-          return clearTimeout(_this.hoverTimeout);
-        },
-        drop: function(event, ui) {
-          return alert("Dropping a debate onto the zoom link does nothing");
-        }
-      });
+      if (Gruff.User.isCurator()) {
+        return this.$('> .canvas-title').add(this.zoomLink).droppable({
+          accept: '.subdebate, .argument, .debate, .answer',
+          greedy: true,
+          tolerance: 'pointer',
+          over: function(e, ui) {
+            _this.$('> .canvas-title').addClass('over');
+            return _this.hoverTimeout = setTimeout(function() {
+              _this.maximize();
+              ui.helper.show();
+              return ui.draggable.show();
+            }, 500);
+          },
+          out: function(e, ui) {
+            _this.$('> .canvas-title').removeClass('over');
+            return clearTimeout(_this.hoverTimeout);
+          },
+          drop: function(event, ui) {
+            return alert("Dropping a debate onto the zoom link does nothing");
+          }
+        });
+      }
     };
 
     ShowView.prototype.disableDragDrop = function() {

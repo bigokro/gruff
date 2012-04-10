@@ -3,7 +3,9 @@
     <h4 class="title">
       <a href="<%=linkableId%>" class="title-link"><%= bestTitle %></a>
       <a href="<%=linkableId%>" class="zoom-link">(zoom)</a>
+  <% if (user.curator) { %>
       <a href="#" class="delete-link">(del)</a>
+  <% } %>
     </h4>
     <div class="body description selectable" style="display:none;"><%= bestDescription %></div>
   <% if (type === DebateTypes.DIALECTIC) { %>

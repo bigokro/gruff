@@ -162,76 +162,79 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
   closeModalView: ->
 
   setUpDragDrop: =>
-    @.$('> h4 a.title-link').droppable(
-      accept: '.subdebate, .argument, .debate, .answer'
-      hoverClass: 'over'
-      greedy: true
-      tolerance: 'pointer'
-      over: (e, ui) =>
-        @.$('> h4').addClass('over')
-        @hoverTimeout = setTimeout( 
-          () => 
-            @doToggleInfo(e, ui)
-          , 500
-        )
-      out: (e, ui) =>
-        clearTimeout @hoverTimeout
-        @.$('> h4').removeClass('over')
-      drop: ( event, ui ) =>
-        dragged = ui.draggable[0]
-        @mergeDebates dragged, event.target
-    )
+    if Gruff.User.isCurator()
+      @.$('> h4 a.title-link').droppable(
+        accept: '.subdebate, .argument, .debate, .answer'
+        hoverClass: 'over'
+        greedy: true
+        tolerance: 'pointer'
+        over: (e, ui) =>
+          @.$('> h4').addClass('over')
+          @hoverTimeout = setTimeout( 
+            () => 
+              @doToggleInfo(e, ui)
+            , 500
+          )
+        out: (e, ui) =>
+          clearTimeout @hoverTimeout
+          @.$('> h4').removeClass('over')
+        drop: ( event, ui ) =>
+          dragged = ui.draggable[0]
+          @mergeDebates dragged, event.target
+      )
 
-    @.$('> h4 a.zoom-link').droppable(
-      accept: '.subdebate, .argument, .debate, .answer'
-      greedy: true
-      tolerance: 'pointer'
-      over: (e, ui) =>
-        @.$('> h4').addClass('over')
-        @hoverTimeout = setTimeout( 
-          () => 
-            @.$('> h4').removeClass('over')
-            @zoom()
-          , 500
-        )
-      out: (e, ui) =>
-        clearTimeout @hoverTimeout
-        @.$('> h4').removeClass('over')
-      drop: ( event, ui ) =>
-        alert "Dropping a debate onto the zoom link does nothing"
-    )
+      @.$('> h4 a.zoom-link').droppable(
+        accept: '.subdebate, .argument, .debate, .answer'
+        greedy: true
+        tolerance: 'pointer'
+        over: (e, ui) =>
+          @.$('> h4').addClass('over')
+          @hoverTimeout = setTimeout( 
+            () => 
+              @.$('> h4').removeClass('over')
+              @zoom()
+            , 500
+          )
+        out: (e, ui) =>
+          clearTimeout @hoverTimeout
+          @.$('> h4').removeClass('over')
+        drop: ( event, ui ) =>
+          alert "Dropping a debate onto the zoom link does nothing"
+      )
 
-    $(@el).draggable(
-      revert: true
-      refreshPositions: true
-      distance: 5
-      helper: 'clone'
-      appendTo: "body"
-      cursorAt:
-        left: 0
-      start: (e, ui) =>
-        @dontShowInfo = true
-        @hideInfo()
-        @.$('> h4').css('opacity', 0)
-
-        cloneEl = ui.helper
-        cloneEl.find('div, a.zoom-link').remove()
-        cloneEl.find('div, a.delete-link').remove()
-        cloneEl.attr('id', @model.id)
-      stop: (e, ui) =>
-        @resolveZoom()
-        @.$('> h4').css('opacity', 1)
-    )
+      $(@el).draggable(
+        revert: true
+        refreshPositions: true
+        distance: 5
+        helper: 'clone'
+        appendTo: "body"
+        cursorAt:
+          left: 0
+        start: (e, ui) =>
+          @dontShowInfo = true
+          @hideInfo()
+          @.$('> h4').css('opacity', 0)
+  
+          cloneEl = ui.helper
+          cloneEl.find('div, a.zoom-link').remove()
+          cloneEl.find('div, a.delete-link').remove()
+          cloneEl.attr('id', @model.id)
+        stop: (e, ui) =>
+          @resolveZoom()
+          @.$('> h4').css('opacity', 1)
+      )
 
   disableDragDrop: ->
-    @.$('> h4 a.title-link').droppable("disable")
-    @.$('> h4 a.zoom-link').droppable("disable")
-    $(@el).draggable("disable")
+    if Gruff.User.isCurator()
+      @.$('> h4 a.title-link').droppable("disable")
+      @.$('> h4 a.zoom-link').droppable("disable")
+      $(@el).draggable("disable")
 
   enableDragDrop: ->
-    @.$('> h4 a.title-link').droppable("enable")
-    @.$('> h4 a.zoom-link').droppable("enable")
-    $(@el).draggable("enable")
+    if Gruff.User.isCurator()
+      @.$('> h4 a.title-link').droppable("enable")
+      @.$('> h4 a.zoom-link').droppable("enable")
+      $(@el).draggable("enable")
 
   handleModelChanges: (model, options) =>
     @.$('> h4.title > a.title-link').html @model.bestTitleText()

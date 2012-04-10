@@ -224,45 +224,47 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$('> .description').html @model.bestDescriptionText()
 
   setUpDragDrop: =>
-    _this = @
-    @mySubdebateLists().droppable(
-      accept: '.subdebate, .argument, .debate, .answer'
-      tolerance: 'pointer'
-      drop: ( event, ui ) ->
-        dragged = ui.draggable[0]
-        $(this).removeClass('over')
-        unless $(dragged).parent().parent()[0] == this
-          _this.moveDebate dragged, $(this)
-          ui.helper.hide()
-          _this.focus()
-      over: ( event, ui ) ->
-        dragged = ui.draggable[0]
-        unless $(dragged).parent().parent()[0] == this
-          $(this).addClass('over')
-      out: ( event, ui ) ->
-        $(this).removeClass('over')
-    )
+    if Gruff.User.isCurator()
+      _this = @
+      @mySubdebateLists().droppable(
+        accept: '.subdebate, .argument, .debate, .answer'
+        tolerance: 'pointer'
+        drop: ( event, ui ) ->
+          dragged = ui.draggable[0]
+          $(this).removeClass('over')
+          unless $(dragged).parent().parent()[0] == this
+            _this.moveDebate dragged, $(this)
+            ui.helper.hide()
+            _this.focus()
+        over: ( event, ui ) ->
+          dragged = ui.draggable[0]
+          unless $(dragged).parent().parent()[0] == this
+            $(this).addClass('over')
+        out: ( event, ui ) ->
+          $(this).removeClass('over')
+      )
 
   setUpZoomLinkDragDrop: =>
-    @.$('> .canvas-title').add(@zoomLink).droppable(
-      accept: '.subdebate, .argument, .debate, .answer'
-      greedy: true
-      tolerance: 'pointer'
-      over: (e, ui) =>
-        @.$('> .canvas-title').addClass('over')
-        @hoverTimeout = setTimeout( 
-          () => 
-            @maximize()
-            ui.helper.show()
-            ui.draggable.show()
-          , 500
-        )
-      out: (e, ui) =>
-        @.$('> .canvas-title').removeClass('over')
-        clearTimeout @hoverTimeout
-      drop: ( event, ui ) =>
-        alert "Dropping a debate onto the zoom link does nothing"
-    )
+    if Gruff.User.isCurator()
+      @.$('> .canvas-title').add(@zoomLink).droppable(
+        accept: '.subdebate, .argument, .debate, .answer'
+        greedy: true
+        tolerance: 'pointer'
+        over: (e, ui) =>
+          @.$('> .canvas-title').addClass('over')
+          @hoverTimeout = setTimeout( 
+            () => 
+              @maximize()
+              ui.helper.show()
+              ui.draggable.show()
+            , 500
+          )
+        out: (e, ui) =>
+          @.$('> .canvas-title').removeClass('over')
+          clearTimeout @hoverTimeout
+        drop: ( event, ui ) =>
+          alert "Dropping a debate onto the zoom link does nothing"
+      )
 
   disableDragDrop: =>
     @mySubdebateLists().droppable("destroy")

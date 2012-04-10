@@ -9,7 +9,13 @@ class Gruff.Models.User extends Backbone.Model
 
   fullJSON: =>
     json = @toJSON()
-    json.logged = true if json._id
-    json.curator = json.login == 'thigh' || json.login == 'biggusgruffus'
+    json.logged = @isLogged()
+    json.curator = @isCurator()
     json
 
+  isCurator: =>
+    login = @get("login")
+    login == 'thigh' || login == 'biggusgruffus'
+
+  isLogged: =>
+    @id?
