@@ -8,6 +8,8 @@
     "mongodb": "0.9.7",
     "socket.io": ">= 0.7.11",
     "stylus": ">= 0.18.0",
+    "oauth": ">=0.9.5",
+    "restler": ">=0.2.5",
     "everyauth": ">= 0.2.23",
     "validator": ">= 0.2.9",
     "tobi": ">= 0.3.1",

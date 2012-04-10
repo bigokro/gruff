@@ -227,7 +227,7 @@ exports.index = function(req, res){
       , showTwitter: true
       , showTagCloud: true
     }});
-  })
+  });
 };
 
 // GET JSON
