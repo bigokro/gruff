@@ -568,6 +568,7 @@
     User.prototype.fullJSON = function() {
       var json;
       json = this.toJSON();
+      if (json._id) json.logged = true;
       json.curator = json.login === 'thigh' || json.login === 'biggusgruffus';
       return json;
     };

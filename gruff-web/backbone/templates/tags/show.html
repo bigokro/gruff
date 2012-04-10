@@ -2,7 +2,7 @@
 <span class="tag spacer" id="<%= name %>-tag">
   <a class="tag" title="View others with this tag" href="/tags/<%=name%>"><%=name%></a>
   <%
-   if (user.login) {
+   if (user.logged) {
   %>
   <a class="delete-tag" title="Remove" href="#">X</a>
   <%
