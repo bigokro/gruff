@@ -37,7 +37,7 @@
 
     Comment.prototype.updateUrl = function(e) {
       var _ref, _ref2;
-      return this.url = "/rest/debates/" + ((_ref = this.collection) != null ? (_ref2 = _ref.parent) != null ? _ref2.id : void 0 : void 0) + "/comments/" + this.get("date");
+      return this.url = "/rest/debates/" + ((_ref = this.collection) != null ? (_ref2 = _ref.parent) != null ? _ref2.id : void 0 : void 0) + "/comments";
     };
 
     Comment.prototype.save = function() {

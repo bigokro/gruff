@@ -34,7 +34,7 @@ DescribableProvider.prototype.addComment = function(type, describableId, comment
 	  if( error ) callback( error );
 	  else {
       var objId = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
-      if (commentId === null) {
+      if (!commentId || commentId === null) {
         console.log("no comment id - adding to list of debate comments");
   	    describable_collection.update(
 	  	    {_id: objId },

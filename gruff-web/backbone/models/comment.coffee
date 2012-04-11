@@ -13,7 +13,7 @@ class Gruff.Models.Comment extends Backbone.Model
     @bind "change", @updateUrl
 
   updateUrl: (e) ->
-    @url = "/rest/debates/" + @collection?.parent?.id + "/comments/" + @get("date")
+    @url = "/rest/debates/" + @collection?.parent?.id + "/comments"
 
   save: ->
     @updateUrl()
