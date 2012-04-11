@@ -1,6 +1,6 @@
 <script type="text/x-jquery-tmpl" id="references-index-template">
     <h3>References</h3>
-    <% if (user.logged) { %>
+    <% if (curruser.logged) { %>
       <a class="new-reference-link selected-enter-action">Add a reference</a>
       <div id="<%= id %>-new-reference-div" style="display:none;"></div>
     <% } else { %>

@@ -48,7 +48,7 @@
     Comment.prototype.fullJSON = function() {
       var json;
       json = this.toJSON();
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       return json;
     };
 
@@ -124,7 +124,7 @@
       json.titleLink = this.titleLink();
       json.attributeType = this.get("attributeType");
       json.DebateTypes = this.DebateTypes;
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       return json;
     };
 
@@ -414,7 +414,7 @@
       if (json.bestTitle == null) json.bestTitle = "(no title)";
       json.bestDescription = this.bestDescriptionText();
       json.linkableId = this.linkableId();
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       return json;
     };
 
@@ -507,7 +507,7 @@
     Tag.prototype.fullJSON = function() {
       var json;
       json = this.toJSON();
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       return json;
     };
 
@@ -682,7 +682,7 @@
         _this = this;
       json = {};
       json.id = this.parentModel.id;
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".new-comment-link");
       this.listEl = this.$('.comments-list');
@@ -1115,7 +1115,7 @@
         _this = this;
       json = {};
       json.text = this.segment.text;
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       if ($(this.parentEl).children().length === 0 || this.index === 0) {
         $(this.parentEl).prepend(this.template(json));
       } else {
@@ -3112,7 +3112,7 @@
         _this = this;
       json = {};
       json.id = this.parentModel.id;
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".new-reference-link");
       this.formEl = $('#' + this.parentModel.id + '-new-reference-div');
@@ -3379,7 +3379,7 @@
         _this = this;
       json = {};
       json.id = this.parentModel.id;
-      json.user = Gruff.User.fullJSON();
+      json.curruser = Gruff.User.fullJSON();
       $(this.el).html(this.template(json));
       this.showFormEl = this.$(".show-add-tag-form a");
       this.formEl = this.$(".add-tag-form");

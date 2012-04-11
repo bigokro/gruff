@@ -11,7 +11,7 @@ class Gruff.Views.Tags.IndexView extends Backbone.View
   render: ->
     json = {}
     json.id = @parentModel.id
-    json.user = Gruff.User.fullJSON()
+    json.curruser = Gruff.User.fullJSON()
     $(@el).html(@template json)
     @showFormEl = @.$(".show-add-tag-form a")
     @formEl = @.$(".add-tag-form")

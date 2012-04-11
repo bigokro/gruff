@@ -12,7 +12,7 @@ class Gruff.Views.Comments.IndexView extends Backbone.View
   render: ->
     json = {}
     json.id = @parentModel.id
-    json.user = Gruff.User.fullJSON()
+    json.curruser = Gruff.User.fullJSON()
     $(@el).html(@template json)
     @showFormEl = @.$(".new-comment-link")
     @listEl = @.$('.comments-list')
