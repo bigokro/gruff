@@ -37,20 +37,6 @@ require('./lib/utils');
 
 var app = module.exports = express.createServer();
 
-everyauth.facebook
-  .appId('284793468267979')
-  .appSecret('90eb5735f5f58beaf88c98e0d7fc1398')
-  .entryPath('/auth/facebook')
-  .callbackPath('/auth/facebook/callback')
-  .scope('email,user_status') // Defaults to undefined
-  .handleAuthCallbackError( function(req, res) {
-                                
-  })
-  .findOrCreateUser( function(session, accessToken, accessTokExtra, fbUserMetadata) {
-                         
-  })
-  .redirectPath('/');
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
