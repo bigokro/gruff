@@ -2207,6 +2207,8 @@
       this.setChildView = __bind(this.setChildView, this);
       this.maximize = __bind(this.maximize, this);
       this.minimize = __bind(this.minimize, this);
+      this.showComments = __bind(this.showComments, this);
+      this.showDebate = __bind(this.showDebate, this);
       this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
       this.showEditTitleForm = __bind(this.showEditTitleForm, this);
       this.toggleDescription = __bind(this.toggleDescription, this);
@@ -2221,6 +2223,7 @@
       this.setUpMaximizeEvents = __bind(this.setUpMaximizeEvents, this);
       this.setUpMinimizeEvents = __bind(this.setUpMinimizeEvents, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
+      this.setUpEls = __bind(this.setUpEls, this);
       this.showNewCommentForm = __bind(this.showNewCommentForm, this);
       this.showNewReferenceForm = __bind(this.showNewReferenceForm, this);
       this.closeNewDebateForm = __bind(this.closeNewDebateForm, this);
@@ -2253,11 +2256,11 @@
       json = this.model.fullJSON();
       json.typeHeading = this.getTypeHeading();
       $(this.el).html(this.template(json));
-      this.zoomLink = this.$('> .canvas-title .zoom-link');
       this.renderTags();
       this.renderReferences();
       this.renderComments();
       this.renderParents();
+      this.setUpEls();
       this.setUpEvents();
       this.zoomLink.hide();
       this.status = "rendered";
@@ -2395,6 +2398,13 @@
       return $('.new-comment-link:visible').click();
     };
 
+    ShowView.prototype.setUpEls = function() {
+      this.zoomLink = this.$('> .canvas-title .zoom-link');
+      this.debateTab = this.$('> .tabs #tab-debate');
+      this.commentsTab = this.$('> .tabs #tab-comments');
+      return this.maximizedEls = this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references, > .tabs');
+    };
+
     ShowView.prototype.setUpEvents = function() {
       this.$("> .title").bind("click", this.toggleDescription);
       this.$("> .title").bind("dblclick", this.showEditTitleForm);
@@ -2415,6 +2425,8 @@
       this.$("> .title").unbind("click", this.toggleDescription);
       this.$(".new-debate-link").bind("click", this.showNewDebateForm);
       this.$(".selectable").bind("click", this.selectClicked);
+      this.debateTab.bind("click", this.showDebate);
+      this.commentsTab.bind("click", this.showComments);
       this.setUpDragDrop();
       return this.setUpHandleKeys();
     };
@@ -2438,7 +2450,18 @@
         }
         return false;
       } else if (e.keyCode === 67) {
-        this.showNewCommentForm();
+        if (this.$('> .comments:visible').length > 0) {
+          this.showNewCommentForm();
+        } else {
+          this.showComments();
+        }
+        return false;
+      } else if (e.keyCode === 68) {
+        if (this.$('> .comments:visible').length > 0) {
+          this.showDebate();
+        } else {
+          $('.selected > .title > .delete-link').click();
+        }
         return false;
       } else if (e.keyCode === 70) {
         this.showNewDebateForm("argumentsFor");
@@ -2454,9 +2477,6 @@
         return false;
       } else if (e.keyCode === 90) {
         $('.selected > .title > .zoom-link, .selected > .zoom-link').click();
-        return false;
-      } else if (e.keyCode === 68) {
-        $('.selected > .title > .delete-link').click();
         return false;
       } else if (e.keyCode === 13) {
         this.handleEnter();
@@ -2605,6 +2625,26 @@
       return this.editDescriptionView.render();
     };
 
+    ShowView.prototype.showDebate = function() {
+      this.commentsTab.removeClass('active');
+      this.debateTab.addClass('active');
+      this.commentsTab.addClass('selectable');
+      this.debateTab.removeClass('selectable');
+      this.$('> .comments').hide();
+      this.$('> .arguments, > .answers, > .subdebates, > .references').show();
+      return false;
+    };
+
+    ShowView.prototype.showComments = function() {
+      this.commentsTab.addClass('active');
+      this.debateTab.removeClass('active');
+      this.commentsTab.removeClass('selectable');
+      this.debateTab.addClass('selectable');
+      this.$('> .comments').show();
+      this.$('> .arguments, > .answers, > .subdebates, > .references').hide();
+      return false;
+    };
+
     ShowView.prototype.minimize = function() {
       var _ref, _ref2, _ref3, _ref4;
       if (this.isOffScreen) {
@@ -2614,7 +2654,7 @@
       }
       if ((_ref = this.parentView) != null) _ref.setChildView(this);
       if ((_ref2 = this.parentView) != null) _ref2.minimize();
-      this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide();
+      this.maximizedEls.hide();
       this.setUpMinimizeEvents();
       this.tagsView.hideForm();
       if ((_ref3 = this.editTitleView) != null) _ref3.close();
@@ -2633,13 +2673,14 @@
       this.focus();
       router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
-        this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
+        this.maximizedEls.show(200);
+        this.showDebate();
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response) {
             var json, _ref;
-            _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
+            _this.maximizedEls.show(200);
             json = _this.model.fullJSON();
             json.objecttype = "debates";
             json.objectid = json.linkableId;
@@ -2685,6 +2726,7 @@
               'showView': _this
             });
             _this.subdebatesView.render();
+            _this.showDebate();
             _this.setUpMaximizeEvents();
             return _this.loaded = true;
           }
