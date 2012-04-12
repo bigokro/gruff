@@ -103,6 +103,35 @@ everyauth
     .loginSuccessRedirect('/')
     .registerSuccessRedirect('/');
 
+everyauth.facebook
+  .appId('284793468267979')
+  .appSecret('90eb5735f5f58beaf88c98e0d7fc1398')
+  .entryPath('/auth/facebook')
+  .callbackPath('/auth/facebook/callback')
+  .scope('email,user_status') // Defaults to undefined
+  .handleAuthCallbackError( function(req, res) {
+	  console.log("Facebook handleAuthCallbackError()");
+  })
+  .findOrCreateUser( function(session, accessToken, accessTokExtra, fbUserMetadata) {
+      console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
+      var promise = this.Promise();
+      var newUser = {
+	authenticator: "facebook",
+        data: fbUserMetadata
+      };
+      userProvider.save(newUser, function(err, users) {
+        if (err) {
+          return promise.fulfill([err]);
+        }
+        var user = users[0];
+        user.id = user._id;
+        promise.fulfill(user);
+      });
+      return promise;
+  })
+  .redirectPath('/');
+
+
 exports.everyauth = everyauth;
 
 var validateLogin = function (registration, callback) {

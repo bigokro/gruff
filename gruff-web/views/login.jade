@@ -3,24 +3,6 @@
   ul#errors
     - each error in errors
       li.error= error
-div#fb-root
-script
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId: '284793468267979',
-      status     : true, 
-      cookie     : true,
-      xfbml      : true,
-      oauth      : true,
-    });
-  };
-  (function(d){
-     var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
-     js = d.createElement('script'); js.id = id; js.async = true;
-     js.src = "//connect.facebook.net/en_US/all.js";
-     d.getElementsByTagName('head')[0].appendChild(js);
-   }(document));
-div.fb-login-button Login with Facebook
 div.card
   form#login.standaloneForm(action='/login', method='post')
     fieldset  
@@ -33,3 +15,7 @@ div.card
         input(type='password', name=everyauth.password.passwordFormFieldName)
       #submit
         input(type='submit') Login
+div#fb-login.fb_button(style='background-position: left -188px')
+  a.fb_button_medium(href='/auth/facebook')
+    span#fb_login_text.fb_button_text 
+      | Connect with Facebook

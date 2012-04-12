@@ -1,0 +1,566 @@
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+breaking out to registrationFailSteps
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Wed Feb 15 2012 17:25:12 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:263:9
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:230:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:106:23
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:131:9
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:178:11
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:35
+    at [object Object].close (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:669:5)
+    at [object Object].nextObject (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:17)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Thu Feb 16 2012 16:37:00 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:263:9
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:230:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:97:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:21:13
+    at [object Object].collection (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/db.js:272:12)
+    at [object Object].getCollection (/home/ec2-user/gruff/gruff-web/providers/reference_provider.js:19:13)
+    at [object Object].findAllByObjID (/home/ec2-user/gruff/gruff-web/providers/reference_provider.js:94:10)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:224:77
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+bouncing anonymous user
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+bouncing anonymous user
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+404 error: value is null
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+breaking out to registrationFailSteps
+bouncing anonymous user
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+500 error: You cannot delete a debate that has subdebates or references
+500 error: You cannot delete a debate that has subdebates or references
+500 error: You cannot delete a debate that has subdebates or references
+500 error: You cannot delete a debate that has subdebates or references
+500 error: You cannot delete a debate that has subdebates or references
+Tue Mar 06 2012 19:48:49 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 19:51:08 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Tue Mar 06 2012 19:52:46 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 19:55:34 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 19:56:56 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 19:58:14 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 20:00:40 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 20:05:34 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 20:06:12 GMT+0000 (UTC)
+Error: TypeError: Cannot call method 'hasChildren' of null
+    at Array.0 (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/connection/server.js:168:49)
+    at EventEmitter._tickCallback (node.js:192:40)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Tue Mar 06 2012 20:06:43 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:677:11
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:611:53
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:662:65
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:654:71
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:646:59
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Tue Mar 06 2012 20:19:42 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:264:9
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:230:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:98:42
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:21:13
+    at [object Object].collection (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/db.js:272:12)
+    at [object Object].getCollection (/home/ec2-user/gruff/gruff-web/providers/reference_provider.js:19:13)
+    at [object Object].findAllByObjID (/home/ec2-user/gruff/gruff-web/providers/reference_provider.js:94:10)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:224:77
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Tue Mar 06 2012 20:20:20 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:264:9
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:230:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:98:42
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:21:13
+    at [object Object].collection (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/db.js:272:12)
+    at [object Object].getCollection (/home/ec2-user/gruff/gruff-web/providers/reference_provider.js:19:13)
+    at [object Object].findAllByObjID (/home/ec2-user/gruff/gruff-web/providers/reference_provider.js:94:10)
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:224:77
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Tue Mar 06 2012 20:24:10 GMT+0000 (UTC)
+TypeError: Object #<IncomingMessage> has no method 'json'
+    at /home/ec2-user/gruff/gruff-web/routes.js:341:11
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:79:30
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:129:28
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:124:43
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:111:37
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:106:27
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:24:9
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+Tue Mar 06 2012 21:00:23 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:264:9
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:230:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:106:23
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:131:9
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:178:11
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:35
+    at [object Object].close (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:669:5)
+    at [object Object].nextObject (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:17)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+Tue Mar 06 2012 21:26:29 GMT+0000 (UTC)
+TypeError: Converting circular structure to JSON
+    at Object.stringify (native)
+    at ServerResponse.json (/home/ec2-user/gruff/gruff-web/node_modules/express/lib/response.js:130:19)
+    at /home/ec2-user/gruff/gruff-web/routes.js:264:9
+    at /home/ec2-user/gruff/gruff-web/providers/debate_provider.js:230:57
+    at /home/ec2-user/gruff/gruff-web/providers/reference_provider.js:106:23
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:131:9
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:178:11
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:35
+    at [object Object].close (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:669:5)
+    at [object Object].nextObject (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:17)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+bouncing anonymous user
+Wed Mar 07 2012 21:56:15 GMT+0000 (UTC)
+TypeError: Object #<IncomingMessage> has no method 'json'
+    at /home/ec2-user/gruff/gruff-web/routes.js:366:11
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:79:30
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:129:28
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:124:43
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:111:37
+    at Collection.update (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:446:12)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:106:27
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:24:9
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+bouncing anonymous user
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+bouncing anonymous user
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+404 error: value is null
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+bouncing anonymous user
+404 error: value is null
+404 error: value is null
+404 error: value is null
+bouncing anonymous user
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+404 error: value is null
+bouncing anonymous user
+bouncing anonymous user
+404 error: value is null
+404 error: value is null
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Gruff listening on port 80 in production mode
+bouncing anonymous user
+Parent ID: 4ea8859dccf48f373a000007
+Comment ID: undefined
+Text index: undefined
+{"id":1333944693255,"user":"biggusgruffus","date":"2012-04-09T04:11:33.255Z","isFor":false,"upvotes":[],"downvotes":[],"tags":[],"body":[{"text":"I'm not even sure what there is to debate here. Seems to me like a pretty uncontroversial statement. Then again, I'm not a doctor...","comments":[]}]}
+comment id provided - loading debate
+couldn't find a matching subcomment
+404 error: value is null
+bouncing anonymous user
+Parent ID: 4f4e91d0cbdc89d679000001
+Comment ID: undefined
+Text index: undefined
+{"id":1334085705473,"user":"biggusgruffus","date":"2012-04-10T19:21:45.473Z","isFor":false,"upvotes":[],"downvotes":[],"tags":[],"body":[{"text":"This is a really pathetic debate. Why are you wasting our time with this??","comments":[]}]}
+comment id provided - loading debate
+subcomment found: comments.0
+addComment(undefined, NaN, <newcomment>
+found comment with id undefined
+splitting segment -1
+Tue Apr 10 2012 19:21:45 GMT+0000 (UTC)
+TypeError: Cannot read property 'text' of null
+    at Object.addComment (/home/ec2-user/gruff/gruff-web/common/models/comment.js:157:50)
+    at /home/ec2-user/gruff/gruff-web/providers/describable_provider.js:58:31
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/collection.js:894:34
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:131:9
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:178:11
+    at /home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:35
+    at [object Object].close (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:669:5)
+    at [object Object].nextObject (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:490:17)
+    at Array.0 (/home/ec2-user/gruff/gruff-web/node_modules/mongodb/lib/mongodb/cursor.js:169:12)
+    at EventEmitter._tickCallback (node.js:192:40)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Tue Apr 10 2012 23:40:35 GMT+0000 (UTC)
+TypeError: Cannot read property 'port' of null
+    at Object.<anonymous> (/home/ec2-user/gruff/gruff-web/gruff.js:161:55)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Tue Apr 10 2012 23:42:01 GMT+0000 (UTC)
+TypeError: Cannot read property 'port' of null
+    at Object.<anonymous> (/home/ec2-user/gruff/gruff-web/gruff.js:161:55)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Tue Apr 10 2012 23:53:51 GMT+0000 (UTC)
+TypeError: Cannot read property 'port' of null
+    at Object.<anonymous> (/home/ec2-user/gruff/gruff-web/gruff.js:161:55)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Wed Apr 11 2012 03:25:29 GMT+0000 (UTC)
+TypeError: Cannot read property 'port' of null
+    at Object.<anonymous> (/home/ec2-user/gruff/gruff-web/gruff.js:161:55)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
+Warning: connection.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and obviously only work within a single process.
+Wed Apr 11 2012 03:26:52 GMT+0000 (UTC)
+TypeError: Cannot read property 'port' of null
+    at Object.<anonymous> (/home/ec2-user/gruff/gruff-web/gruff.js:161:55)
+    at Module._compile (module.js:432:26)
+    at Object..js (module.js:450:10)
+    at Module.load (module.js:351:31)
+    at Function._load (module.js:310:12)
+    at Array.0 (module.js:470:10)
+    at EventEmitter._tickCallback (node.js:192:40)
