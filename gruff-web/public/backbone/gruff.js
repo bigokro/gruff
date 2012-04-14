@@ -803,6 +803,7 @@
 
     function ListItemView() {
       this.updateScore = __bind(this.updateScore, this);
+      this.voteDown = __bind(this.voteDown, this);
       this.voteUp = __bind(this.voteUp, this);
       this.close = __bind(this.close, this);
       this.removeComment = __bind(this.removeComment, this);
@@ -939,8 +940,21 @@
     ListItemView.prototype.voteUp = function() {
       var _this = this;
       return this.model.voteUp({
-        success: function() {
-          _this.model.fetch();
+        success: function(comment) {
+          _this.model.set(comment);
+          return _this.updateScore();
+        },
+        error: function(jqXHR, data) {
+          return _this.handleRemoteError(jqXHR, data);
+        }
+      });
+    };
+
+    ListItemView.prototype.voteDown = function() {
+      var _this = this;
+      return this.model.voteDown({
+        success: function(comment) {
+          _this.model.set(comment);
           return _this.updateScore();
         },
         error: function(jqXHR, data) {
@@ -950,7 +964,7 @@
     };
 
     ListItemView.prototype.updateScore = function() {
-      return this.$('.score').html(this.model.score() + 1);
+      return this.$('> .info > .score').html(this.model.score());
     };
 
     return ListItemView;
@@ -1073,6 +1087,7 @@
       this.template = _.template($('#comment-new-template').text());
       this.model = new this.collection.model();
       this.model.collection = this.collection;
+      this.model.debate = this.collection.parent;
       this.parentModel = this.collection.parent;
       return this.model.bind("change:errors", function() {
         return _this.render();

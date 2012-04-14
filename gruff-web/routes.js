@@ -330,7 +330,7 @@ exports.postComment = function(req, res) {
   }
   describableProvider.addComment(req.params.objecttype, parentId, commentId, txtIdx, comment, 
     function( error, doc) {
-      if (handleError(req, res, error, true)) {
+      if (handleError(req, res, error, doc)) {
         return;
       }
       if (req.xhr) {
@@ -341,18 +341,17 @@ exports.postComment = function(req, res) {
     });
 };
 
-exports.voteCommentUp = function(req, res) {
+exports.voteComment = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
   var objectType = req.params.objecttype;
   var parentId = req.params.objectid;
   var commentId = req.params.commentid;
-  var userId = req.user["_id"];
-  console.log("user _id: " + req.user["_id"]);
-  describableProvider.voteCommentUp(objectType, parentId, commentId, userId, 
+  var vote = req.params.vote;
+  describableProvider.voteComment(objectType, parentId, commentId, req.user, vote,
     function( error, comment) {
-      if (handleError(req, res, error, true)) {
+      if (handleError(req, res, error, comment)) {
         return;
       }
       res.json(comment);

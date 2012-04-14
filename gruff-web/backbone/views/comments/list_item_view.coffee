@@ -86,13 +86,22 @@ class Gruff.Views.Comments.ListItemView extends Backbone.View
 
   voteUp: =>
     @model.voteUp
-      success: =>
-        @model.fetch()
+      success: (comment) =>
+        @model.set(comment)
+        @updateScore()
+        
+      error: (jqXHR, data) =>
+        @handleRemoteError jqXHR, data
+
+  voteDown: =>
+    @model.voteDown
+      success: (comment) =>
+        @model.set(comment)
         @updateScore()
         
       error: (jqXHR, data) =>
         @handleRemoteError jqXHR, data
 
   updateScore: =>
-    @.$('.score').html @model.score()+1
+    @.$('> .info > .score').html @model.score()
 
