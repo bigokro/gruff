@@ -1,8 +1,8 @@
 (function() {
   var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base28, _base29, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   window.Gruff = {
     Models: {},
@@ -19,6 +19,9 @@
     __extends(Comment, _super);
 
     function Comment() {
+      this.cancelVote = __bind(this.cancelVote, this);
+      this.voteDown = __bind(this.voteDown, this);
+      this.voteUp = __bind(this.voteUp, this);
       Comment.__super__.constructor.apply(this, arguments);
     }
 
@@ -31,13 +34,15 @@
     };
 
     Comment.prototype.initialize = function(options) {
+      var _ref;
+      this.debate = options.debate || ((_ref = this.collection) != null ? _ref.parent : void 0);
       this.updateUrl();
       return this.bind("change", this.updateUrl);
     };
 
     Comment.prototype.updateUrl = function(e) {
-      var _ref, _ref2;
-      return this.url = "/rest/debates/" + ((_ref = this.collection) != null ? (_ref2 = _ref.parent) != null ? _ref2.id : void 0 : void 0) + "/comments";
+      var _ref;
+      return this.url = "/rest/debates/" + ((_ref = this.debate) != null ? _ref.id : void 0) + "/comments";
     };
 
     Comment.prototype.save = function() {
@@ -45,10 +50,38 @@
       return Comment.__super__.save.apply(this, arguments);
     };
 
+    Comment.prototype.voteUp = function(options) {
+      return $.ajax({
+        type: "POST",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.id + "/vote/up",
+        success: options.success,
+        error: options.error
+      });
+    };
+
+    Comment.prototype.voteDown = function(options) {
+      return $.ajax({
+        type: "POST",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.id + "/vote/down",
+        success: options.success,
+        error: options.error
+      });
+    };
+
+    Comment.prototype.cancelVote = function(options) {
+      return $.ajax({
+        type: "DELETE",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.id + "/vote",
+        success: options.success,
+        error: options.error
+      });
+    };
+
     Comment.prototype.fullJSON = function() {
       var json;
       json = this.toJSON();
       json.curruser = Gruff.User.fullJSON();
+      json.score = this.score();
       return json;
     };
 
@@ -769,6 +802,8 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.updateScore = __bind(this.updateScore, this);
+      this.voteUp = __bind(this.voteUp, this);
       this.close = __bind(this.close, this);
       this.removeComment = __bind(this.removeComment, this);
       this.textIndex = __bind(this.textIndex, this);
@@ -814,7 +849,10 @@
     };
 
     ListItemView.prototype.setUpEvents = function() {
-      return this.deleteEl.bind("click", this.removeComment);
+      this.deleteEl.bind("click", this.removeComment);
+      this.$('.vote-up a').bind('click', this.voteUp);
+      this.$('.vote-down a').bind('click', this.voteDown);
+      return this.$('.cancel-vote a').bind('click', this.cancelVote);
     };
 
     ListItemView.prototype.showDelete = function() {
@@ -898,6 +936,23 @@
       return this.unbind();
     };
 
+    ListItemView.prototype.voteUp = function() {
+      var _this = this;
+      return this.model.voteUp({
+        success: function() {
+          _this.model.fetch();
+          return _this.updateScore();
+        },
+        error: function(jqXHR, data) {
+          return _this.handleRemoteError(jqXHR, data);
+        }
+      });
+    };
+
+    ListItemView.prototype.updateScore = function() {
+      return this.$('.score').html(this.model.score() + 1);
+    };
+
     return ListItemView;
 
   })(Backbone.View);
@@ -961,6 +1016,7 @@
         success: function(data) {
           var comment, commentView;
           _this.close();
+          data.debate = _this.debate;
           comment = new Gruff.Models.Comment(data);
           commentView = new Gruff.Views.Comments.ListItemView({
             'parentEl': _this.parentView.el,
@@ -1126,6 +1182,7 @@
       _.each(this.segment.comments, function(comment) {
         var c, commentView;
         c = new Gruff.Models.Comment(comment);
+        c.debate = _this.debate;
         commentView = new Gruff.Views.Comments.ListItemView({
           'parentEl': _this.el,
           'debate': _this.debate,

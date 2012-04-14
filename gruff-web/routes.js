@@ -341,6 +341,24 @@ exports.postComment = function(req, res) {
     });
 };
 
+exports.voteCommentUp = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  var objectType = req.params.objecttype;
+  var parentId = req.params.objectid;
+  var commentId = req.params.commentid;
+  var userId = req.user["_id"];
+  console.log("user _id: " + req.user["_id"]);
+  describableProvider.voteCommentUp(objectType, parentId, commentId, userId, 
+    function( error, comment) {
+      if (handleError(req, res, error, true)) {
+        return;
+      }
+      res.json(comment);
+    });
+};
+
 exports.postDebateTitle = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;

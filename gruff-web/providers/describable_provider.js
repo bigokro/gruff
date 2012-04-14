@@ -79,6 +79,66 @@ DescribableProvider.prototype.addComment = function(type, describableId, comment
   });
 };
 
+DescribableProvider.prototype.voteCommentUp = function(describableType, describableId, commentId, userId, callback) {
+  var provider = this;
+  this.getCollection(describableType, function(error, describable_collection) {
+	  if( error ) callback( error );
+	  else {
+      var objId = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      var userObjId = userId; // describable_collection.db.bson_serializer.ObjectID.createFromHexString(userId);
+      provider.getCollection("users", function(error, user_collection) {
+	      if( error ) callback( error );
+	      else {
+          var action = {"$addToSet": { voted_references : objId } };
+          if (describableType == "debates") {
+            action = {"$addToSet": { voted_debates : objId } };
+          }
+          user_collection.update( {_id:userObjId}, action, function(error, user) {
+	          if( error ) callback( error );
+	          else {
+              describable_collection.findOne({_id: objId}, function(error, result) {
+                if( error ) callback(error);
+      	        else {
+                  classHelper.augment(result, Describable);
+                  var comment = result.findComment(commentId);
+                  if (comment === null) {
+                    callback(null, null);
+                  } else {
+                    console.log("subcomment found: " + comment.mongoIdx);
+                    var removeCmd = {};
+                    removeCmd["$removeFromSet"] = {};
+                    removeCmd["$removeFromSet"][comment.mongoIdx + ".downvotes"] = userObjId;
+                    var addCmd = {};
+                    addCmd["$addToSet"] = {};
+                    addCmd["$addToSet"][comment.mongoIdx + ".upvotes"] = userObjId;
+                    describable_collection.update(
+                      {_id: objId},
+                      removeCmd,
+                      function(error, removeResult) {
+                        if( error ) callback(error);
+	                      else {
+                          describable_collection.update(
+                            {_id: objId},
+                            addCmd,
+                            function(error, addResult) {
+                              if( error ) callback(error);
+	                            else {
+                                callback(null, comment);
+                              }                    
+                            });
+                        }                    
+                      });
+                  }
+                }
+              });
+            }
+		      });
+    	  }
+      });
+ 	  }
+  });
+};
+
 DescribableProvider.prototype.addDescriptor = function(describableType, descriptorType, describableId, login, descriptor, callback) {
   var provider = this;
   this.getCollection(describableType, function(error, describable_collection) {

@@ -21,6 +21,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
     @commentViews = []
     _.each @segment.comments, (comment) =>
       c = new Gruff.Models.Comment comment
+      c.debate = @debate
       commentView = new Gruff.Views.Comments.ListItemView
         'parentEl': @el
         'debate': @debate

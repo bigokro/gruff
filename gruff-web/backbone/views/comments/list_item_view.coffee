@@ -25,6 +25,9 @@ class Gruff.Views.Comments.ListItemView extends Backbone.View
 
   setUpEvents: =>
     @deleteEl.bind("click", @removeComment)
+    @.$('.vote-up a').bind 'click', @voteUp
+    @.$('.vote-down a').bind 'click', @voteDown
+    @.$('.cancel-vote a').bind 'click', @cancelVote
 
   showDelete: =>
     @deleteEl.show()
@@ -80,3 +83,16 @@ class Gruff.Views.Comments.ListItemView extends Backbone.View
       segmentView.close()
     @el.remove()
     @unbind()
+
+  voteUp: =>
+    @model.voteUp
+      success: =>
+        @model.fetch()
+        @updateScore()
+        
+      error: (jqXHR, data) =>
+        @handleRemoteError jqXHR, data
+
+  updateScore: =>
+    @.$('.score').html @model.score()+1
+
