@@ -5,6 +5,7 @@ class Gruff.Views.Comments.NewView extends Backbone.View
     @template = _.template $('#comment-new-template').text()
     @model = new @collection.model()
     @model.collection = @collection
+    @model.debate = @collection.parent
     @parentModel = @collection.parent
 
     @model.bind("change:errors", () =>

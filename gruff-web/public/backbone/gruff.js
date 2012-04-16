@@ -1,8 +1,8 @@
 (function() {
   var classHelper, _base, _base10, _base11, _base12, _base13, _base14, _base15, _base16, _base17, _base18, _base19, _base2, _base20, _base21, _base22, _base23, _base24, _base25, _base26, _base27, _base28, _base29, _base3, _base4, _base5, _base6, _base7, _base8, _base9,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   window.Gruff = {
     Models: {},
@@ -19,6 +19,9 @@
     __extends(Comment, _super);
 
     function Comment() {
+      this.cancelVote = __bind(this.cancelVote, this);
+      this.voteDown = __bind(this.voteDown, this);
+      this.voteUp = __bind(this.voteUp, this);
       Comment.__super__.constructor.apply(this, arguments);
     }
 
@@ -31,13 +34,15 @@
     };
 
     Comment.prototype.initialize = function(options) {
+      var _ref;
+      this.debate = options.debate || ((_ref = this.collection) != null ? _ref.parent : void 0);
       this.updateUrl();
       return this.bind("change", this.updateUrl);
     };
 
     Comment.prototype.updateUrl = function(e) {
-      var _ref, _ref2;
-      return this.url = "/rest/debates/" + ((_ref = this.collection) != null ? (_ref2 = _ref.parent) != null ? _ref2.id : void 0 : void 0) + "/comments";
+      var _ref;
+      return this.url = "/rest/debates/" + ((_ref = this.debate) != null ? _ref.id : void 0) + "/comments";
     };
 
     Comment.prototype.save = function() {
@@ -45,10 +50,38 @@
       return Comment.__super__.save.apply(this, arguments);
     };
 
+    Comment.prototype.voteUp = function(options) {
+      return $.ajax({
+        type: "POST",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.id + "/vote/up",
+        success: options.success,
+        error: options.error
+      });
+    };
+
+    Comment.prototype.voteDown = function(options) {
+      return $.ajax({
+        type: "POST",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.id + "/vote/down",
+        success: options.success,
+        error: options.error
+      });
+    };
+
+    Comment.prototype.cancelVote = function(options) {
+      return $.ajax({
+        type: "DELETE",
+        url: "/rest/debates/" + this.debate.id + "/comments/" + this.id + "/vote",
+        success: options.success,
+        error: options.error
+      });
+    };
+
     Comment.prototype.fullJSON = function() {
       var json;
       json = this.toJSON();
       json.curruser = Gruff.User.fullJSON();
+      json.score = this.score();
       return json;
     };
 
@@ -769,6 +802,9 @@
     __extends(ListItemView, _super);
 
     function ListItemView() {
+      this.updateScore = __bind(this.updateScore, this);
+      this.voteDown = __bind(this.voteDown, this);
+      this.voteUp = __bind(this.voteUp, this);
       this.close = __bind(this.close, this);
       this.removeComment = __bind(this.removeComment, this);
       this.textIndex = __bind(this.textIndex, this);
@@ -814,7 +850,10 @@
     };
 
     ListItemView.prototype.setUpEvents = function() {
-      return this.deleteEl.bind("click", this.removeComment);
+      this.deleteEl.bind("click", this.removeComment);
+      this.$('.vote-up a').bind('click', this.voteUp);
+      this.$('.vote-down a').bind('click', this.voteDown);
+      return this.$('.cancel-vote a').bind('click', this.cancelVote);
     };
 
     ListItemView.prototype.showDelete = function() {
@@ -898,6 +937,36 @@
       return this.unbind();
     };
 
+    ListItemView.prototype.voteUp = function() {
+      var _this = this;
+      return this.model.voteUp({
+        success: function(comment) {
+          _this.model.set(comment);
+          return _this.updateScore();
+        },
+        error: function(jqXHR, data) {
+          return _this.handleRemoteError(jqXHR, data);
+        }
+      });
+    };
+
+    ListItemView.prototype.voteDown = function() {
+      var _this = this;
+      return this.model.voteDown({
+        success: function(comment) {
+          _this.model.set(comment);
+          return _this.updateScore();
+        },
+        error: function(jqXHR, data) {
+          return _this.handleRemoteError(jqXHR, data);
+        }
+      });
+    };
+
+    ListItemView.prototype.updateScore = function() {
+      return this.$('> .info > .score').html(this.model.score());
+    };
+
     return ListItemView;
 
   })(Backbone.View);
@@ -961,6 +1030,7 @@
         success: function(data) {
           var comment, commentView;
           _this.close();
+          data.debate = _this.debate;
           comment = new Gruff.Models.Comment(data);
           commentView = new Gruff.Views.Comments.ListItemView({
             'parentEl': _this.parentView.el,
@@ -1017,6 +1087,7 @@
       this.template = _.template($('#comment-new-template').text());
       this.model = new this.collection.model();
       this.model.collection = this.collection;
+      this.model.debate = this.collection.parent;
       this.parentModel = this.collection.parent;
       return this.model.bind("change:errors", function() {
         return _this.render();
@@ -1126,6 +1197,7 @@
       _.each(this.segment.comments, function(comment) {
         var c, commentView;
         c = new Gruff.Models.Comment(comment);
+        c.debate = _this.debate;
         commentView = new Gruff.Views.Comments.ListItemView({
           'parentEl': _this.el,
           'debate': _this.debate,
@@ -2207,6 +2279,8 @@
       this.setChildView = __bind(this.setChildView, this);
       this.maximize = __bind(this.maximize, this);
       this.minimize = __bind(this.minimize, this);
+      this.showComments = __bind(this.showComments, this);
+      this.showDebate = __bind(this.showDebate, this);
       this.showEditDescriptionForm = __bind(this.showEditDescriptionForm, this);
       this.showEditTitleForm = __bind(this.showEditTitleForm, this);
       this.toggleDescription = __bind(this.toggleDescription, this);
@@ -2221,6 +2295,7 @@
       this.setUpMaximizeEvents = __bind(this.setUpMaximizeEvents, this);
       this.setUpMinimizeEvents = __bind(this.setUpMinimizeEvents, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
+      this.setUpEls = __bind(this.setUpEls, this);
       this.showNewCommentForm = __bind(this.showNewCommentForm, this);
       this.showNewReferenceForm = __bind(this.showNewReferenceForm, this);
       this.closeNewDebateForm = __bind(this.closeNewDebateForm, this);
@@ -2253,11 +2328,11 @@
       json = this.model.fullJSON();
       json.typeHeading = this.getTypeHeading();
       $(this.el).html(this.template(json));
-      this.zoomLink = this.$('> .canvas-title .zoom-link');
       this.renderTags();
       this.renderReferences();
       this.renderComments();
       this.renderParents();
+      this.setUpEls();
       this.setUpEvents();
       this.zoomLink.hide();
       this.status = "rendered";
@@ -2395,6 +2470,13 @@
       return $('.new-comment-link:visible').click();
     };
 
+    ShowView.prototype.setUpEls = function() {
+      this.zoomLink = this.$('> .canvas-title .zoom-link');
+      this.debateTab = this.$('> .tabs #tab-debate');
+      this.commentsTab = this.$('> .tabs #tab-comments');
+      return this.maximizedEls = this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references, > .tabs');
+    };
+
     ShowView.prototype.setUpEvents = function() {
       this.$("> .title").bind("click", this.toggleDescription);
       this.$("> .title").bind("dblclick", this.showEditTitleForm);
@@ -2415,6 +2497,8 @@
       this.$("> .title").unbind("click", this.toggleDescription);
       this.$(".new-debate-link").bind("click", this.showNewDebateForm);
       this.$(".selectable").bind("click", this.selectClicked);
+      this.debateTab.bind("click", this.showDebate);
+      this.commentsTab.bind("click", this.showComments);
       this.setUpDragDrop();
       return this.setUpHandleKeys();
     };
@@ -2438,7 +2522,18 @@
         }
         return false;
       } else if (e.keyCode === 67) {
-        this.showNewCommentForm();
+        if (this.$('> .comments:visible').length > 0) {
+          this.showNewCommentForm();
+        } else {
+          this.showComments();
+        }
+        return false;
+      } else if (e.keyCode === 68) {
+        if (this.$('> .comments:visible').length > 0) {
+          this.showDebate();
+        } else {
+          $('.selected > .title > .delete-link').click();
+        }
         return false;
       } else if (e.keyCode === 70) {
         this.showNewDebateForm("argumentsFor");
@@ -2454,9 +2549,6 @@
         return false;
       } else if (e.keyCode === 90) {
         $('.selected > .title > .zoom-link, .selected > .zoom-link').click();
-        return false;
-      } else if (e.keyCode === 68) {
-        $('.selected > .title > .delete-link').click();
         return false;
       } else if (e.keyCode === 13) {
         this.handleEnter();
@@ -2605,6 +2697,26 @@
       return this.editDescriptionView.render();
     };
 
+    ShowView.prototype.showDebate = function() {
+      this.commentsTab.removeClass('active');
+      this.debateTab.addClass('active');
+      this.commentsTab.addClass('selectable');
+      this.debateTab.removeClass('selectable');
+      this.$('> .comments').hide();
+      this.$('> .arguments, > .answers, > .subdebates, > .references').show();
+      return false;
+    };
+
+    ShowView.prototype.showComments = function() {
+      this.commentsTab.addClass('active');
+      this.debateTab.removeClass('active');
+      this.commentsTab.removeClass('selectable');
+      this.debateTab.addClass('selectable');
+      this.$('> .comments').show();
+      this.$('> .arguments, > .answers, > .subdebates, > .references').hide();
+      return false;
+    };
+
     ShowView.prototype.minimize = function() {
       var _ref, _ref2, _ref3, _ref4;
       if (this.isOffScreen) {
@@ -2614,7 +2726,7 @@
       }
       if ((_ref = this.parentView) != null) _ref.setChildView(this);
       if ((_ref2 = this.parentView) != null) _ref2.minimize();
-      this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide();
+      this.maximizedEls.hide();
       this.setUpMinimizeEvents();
       this.tagsView.hideForm();
       if ((_ref3 = this.editTitleView) != null) _ref3.close();
@@ -2633,13 +2745,14 @@
       this.focus();
       router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
-        this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
+        this.maximizedEls.show(200);
+        this.showDebate();
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
           success: function(subdebates, response) {
             var json, _ref;
-            _this.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200);
+            _this.maximizedEls.show(200);
             json = _this.model.fullJSON();
             json.objecttype = "debates";
             json.objectid = json.linkableId;
@@ -2685,6 +2798,7 @@
               'showView': _this
             });
             _this.subdebatesView.render();
+            _this.showDebate();
             _this.setUpMaximizeEvents();
             return _this.loaded = true;
           }

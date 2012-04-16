@@ -14,8 +14,10 @@ var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 var Describable = require('../common/models/describable').Describable;
 var Comment = require('../common/models/comment').Comment;
+var Comment = require('../common/models/user').User;
 var ClassHelper = require('../common/lib/class_helper').ClassHelper;
 var classHelper = new ClassHelper();
+var _u = require("../public/javascript/underscore");
 
 DescribableProvider = function(host, port) {
   this.db= new Db(process.env.DBNAME, new Server(host, port, {auto_reconnect: true}, {}));
@@ -76,6 +78,79 @@ DescribableProvider.prototype.addComment = function(type, describableId, comment
         });
       }
 	  }
+  });
+};
+
+DescribableProvider.prototype.voteComment = function(describableType, describableId, commentId, user, vote, callback) {
+  var provider = this;
+  this.getCollection(describableType, function(error, describable_collection) {
+	  if( error ) callback( error );
+	  else {
+      var objId = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      var userObjId = user["_id"];
+      provider.getCollection("users", function(error, user_collection) {
+	      if( error ) callback( error );
+	      else {
+          var action = {"$addToSet": { voted_references : objId } };
+          if (describableType == "debates") {
+            action = {"$addToSet": { voted_debates : objId } };
+          }
+          user_collection.update( {_id:userObjId}, action, function(error, result) {
+	          if( error ) callback( error );
+	          else {
+              describable_collection.findOne({_id: objId}, function(error, result) {
+                if( error ) callback(error);
+      	        else {
+                  classHelper.augment(result, Describable);
+                  var comment = result.findComment(commentId);
+                  if (comment === null) {
+                    callback(null, null);
+                  } else {
+                    classHelper.augment(user, User);
+                    var uniqueName = user.uniqueName();
+                    var addCollection = vote === "up" ? "upvotes" : "downvotes";
+                    var removeCollection = vote === "up" ? "downvotes" : "upvotes";
+                    var removeCmd = {};
+                    removeCmd["$pull"] = {};
+                    removeCmd["$pull"][comment.mongoIdx + "." + removeCollection] = uniqueName;
+                    var addCmd = {};
+                    addCmd["$addToSet"] = {};
+                    addCmd["$addToSet"][comment.mongoIdx + "." + addCollection] = uniqueName;
+                    describable_collection.update(
+                      {_id: objId},
+                      removeCmd,
+                      function(error, removeResult) {
+                        if( error ) callback(error);
+	                      else {
+                          describable_collection.update(
+                            {_id: objId},
+                            addCmd,
+                            function(error, addResult) {
+                              if( error ) callback(error);
+	                            else {
+                                comment[addCollection].push(uniqueName);
+                                comment[addCollection] = _u.uniq(comment[addCollection]);
+                                    for (var i = 0; i < comment[addCollection].length; i++) {
+                                        console.log(addCollection + ": " + comment[addCollection][i] + " " + (comment[addCollection][i].constructor+"").substring(0,20));
+                                    }
+                                comment[removeCollection] = _u.without(comment[removeCollection], uniqueName);
+                                    for (var i = 0; i < comment[removeCollection].length; i++) {
+                                        console.log(removeCollection + ": " + comment[removeCollection][i] + " " + (comment[removeCollection][i].constructor+"").substring(0,20));
+                                    }
+                                  console.log("done");
+                                callback(null, comment);
+                              }                    
+                            });
+                        }                    
+                      });
+                  }
+                }
+              });
+            }
+		      });
+    	  }
+      });
+ 	  }
   });
 };
 

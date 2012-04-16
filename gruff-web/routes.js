@@ -330,7 +330,7 @@ exports.postComment = function(req, res) {
   }
   describableProvider.addComment(req.params.objecttype, parentId, commentId, txtIdx, comment, 
     function( error, doc) {
-      if (handleError(req, res, error, true)) {
+      if (handleError(req, res, error, doc)) {
         return;
       }
       if (req.xhr) {
@@ -338,6 +338,23 @@ exports.postComment = function(req, res) {
       } else {
         res.redirect('/'+ req.params.objecttype + '/' + req.param('_id'));
       }
+    });
+};
+
+exports.voteComment = function(req, res) {
+  if (bounceAnonymous(req, res)) {
+    return;
+  }
+  var objectType = req.params.objecttype;
+  var parentId = req.params.objectid;
+  var commentId = req.params.commentid;
+  var vote = req.params.vote;
+  describableProvider.voteComment(objectType, parentId, commentId, req.user, vote,
+    function( error, comment) {
+      if (handleError(req, res, error, comment)) {
+        return;
+      }
+      res.json(comment);
     });
 };
 

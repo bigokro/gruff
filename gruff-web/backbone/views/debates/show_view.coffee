@@ -19,11 +19,11 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     json = @model.fullJSON()
     json.typeHeading = @getTypeHeading()
     $(@el).html(@template json)
-    @zoomLink = @.$('> .canvas-title .zoom-link')
     @renderTags()
     @renderReferences()
     @renderComments()
     @renderParents()
+    @setUpEls()
     @setUpEvents()
     @zoomLink.hide()
     @status = "rendered"
@@ -127,6 +127,12 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   showNewCommentForm: (e) =>
     $('.new-comment-link:visible').click()
 
+  setUpEls: =>
+    @zoomLink = @.$('> .canvas-title .zoom-link')
+    @debateTab = @.$('> .tabs #tab-debate')
+    @commentsTab = @.$('> .tabs #tab-comments')
+    @maximizedEls = @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references, > .tabs')
+
   setUpEvents: =>
     @.$("> .title").bind "click", @toggleDescription
     @.$("> .title").bind "dblclick", @showEditTitleForm
@@ -145,6 +151,8 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @.$("> .title").unbind "click", @toggleDescription
     @.$(".new-debate-link").bind "click", @showNewDebateForm
     @.$(".selectable").bind "click", @selectClicked
+    @debateTab.bind "click", @showDebate
+    @commentsTab.bind "click", @showComments
     @setUpDragDrop()
     @setUpHandleKeys()
 
@@ -166,7 +174,16 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         @showNewDebateForm("answers")
       false
     else if e.keyCode == 67  # c
-      @showNewCommentForm()
+      if @.$('> .comments:visible').length > 0
+        @showNewCommentForm()
+      else
+        @showComments()
+      false
+    else if e.keyCode == 68  # d
+      if @.$('> .comments:visible').length > 0
+        @showDebate()
+      else
+        $('.selected > .title > .delete-link').click()
       false
     else if e.keyCode == 70  # f
       @showNewDebateForm("argumentsFor")
@@ -182,9 +199,6 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       false
     else if e.keyCode == 90  # z
       $('.selected > .title > .zoom-link, .selected > .zoom-link').click()
-      false
-    else if e.keyCode == 68  # d
-      $('.selected > .title > .delete-link').click()
       false
     else if e.keyCode == 13  # enter
       @handleEnter()
@@ -304,6 +318,24 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       'model': @model
     @editDescriptionView.render()
 
+  showDebate: =>
+    @commentsTab.removeClass('active')
+    @debateTab.addClass('active')
+    @commentsTab.addClass('selectable')
+    @debateTab.removeClass('selectable')
+    @.$('> .comments').hide()
+    @.$('> .arguments, > .answers, > .subdebates, > .references').show()
+    false
+
+  showComments: =>
+    @commentsTab.addClass('active')
+    @debateTab.removeClass('active')
+    @commentsTab.removeClass('selectable')
+    @debateTab.addClass('selectable')
+    @.$('> .comments').show()
+    @.$('> .arguments, > .answers, > .subdebates, > .references').hide()
+    false
+
   minimize: () =>
     if @isOffScreen
       @onScreen()
@@ -311,7 +343,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
       @show()
     @parentView?.setChildView @
     @parentView?.minimize()
-    @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').hide()
+    @maximizedEls.hide()
     @setUpMinimizeEvents()
     @tagsView.hideForm()
     @editTitleView?.close()
@@ -327,12 +359,13 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @focus()
     router.navigate 'canvas/'+@model.id
     if @loaded
-      @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
+      @maximizedEls.show(200)
+      @showDebate()
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
         success: (subdebates, response) =>
-          @.$('> .description, > .tags, > .arguments, > .answers, > .subdebates, > .comments, > .references').show(200)
+          @maximizedEls.show(200)
           json = @model.fullJSON()
           json.objecttype = "debates"
           json.objectid = json.linkableId
@@ -371,6 +404,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             'parentView': @
             'showView': @
           @subdebatesView.render()
+          @showDebate()
           @setUpMaximizeEvents()
           @loaded = true
       )
