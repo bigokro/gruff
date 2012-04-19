@@ -728,7 +728,7 @@ exports.deleteDebate = function(req, res){
 
 // Facebook App
 exports.postFacebook = function(req, res) {
-  res.json(JSON.stringify(req.params));
+  res.json(JSON.stringify(req.param));
 };
 
 
