@@ -110,6 +110,9 @@ app.get('/:objecttype/:objectid/tag/:tag/remove', routes.removeTag);
 app.get('/:objecttype/:objectid/:attributetype/:attributeid/tag/:tag/remove', routes.removeTag);
 app.post('/:objecttype/comments/new', routes.postComment);
 
+// facebook app
+app.post('/facebook', routes.postFacebook);
+
 // json
 app.get('/rest/user', routes.getCurrentUser);
 app.get('/rest/tags', routes.getTagSearch);

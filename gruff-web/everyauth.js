@@ -116,7 +116,7 @@ everyauth.facebook
       console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
       var promise = this.Promise();
       var newUser = {
-	authenticator: "facebook",
+ 	      authenticator: "facebook",
         data: fbUserMetadata
       };
       userProvider.save(newUser, function(err, users) {
