@@ -728,7 +728,21 @@ exports.deleteDebate = function(req, res){
 
 // Facebook App
 exports.postFacebook = function(req, res) {
-  res.json(new Buffer(req.param['signed_request'], 'base64').toString('ascii'));
+    var signed_request = req.param('signed_request').split('.');
+    var signature = signed_request[0];
+    var data = signed_request[1];
+    var decoded = new Buffer(data, 'base64').toString('utf8');
+    var json = JSON.parse(decoded);
+
+    if (!json.user_id || json.user_id === null) {
+      var appID = "284793468267979";
+      var appID = everyauth.facebook.appId();
+      var authURL = "http://www.facebook.com/dialog/oauth?client_id="+ appID + "&redirect_uri=" + encodeURI("http://gruff.co/facebook");
+      //res.redirect(authURL);
+      res.redirect('/auth/facebook');
+    } else {
+        res.json(json);
+    }
 };
 
 
