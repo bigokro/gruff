@@ -728,7 +728,7 @@ exports.deleteDebate = function(req, res){
 
 // Facebook App
 exports.postFacebook = function(req, res) {
-  res.json(JSON.stringify(req.param));
+  res.json(new Buffer(req.param['signed_request'], 'base64').toString('ascii'));
 };
 
 
