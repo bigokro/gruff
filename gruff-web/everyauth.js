@@ -119,6 +119,7 @@ everyauth.facebook
   .findOrCreateUser( function(session, accessToken, accessTokExtra, fbUserMetadata) {
       console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
       var promise = this.Promise();
+      var login = fbUserMetadata.user_id;
       userProvider.findByLogin(User.AuthTypes.LOCAL, login, function (err, foundUser) {
         if (err) {
           promise.fulfill(err);
@@ -130,7 +131,7 @@ everyauth.facebook
           }
           else {
             var newUser = {
-              login: fbUserMetadata.username,
+              login: login
        	      authenticator: User.AuthTypes.FACEBOOK,
               data: fbUserMetadata
             };
