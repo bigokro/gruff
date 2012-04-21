@@ -100,21 +100,27 @@ UserProvider.prototype.findAllByObjID = function(objIds, callback) {
 };
 
 UserProvider.prototype.findByLogin = function(authenticator, login, callback) {
+    console.log("Getting collection");
   this.getCollection(function(error, user_collection) {
     if (error) {
+	console.log("get collection returned error");
       callback(error)
     }
     else {
+	console.log("calling findOne");
       user_collection.findOne(
         { login: login, authenticator: authenticator },
         function(error, result) {
           if (error) {
+	console.log("findOne returned error");
             callback(error)
           }
           else if (!result) {
+	console.log("findOne returned nothing");
             callback(null, null);
           }
           else {
+	console.log("findOne returning user");
             callback(null, result);
           }
       });
