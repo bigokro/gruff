@@ -145,6 +145,5 @@ app.get('*', routes.handle404);
 
 // Main
 
-everyauth.helpExpress(app);
 app.listen(port);
 console.log('Gruff listening on port ' + app.address().port + ' in ' + app.settings.env + ' mode');
