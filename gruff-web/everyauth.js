@@ -110,6 +110,7 @@ everyauth.facebook
   .entryPath('/auth/facebook')
   .callbackPath('/auth/facebook/callback')
   .canvasPath('/auth/facebook/canvas')
+  .canvasPage('http://apps.facebook.com/gruff-it')
   .scope('email,user_status') // Defaults to undefined
   .fields('id,name,email,picture')
   .handleAuthCallbackError( function(req, res) {
