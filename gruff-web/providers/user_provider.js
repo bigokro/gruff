@@ -99,6 +99,29 @@ UserProvider.prototype.findAllByObjID = function(objIds, callback) {
   });
 };
 
+UserProvider.prototype.findByLogin = function(authenticator, login, callback) {
+  this.getCollection(function(error, user_collection) {
+    if (error) {
+      callback(error)
+    }
+    else {
+      user_collection.findOne(
+        { login: login, authenticator: authenticator },
+        function(error, result) {
+          if (error) {
+            callback(error)
+          }
+          else if (!result) {
+            callback(null, null);
+          }
+          else {
+            callback(null, result);
+          }
+      });
+    }
+  });
+};
+
 UserProvider.prototype.findByKey = function(value, key, callback) {
   this.getCollection(function(error, user_collection) {
     if (error) {

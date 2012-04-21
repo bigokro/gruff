@@ -32,7 +32,7 @@ everyauth
         return errors;
       }
       var promise = this.Promise();
-      userProvider.findByKey(login, 'login', function (err, user) {
+      userProvider.findByLogin(User.AuthTypes.LOCAL, login, function (err, user) {
         if (err) {
           promise.fulfill(err);
         }
@@ -119,17 +119,31 @@ everyauth.facebook
   .findOrCreateUser( function(session, accessToken, accessTokExtra, fbUserMetadata) {
       console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
       var promise = this.Promise();
-      var newUser = {
- 	      authenticator: "facebook",
-        data: fbUserMetadata
-      };
-      userProvider.save(newUser, function(err, users) {
+      userProvider.findByLogin(User.AuthTypes.LOCAL, login, function (err, foundUser) {
         if (err) {
-          return promise.fulfill([err]);
+          promise.fulfill(err);
         }
-        var user = users[0];
-        user.id = user._id;
-        promise.fulfill(user);
+        else {
+          if (foundUser) {
+            user.id = foundUser._id;
+            promise.fulfill(foundUser);
+          }
+          else {
+            var newUser = {
+              login: fbUserMetadata.username,
+       	      authenticator: User.AuthTypes.FACEBOOK,
+              data: fbUserMetadata
+            };
+            userProvider.save(newUser, function(err, users) {
+              if (err) {
+                return promise.fulfill([err]);
+              }
+              var user = users[0];
+              user.id = user._id;
+              promise.fulfill(user);
+            });
+          }
+        }
       });
       return promise;
   })

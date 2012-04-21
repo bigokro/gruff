@@ -29,14 +29,15 @@ User.prototype.safeSet = function(attributes) {
     }
 };
 
+User.prototype.AuthTypes = {
+    LOCAL : "loc"
+  , FACEBOOK : "fb"
+};
+
 User.prototype.uniqueName = function() {
     var name = this.safeGet("login");
-    if (!name || name === null) {
-      var auth = this.safeGet("authenticator");
-      var data = this.safeGet("data");
-      name = data.username;
-    }
-    return name;
+    var auth = this.safeGet("authenticator");
+    return auth + ":" + name;
 };
 
 User.prototype.augmentUser = function(user) {
