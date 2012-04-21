@@ -131,7 +131,7 @@ everyauth.facebook
       console.log(" findbylogin ok");
           if (foundUser) {
       console.log("found user");
-            user.id = foundUser._id;
+            foundUser.id = foundUser._id;
             promise.fulfill(foundUser);
           }
           else {
