@@ -91,6 +91,7 @@ exports.getCurrentUser = function(req, res) {
     res.json({
       _id: req.user._id
       , login: req.user.login
+      , authenticator: req.user.authenticator
       , email: req.user.email
     });
   } else {
