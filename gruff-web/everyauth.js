@@ -1,6 +1,7 @@
 var everyauth = require('everyauth')
 , userProvider = new UserProvider('localhost', 27017)
-, validator = require('validator');
+, validator = require('validator')
+, User = require('./common/models/user').User
 ;
 
 everyauth.everymodule
@@ -32,7 +33,7 @@ everyauth
         return errors;
       }
       var promise = this.Promise();
-      userProvider.findByLogin(User.AuthTypes.LOCAL, login, function (err, user) {
+      userProvider.findByLogin(User.prototype.AuthTypes.LOCAL, login, function (err, user) {
         if (err) {
           promise.fulfill(err);
         }
@@ -120,25 +121,33 @@ everyauth.facebook
       console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
       var promise = this.Promise();
       var login = fbUserMetadata.user_id;
-      userProvider.findByLogin(User.AuthTypes.LOCAL, login, function (err, foundUser) {
+      console.log("Calling findbylogin");
+      userProvider.findByLogin(User.prototype.AuthTypes.FACEBOOK, login, function (err, foundUser) {
         if (err) {
+      console.log("Findbylogin returned error");
           promise.fulfill(err);
         }
         else {
+      console.log(" findbylogin ok");
           if (foundUser) {
+      console.log("found user");
             user.id = foundUser._id;
             promise.fulfill(foundUser);
           }
           else {
+	      console.log("user not found");
             var newUser = {
               login: login,
-       	      authenticator: User.AuthTypes.FACEBOOK,
+       	      authenticator: User.prototype.AuthTypes.FACEBOOK,
               data: fbUserMetadata
             };
+	    console.log("saving new user");
             userProvider.save(newUser, function(err, users) {
               if (err) {
+		  console.log("save user returned error");
                 return promise.fulfill([err]);
               }
+	      console.log("saved user");
               var user = users[0];
               user.id = user._id;
               promise.fulfill(user);
