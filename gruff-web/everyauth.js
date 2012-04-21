@@ -131,7 +131,7 @@ everyauth.facebook
           }
           else {
             var newUser = {
-              login: login
+              login: login,
        	      authenticator: User.AuthTypes.FACEBOOK,
               data: fbUserMetadata
             };
