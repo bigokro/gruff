@@ -104,11 +104,14 @@ everyauth
     .registerSuccessRedirect('/');
 
 everyauth.facebook
+  .myHostname('http://gruff.co')
   .appId('284793468267979')
   .appSecret('90eb5735f5f58beaf88c98e0d7fc1398')
   .entryPath('/auth/facebook')
   .callbackPath('/auth/facebook/callback')
+  .canvasPath('/auth/facebook/canvas')
   .scope('email,user_status') // Defaults to undefined
+  .fields('id,name,email,picture')
   .handleAuthCallbackError( function(req, res) {
 	  console.log("Facebook handleAuthCallbackError()");
   })
