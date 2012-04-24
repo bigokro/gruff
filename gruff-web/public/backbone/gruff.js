@@ -2748,7 +2748,7 @@
       router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
         this.maximizedEls.show(200);
-        if (this.showCommentsFirst) {
+        if (this.commentsFirst) {
           this.showComments();
         } else {
           this.showDebate();
@@ -2804,7 +2804,7 @@
               'showView': _this
             });
             _this.subdebatesView.render();
-            if (_this.showCommentsFirst) {
+            if (_this.commentsFirst) {
               _this.showComments();
             } else {
               _this.showDebate();

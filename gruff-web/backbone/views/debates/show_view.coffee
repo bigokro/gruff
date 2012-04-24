@@ -362,7 +362,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     router.navigate 'canvas/'+@model.id
     if @loaded
       @maximizedEls.show(200)
-      if @showCommentsFirst
+      if @commentsFirst
         @showComments()
       else
         @showDebate()
@@ -409,7 +409,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             'parentView': @
             'showView': @
           @subdebatesView.render()
-          if @showCommentsFirst
+          if @commentsFirst
             @showComments()
           else
             @showDebate()
