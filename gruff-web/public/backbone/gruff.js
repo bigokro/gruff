@@ -2320,7 +2320,8 @@
       this.subdebateListsSelector = "> .arguments > .for, > .arguments > .against, > .subdebates, > .answers";
       this.subdebatesSelector = '> .debates-list > .debate-list-item';
       this.newDebateFormViews || (this.newDebateFormViews = []);
-      return Gruff.Views.Debates.ShowViews[this.model.id] = this;
+      Gruff.Views.Debates.ShowViews[this.model.id] = this;
+      return this.commentsFirst = true;
     };
 
     ShowView.prototype.render = function() {
@@ -2747,7 +2748,11 @@
       router.navigate('canvas/' + this.model.id);
       if (this.loaded) {
         this.maximizedEls.show(200);
-        this.showDebate();
+        if (this.showCommentsFirst) {
+          this.showComments();
+        } else {
+          this.showDebate();
+        }
         return this.setUpMaximizeEvents();
       } else {
         this.model.fetchSubdebates({
@@ -2799,7 +2804,11 @@
               'showView': _this
             });
             _this.subdebatesView.render();
-            _this.showDebate();
+            if (_this.showCommentsFirst) {
+              _this.showComments();
+            } else {
+              _this.showDebate();
+            }
             _this.setUpMaximizeEvents();
             return _this.loaded = true;
           }
