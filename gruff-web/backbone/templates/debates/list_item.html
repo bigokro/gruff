@@ -1,10 +1,10 @@
 <script type="text/x-jquery-tmpl" id="debate-list-item-template">
   <div class="debate-list-item selectable <%=divClass%>" id="<%=linkableId%>">
     <h4 class="title">
-      <a href="<%=linkableId%>" class="title-link"><%= bestTitle %></a>
-      <a href="<%=linkableId%>" class="zoom-link">(zoom)</a>
+      <a href="<%=linkableId%>" class="title-link" text="Click to expand"><%= bestTitle %></a>
+      <a href="<%=linkableId%>" class="zoom-link" text="Select and type 'z' to zoom in">(zoom)</a>
   <% if (curruser.curator) { %>
-      <a href="#" class="delete-link">(del)</a>
+      <a href="#" class="delete-link" text="Select and type 'd' to delete">(del)</a>
   <% } %>
     </h4>
     <div class="body description selectable" style="display:none;"><%= bestDescription %></div>

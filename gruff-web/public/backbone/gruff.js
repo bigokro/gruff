@@ -1164,10 +1164,15 @@
       this.close = __bind(this.close, this);
       this.textIndex = __bind(this.textIndex, this);
       this.mergeBack = __bind(this.mergeBack, this);
+      this.closeTooltip = __bind(this.closeTooltip, this);
+      this.moveTooltip = __bind(this.moveTooltip, this);
+      this.showTooltip = __bind(this.showTooltip, this);
       this.getClickIdx = __bind(this.getClickIdx, this);
       this.renderForm = __bind(this.renderForm, this);
       this.updateText = __bind(this.updateText, this);
       this.showNewCommentForm = __bind(this.showNewCommentForm, this);
+      this.setUpMouseOverEvents = __bind(this.setUpMouseOverEvents, this);
+      this.setUpTooltipEvents = __bind(this.setUpTooltipEvents, this);
       this.setUpEvents = __bind(this.setUpEvents, this);
       SegmentView.__super__.constructor.apply(this, arguments);
     }
@@ -1212,7 +1217,20 @@
     };
 
     SegmentView.prototype.setUpEvents = function() {
-      return this.$('> .text').click(this.showNewCommentForm);
+      this.$('> .text').click(this.showNewCommentForm);
+      return this.setUpTooltipEvents;
+    };
+
+    SegmentView.prototype.setUpTooltipEvents = function() {
+      this.$('> .text').mouseover(this.showTooltip);
+      this.$('> .text').unbind("mousemove", this.moveTooltip);
+      return this.$('> .text').unbind("mouseout", this.closeTooltip);
+    };
+
+    SegmentView.prototype.setUpMouseOverEvents = function() {
+      this.$('> .text').unbind("mouseover", this.showTooltip);
+      this.$('> .text').mousemove(this.moveTooltip);
+      return this.$('> .text').mouseout(this.closeTooltip);
     };
 
     SegmentView.prototype.showNewCommentForm = function(e) {
@@ -1257,6 +1275,19 @@
       }
       idx = clicked.focusOffset;
       return idx;
+    };
+
+    SegmentView.prototype.showTooltip = function(e) {
+      $(body).append('<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>');
+      this.tooltip = $('#add-comment-tooltip');
+      return this.setUpMouseOverEvents();
+    };
+
+    SegmentView.prototype.moveTooltip = function(e) {};
+
+    SegmentView.prototype.closeTooltip = function(e) {
+      this.tooltip.remove();
+      return this.setUpTooltipEvents();
     };
 
     SegmentView.prototype.mergeBack = function() {
