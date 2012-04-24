@@ -14,6 +14,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     @subdebatesSelector = '> .debates-list > .debate-list-item'
     @newDebateFormViews ||= []
     Gruff.Views.Debates.ShowViews[@model.id] = @
+    @commentsFirst = true
     
   render: ->
     json = @model.fullJSON()
@@ -361,7 +362,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
     router.navigate 'canvas/'+@model.id
     if @loaded
       @maximizedEls.show(200)
-      @showDebate()
+      if @showCommentsFirst
+        @showComments()
+      else
+        @showDebate()
       @setUpMaximizeEvents()
     else
       @model.fetchSubdebates(
@@ -405,7 +409,10 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
             'parentView': @
             'showView': @
           @subdebatesView.render()
-          @showDebate()
+          if @showCommentsFirst
+            @showComments()
+          else
+            @showDebate()
           @setUpMaximizeEvents()
           @loaded = true
       )
