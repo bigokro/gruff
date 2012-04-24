@@ -174,20 +174,21 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
         @showNewDebateForm("answers")
       false
     else if e.keyCode == 67  # c
-      if @.$('> .comments:visible').length > 0
-        @showNewCommentForm()
-      else
-        @showComments()
+      @showNewCommentForm()
       false
     else if e.keyCode == 68  # d
       if @.$('> .comments:visible').length > 0
-        @showDebate()
-      else
         $('.selected > .title > .delete-link').click()
+      else
+        @showComments()
       false
     else if e.keyCode == 70  # f
       @showNewDebateForm("argumentsFor")
       false
+    else if e.keyCode == 79  # o
+      if @.$('> .comments:visible').length > 0
+        @showDebate()
+        false
     else if e.keyCode == 82  # r
       @showNewReferenceForm()
       false

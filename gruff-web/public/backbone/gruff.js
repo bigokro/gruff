@@ -2522,22 +2522,23 @@
         }
         return false;
       } else if (e.keyCode === 67) {
-        if (this.$('> .comments:visible').length > 0) {
-          this.showNewCommentForm();
-        } else {
-          this.showComments();
-        }
+        this.showNewCommentForm();
         return false;
       } else if (e.keyCode === 68) {
         if (this.$('> .comments:visible').length > 0) {
-          this.showDebate();
-        } else {
           $('.selected > .title > .delete-link').click();
+        } else {
+          this.showComments();
         }
         return false;
       } else if (e.keyCode === 70) {
         this.showNewDebateForm("argumentsFor");
         return false;
+      } else if (e.keyCode === 79) {
+        if (this.$('> .comments:visible').length > 0) {
+          this.showDebate();
+          return false;
+        }
       } else if (e.keyCode === 82) {
         this.showNewReferenceForm();
         return false;

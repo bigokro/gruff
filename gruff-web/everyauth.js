@@ -83,7 +83,7 @@ everyauth
           if (count <= 0) {
             promise.fulfill(errors);
           }
-        })
+        });
       });
       
       return promise;
@@ -97,11 +97,11 @@ everyauth
         }
         var user = users[0];
         user.id = user._id;
-        promise.fulfill(user);
+        return promise.fulfill(user);
       });
       return promise;
     })
-    .loginSuccessRedirect('/')
+    .loginSuccessRedirect('/my/debates')
     .registerSuccessRedirect('/');
 
 everyauth.facebook
@@ -150,14 +150,14 @@ everyauth.facebook
 	      console.log("saved user");
               var user = users[0];
               user.id = user._id;
-              promise.fulfill(user);
+              return promise.fulfill(user);
             });
           }
         }
       });
       return promise;
   })
-  .redirectPath('/');
+  .redirectPath('/my/debates');
 
 
 exports.everyauth = everyauth;
