@@ -1218,7 +1218,7 @@
 
     SegmentView.prototype.setUpEvents = function() {
       this.$('> .text').click(this.showNewCommentForm);
-      return this.setUpTooltipEvents;
+      return this.setUpTooltipEvents();
     };
 
     SegmentView.prototype.setUpTooltipEvents = function() {
@@ -1278,12 +1278,15 @@
     };
 
     SegmentView.prototype.showTooltip = function(e) {
-      $(body).append('<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>');
+      $('body').append('<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>');
       this.tooltip = $('#add-comment-tooltip');
       return this.setUpMouseOverEvents();
     };
 
-    SegmentView.prototype.moveTooltip = function(e) {};
+    SegmentView.prototype.moveTooltip = function(e) {
+      this.tooltip.css('left', e.pageX + 8);
+      return this.tooltip.css('top', e.pageY - 17);
+    };
 
     SegmentView.prototype.closeTooltip = function(e) {
       this.tooltip.remove();

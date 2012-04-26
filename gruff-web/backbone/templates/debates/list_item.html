@@ -1,13 +1,13 @@
 <script type="text/x-jquery-tmpl" id="debate-list-item-template">
   <div class="debate-list-item selectable <%=divClass%>" id="<%=linkableId%>">
     <h4 class="title">
-      <a href="<%=linkableId%>" class="title-link" text="Click to expand"><%= bestTitle %></a>
-      <a href="<%=linkableId%>" class="zoom-link" text="Select and type 'z' to zoom in">(zoom)</a>
+      <a href="<%=linkableId%>" class="title-link" title="Click to expand, double-click to edit"><%= bestTitle %></a>
+      <a href="<%=linkableId%>" class="zoom-link" title="Select and type 'z' to zoom in">(zoom)</a>
   <% if (curruser.curator) { %>
-      <a href="#" class="delete-link" text="Select and type 'd' to delete">(del)</a>
+      <a href="#" class="delete-link" title="Select and type 'd' to delete">(del)</a>
   <% } %>
     </h4>
-    <div class="body description selectable" style="display:none;"><%= bestDescription %></div>
+    <div class="body description selectable" title="Double-click to edit" style="display:none;"><%= bestDescription %></div>
   <% if (type === DebateTypes.DIALECTIC) { %>
   <div class="arguments" style="display:none; font-size:80%;">
     <div class="for selectable">

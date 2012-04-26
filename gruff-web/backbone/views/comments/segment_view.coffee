@@ -34,7 +34,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
 
   setUpEvents: =>
     @.$('> .text').click @showNewCommentForm
-    @setUpTooltipEvents
+    @setUpTooltipEvents()
 
   setUpTooltipEvents: =>
     @.$('> .text').mouseover @showTooltip
@@ -80,13 +80,15 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
       clicked = document.selection.createRange()
     idx = clicked.focusOffset
     idx
-
+  
   showTooltip: (e) =>
-    $(body).append '<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>'
+    $('body').append '<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>'
     @tooltip = $('#add-comment-tooltip')
     @setUpMouseOverEvents()
 
   moveTooltip: (e) =>
+    @tooltip.css 'left', (e.pageX + 8)
+    @tooltip.css 'top', (e.pageY - 17)
 
   closeTooltip: (e) =>
     @tooltip.remove()
