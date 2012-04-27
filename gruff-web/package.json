@@ -10,7 +10,7 @@
     "stylus": ">= 0.18.0",
     "oauth": ">=0.9.5",
     "restler": ">=0.2.5",
-    "everyauth": "https://github.com/bigokro/everyauth/raw/master/everyauth.tar.gz",
+    "everyauth": "= 0.2.23",
     "validator": ">= 0.2.9",
     "tobi": ">= 0.3.1",
     "connect": ">= 0.3.1",

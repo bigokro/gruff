@@ -21,7 +21,7 @@ class Gruff.Views.Debates.EditDescriptionView extends Backbone.View
         _id: @model.linkableId()
         desc: newDescription
       success: (data) =>
-        $(@descriptionEl).html newDescription
+        $(@descriptionEl).html @formatText(newDescription)
         @close()
       error: (jqXHR, type) =>
         @handleRemoteError jqXHR

@@ -13,6 +13,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   render: ->
     json = @model.fullJSON()
+    json.bestDescription = @formatText json.bestDescription
     if @attributeType == "argumentsFor" then json.divClass = "argument argumentFor"
     if @attributeType == "argumentsAgainst" then json.divClass = "argument argumentAgainst"
     if @attributeType == "answers" then json.divClass = "answer"
@@ -238,7 +239,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   handleModelChanges: (model, options) =>
     @.$('> h4.title > a.title-link').html @model.bestTitleText()
-    @.$('> .description').html @model.bestDescriptionText()
+    @.$('> .description').html @formatText(@model.bestDescriptionText())
 
   close: ->
     @el.remove()

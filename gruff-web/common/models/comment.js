@@ -107,9 +107,7 @@ Comment.prototype.completeText = function() {
 
 Comment.prototype.numVotes = function(type) {
     var votesArr = this.safeGet(type);
-    if (votesArr === null || !votesArr.length) {
-        votesArr = [];
-    }
+    votesArr = votesArr || [];
     return votesArr.length;
 };
 

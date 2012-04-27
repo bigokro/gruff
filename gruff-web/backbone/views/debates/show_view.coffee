@@ -19,6 +19,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   render: ->
     json = @model.fullJSON()
     json.typeHeading = @getTypeHeading()
+    json.bestDescription = @formatText json.bestDescription
     $(@el).html(@template json)
     @renderTags()
     @renderReferences()
@@ -237,7 +238,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   handleModelChanges: (model, options) =>
     @.$('> .canvas-title > h1 > .attribute-type').html @getTypeHeading()
     @.$('> .canvas-title > h1 > .title-text').html @model.bestTitleText()
-    @.$('> .description').html @model.bestDescriptionText()
+    @.$('> .description').html @formatText(@model.bestDescriptionText())
 
   setUpDragDrop: =>
     if Gruff.User.isCurator()

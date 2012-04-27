@@ -51,4 +51,16 @@ _.extend(Backbone.View.prototype,
   showLoginForm: ->
     form = new Gruff.Views.Login.LoginView
     form.render()
+
+  formatText: (text) ->
+    return "" unless text && text?
+    html = text.replace /\n[*]([^\n]+)/g, "<ul><li>$1</li></ul>"
+    html = html.replace /<\/ul><ul>/g, ""
+    html = html.replace /\n[#]([^\n]+)/g, "<ol><li>$1</li></ol>"
+    html = html.replace /<\/ol><ol>/g, ""
+    html = html.replace /\n\w*\n/g, "</p><p>"
+    html = html.replace /\n/g, "<br/>"
+    html = html.replace /(https?[:]\/\/[^\s)]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>"
+    html = "<p>" + html + "</p>"
+    html
 )

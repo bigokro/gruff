@@ -1190,7 +1190,7 @@
       var json,
         _this = this;
       json = {};
-      json.text = this.segment.text;
+      json.text = this.formatText(this.segment.text);
       json.curruser = Gruff.User.fullJSON();
       if ($(this.parentEl).children().length === 0 || this.index === 0) {
         $(this.parentEl).prepend(this.template(json));
@@ -1218,7 +1218,7 @@
 
     SegmentView.prototype.setUpEvents = function() {
       this.$('> .text').click(this.showNewCommentForm);
-      return this.setUpTooltipEvents;
+      return this.setUpTooltipEvents();
     };
 
     SegmentView.prototype.setUpTooltipEvents = function() {
@@ -1278,12 +1278,15 @@
     };
 
     SegmentView.prototype.showTooltip = function(e) {
-      $(body).append('<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>');
+      $('body').append('<div class="tooltip" id="add-comment-tooltip">Click to respond right here</div>');
       this.tooltip = $('#add-comment-tooltip');
       return this.setUpMouseOverEvents();
     };
 
-    SegmentView.prototype.moveTooltip = function(e) {};
+    SegmentView.prototype.moveTooltip = function(e) {
+      this.tooltip.css('left', e.pageX + 8);
+      return this.tooltip.css('top', e.pageY - 17);
+    };
 
     SegmentView.prototype.closeTooltip = function(e) {
       this.tooltip.remove();
@@ -1453,7 +1456,7 @@
           desc: newDescription
         },
         success: function(data) {
-          $(_this.descriptionEl).html(newDescription);
+          $(_this.descriptionEl).html(_this.formatText(newDescription));
           return _this.close();
         },
         error: function(jqXHR, type) {
@@ -1712,6 +1715,7 @@
     ListItemView.prototype.render = function() {
       var json;
       json = this.model.fullJSON();
+      json.bestDescription = this.formatText(json.bestDescription);
       if (this.attributeType === "argumentsFor") {
         json.divClass = "argument argumentFor";
       }
@@ -2359,6 +2363,7 @@
       var json;
       json = this.model.fullJSON();
       json.typeHeading = this.getTypeHeading();
+      json.bestDescription = this.formatText(json.bestDescription);
       $(this.el).html(this.template(json));
       this.renderTags();
       this.renderReferences();
@@ -3782,6 +3787,19 @@
       var form;
       form = new Gruff.Views.Login.LoginView;
       return form.render();
+    },
+    formatText: function(text) {
+      var html;
+      if (!(text && (text != null))) return "";
+      html = text.replace(/\n[*]([^\n]+)/g, "<ul><li>$1</li></ul>");
+      html = html.replace(/<\/ul><ul>/g, "");
+      html = html.replace(/\n[#]([^\n]+)/g, "<ol><li>$1</li></ol>");
+      html = html.replace(/<\/ol><ol>/g, "");
+      html = html.replace(/\n\w*\n/g, "</p><p>");
+      html = html.replace(/\n/g, "<br/>");
+      html = html.replace(/(https?[:]\/\/[^\s)]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>");
+      html = "<p>" + html + "</p>";
+      return html;
     }
   });
 
