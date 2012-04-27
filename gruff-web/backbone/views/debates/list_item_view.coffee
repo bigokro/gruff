@@ -239,7 +239,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   handleModelChanges: (model, options) =>
     @.$('> h4.title > a.title-link').html @model.bestTitleText()
-    @.$('> .description').html @model.bestDescriptionText()
+    @.$('> .description').html @formatText(@model.bestDescriptionText())
 
   close: ->
     @el.remove()

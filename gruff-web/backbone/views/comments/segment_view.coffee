@@ -59,7 +59,7 @@ class Gruff.Views.Comments.SegmentView extends Backbone.View
     false
 
   updateText: =>
-    @.$('> .text').html @segment.text
+    @.$('> .text').html @formatText(@segment.text)
 
   renderForm: =>
     @newView = new Gruff.Views.Comments.NewSubcommentView
