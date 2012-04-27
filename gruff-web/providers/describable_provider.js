@@ -43,7 +43,7 @@ DescribableProvider.prototype.addComment = function(type, describableId, comment
 		      {"$push": {comments: comment}},
 		      function(error, describable){
 		        if( error ) callback(error);
-		        else callback(null, describable);
+		        else callback(null, comment);
 		      });
       } else {
         console.log("comment id provided - loading debate");
