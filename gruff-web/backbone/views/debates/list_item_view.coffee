@@ -13,6 +13,7 @@ class Gruff.Views.Debates.ListItemView extends Backbone.View
 
   render: ->
     json = @model.fullJSON()
+    json.bestDescription = @formatText json.bestDescription
     if @attributeType == "argumentsFor" then json.divClass = "argument argumentFor"
     if @attributeType == "argumentsAgainst" then json.divClass = "argument argumentAgainst"
     if @attributeType == "answers" then json.divClass = "answer"

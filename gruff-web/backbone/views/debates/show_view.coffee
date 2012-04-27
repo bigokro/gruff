@@ -19,6 +19,7 @@ class Gruff.Views.Debates.ShowView extends Backbone.View
   render: ->
     json = @model.fullJSON()
     json.typeHeading = @getTypeHeading()
+    json.bestDescription = @formatText json.bestDescription
     $(@el).html(@template json)
     @renderTags()
     @renderReferences()

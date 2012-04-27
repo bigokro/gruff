@@ -1190,7 +1190,7 @@
       var json,
         _this = this;
       json = {};
-      json.text = this.segment.text;
+      json.text = this.formatText(this.segment.text);
       json.curruser = Gruff.User.fullJSON();
       if ($(this.parentEl).children().length === 0 || this.index === 0) {
         $(this.parentEl).prepend(this.template(json));
@@ -1456,7 +1456,7 @@
           desc: newDescription
         },
         success: function(data) {
-          $(_this.descriptionEl).html(newDescription);
+          $(_this.descriptionEl).html(_this.formatText(newDescription));
           return _this.close();
         },
         error: function(jqXHR, type) {
@@ -1715,6 +1715,7 @@
     ListItemView.prototype.render = function() {
       var json;
       json = this.model.fullJSON();
+      json.bestDescription = this.formatText(json.bestDescription);
       if (this.attributeType === "argumentsFor") {
         json.divClass = "argument argumentFor";
       }
@@ -2362,6 +2363,7 @@
       var json;
       json = this.model.fullJSON();
       json.typeHeading = this.getTypeHeading();
+      json.bestDescription = this.formatText(json.bestDescription);
       $(this.el).html(this.template(json));
       this.renderTags();
       this.renderReferences();
@@ -3785,6 +3787,19 @@
       var form;
       form = new Gruff.Views.Login.LoginView;
       return form.render();
+    },
+    formatText: function(text) {
+      var html;
+      if (!(text && (text != null))) return "";
+      html = text.replace(/\n[*]([^\n]+)/g, "<ul><li>$1</li></ul>");
+      html = html.replace(/<\/ul><ul>/g, "");
+      html = html.replace(/\n[#]([^\n]+)/g, "<ol><li>$1</li></ol>");
+      html = html.replace(/<\/ol><ol>/g, "");
+      html = html.replace(/\n\w*\n/g, "</p><p>");
+      html = html.replace(/\n/g, "<br/>");
+      html = html.replace(/(https?[:]\/\/[^\s)]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>");
+      html = "<p>" + html + "</p>";
+      return html;
     }
   });
 
