@@ -110,8 +110,6 @@ everyauth.facebook
   .appSecret('90eb5735f5f58beaf88c98e0d7fc1398')
   .entryPath('/auth/facebook')
   .callbackPath('/auth/facebook/callback')
-  .canvasPath('/auth/facebook/canvas')
-  .canvasPage('http://apps.facebook.com/gruff-it')
   .scope('email,user_status') // Defaults to undefined
   .fields('id,name,email,picture')
   .handleAuthCallbackError( function(req, res) {
@@ -158,6 +156,11 @@ everyauth.facebook
       return promise;
   })
   .redirectPath('/my/debates');
+
+
+everyauth.facebookCanvas
+  .canvasPath('/auth/facebook/canvas')
+  .canvasPage('http://apps.facebook.com/gruff-it');
 
 
 exports.everyauth = everyauth;
