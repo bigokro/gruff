@@ -100,6 +100,51 @@ Debate.prototype.stripChildren = function() {
   return this;
 };
 
+/***
+ * PERMISSIONS
+ *
+ * Using a simple access control list (ACL), maintained by each debate individually
+ * If there is no ACL on the debate, it is assumed that anyone can do anything
+ * Otherwise, the ACL has the following format:
+ *
+ * debate: {
+ *   perms: {
+ *     read: [ <uniqueNames of users with read-only perms> ],
+ *     edit: [ <uniqueNames of users with read and write perms> ],
+ *     curate: [ <uniqueNames of users with read/write and curate perms> ]
+ *   }
+ * }
+ * 
+ ***/
+
+Debate.prototype.canRead = function(uniqueName) {
+  var perms = this.safeGet("perms");
+  if (!perms || perms == null) {
+    return true;
+  }
+  perms.read = perms.read || [];
+  return this.canEdit(uniqueName) || perms.read.indexOf(uniqueName) >= 0;
+}
+
+Debate.prototype.canEdit = function(uniqueName) {
+  var perms = this.safeGet("perms");
+  if (!perms || perms == null) {
+    return true;
+  }
+  perms.edit = perms.edit || [];
+  return this.canCurate(uniqueName) || perms.edit.indexOf(uniqueName) >= 0;
+}
+
+Debate.prototype.canCurate = function(uniqueName) {
+  var perms = this.safeGet("perms");
+  if (!perms || perms == null) {
+    return true;
+  }
+  perms.curate = perms.curate || [];
+  return perms.curate.indexOf(uniqueName) >= 0;
+}
+
+
 classHelper.augmentClass(Debate, Identifiable);
 classHelper.augmentClass(Debate, Describable);
 
