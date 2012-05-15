@@ -1,6 +1,7 @@
 var everyauth = require('everyauth')
 , userProvider = new UserProvider('localhost', 27017)
 , validator = require('validator')
+, restler = require('restler')
 , User = require('./common/models/user').User
 ;
 
@@ -118,7 +119,7 @@ everyauth.facebook
   .findOrCreateUser( function(session, accessToken, accessTokExtra, fbUserMetadata) {
       console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
       var promise = this.Promise();
-      var login = fbUserMetadata.user_id;
+      var login = fbUserMetadata.user_id || fbUserMetadata.id;
       console.log("Calling findbylogin");
       userProvider.findByLogin(User.prototype.AuthTypes.FACEBOOK, login, function (err, foundUser) {
         if (err) {
@@ -134,22 +135,34 @@ everyauth.facebook
           }
           else {
 	      console.log("user not found");
-            var newUser = {
-              login: login,
-       	      authenticator: User.prototype.AuthTypes.FACEBOOK,
-              data: fbUserMetadata
-            };
-	    console.log("saving new user");
-            userProvider.save(newUser, function(err, users) {
-              if (err) {
-		  console.log("save user returned error");
-                return promise.fulfill([err]);
-              }
-	      console.log("saved user");
-              var user = users[0];
-              user.id = user._id;
-              return promise.fulfill(user);
+            var request = restler.get("https://graph.facebook.com/me", { query: { access_token: accessToken } });
+
+            request.on('fail', function(data) {
+              var result = JSON.parse(data);
+              console.log("couldn't retrieve FB user: " + result.error.message);
+              return promise.fulfill([err]);
             });
+
+            request.on('success', function(data) {
+              var userData = querystring.parse(data);
+              var newUser = {
+                login: userData.username,
+         	      authenticator: User.prototype.AuthTypes.FACEBOOK,
+                data: userData
+              };
+  	    console.log("saving new user");
+              userProvider.save(newUser, function(err, users) {
+                if (err) {
+		  console.log("save user returned error");
+                  return promise.fulfill([err]);
+                }
+	      console.log("saved user");
+                var user = users[0];
+                user.id = user._id;
+                return promise.fulfill(user);
+              });
+            });
+
           }
         }
       });
