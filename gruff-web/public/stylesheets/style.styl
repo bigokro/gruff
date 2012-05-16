@@ -1,5 +1,39 @@
+/* functions */
+
+rounded-corners()
+  -webkit-border-radius 5px
+  -moz-border-radius 5px
+  border-radius 5px
+
+tabbed-corners()
+  -webkit-border-radius 5px 5px 0px 0px
+  -moz-border-radius 5px 5px 0px 0px
+  border-radius 5px 5px 0px 0px
+
+with-shadow()
+  -moz-box-shadow 10px 10px 5px #888
+  -webkit-box-shadow 10px 10px 5px #888
+  box-shadow 10px 10px 5px #888
+
+no-shadow()
+  -moz-box-shadow none
+  -webkit-box-shadow none
+  box-shadow none
+
+/* constants */
+
+header-font = 'Special Elite', 'Kranky',"Lucida Grande", "Lucida Sans Unicode", Verdana
+description-font = "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif
+text-font = "Courier New",Courier,monospace
+
+link-color = #A3181E
+reference-link-color = blue
+main-bg-color = white
+
+/* styles */
+
 body
-  font-family "Courier New",Courier,monospace
+  font-family text-font
   font-size 1em
   text-stroke 1px rgba(255, 255, 255, 0.1)
   color #555
@@ -29,7 +63,7 @@ h4.title, h4.title a
   letter-spacing -1px
   font-weight bold
   color #A3181E
-  background-color white
+  background-color main-bg-color
 h4.title
   padding 2px
 div
@@ -41,7 +75,7 @@ label
   display block
   font-weight bold
 label em
-  color #A3181E
+  color link-color
   font-style normal
 input[type =text]
   width 100%
@@ -82,7 +116,7 @@ a img
       text-align center
       font-size 3em
       text-decoration none
-      font-family 'Special Elite', 'Kranky',"Lucida Grande", "Lucida Sans Unicode", Verdana
+      font-family header-font
   #user
     float right
     margin 0 20px
@@ -103,15 +137,13 @@ a img
   .references
     margin-top 20px
     border 1px solid
-    -moz-box-shadow 10px 10px 5px #888
-    -webkit-box-shadow 10px 10px 5px #888
-    box-shadow 10px 10px 5px #888
+    with-shadow()
     padding 5px
     .reference
       h4.title, h4.title a
         font-size 1em
-        color #A3181E
-        background-color white
+        color reference-link-color
+        background-color main-bg-color
 #footer
   clear both
   text-align center
@@ -127,9 +159,7 @@ a img
 
 .answers
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   .answer
     margin-top 10px
@@ -139,9 +169,7 @@ a img
       background-color #eee
 .against
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   float right
   width 47%
@@ -153,9 +181,7 @@ a img
 .comments
   margin-top 20px
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   .comment
     margin-top 10px
@@ -164,14 +190,12 @@ a img
 .card
   margin-top 20px
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
 .debates
   .debate
     margin 20px
-    border 2px dashed #A3181E
+    border 2px dashed link-color
     border-bottom-style none
     background-color #DDD
     .date
@@ -179,18 +203,18 @@ a img
     .type
         display none
     .title a
-        color #A3181E
+        color link-color
         font-size 1.25em
         letter-spacing -1px
         font-weight bold
     .description
-        font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
+        font-family description-font
         padding .25em
-        background-color #fff
+        background-color main-bg-color
         border none
 .debate
   z-index 0
-  background-color #fff
+  background-color main-bg-color
   .date
     display none
   .vote-link
@@ -200,9 +224,7 @@ a img
 .references
   margin-top 20px
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
 .reference
   .date
@@ -215,13 +237,11 @@ a img
     margin-left 15px
     margin-top 10px
   .title a
-    color blue
+    color reference-link-color
 .descriptions
   margin-top 20px
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   .choose-description
     padding-bottom 10px
@@ -235,26 +255,24 @@ a img
     .description
       margin-left 30px
       .votes
-        color #A3181E
+        color link-color
         margin-left 5px
         font-size .75em
 .description
     min-height 26px
     margin-top 10px
     margin-bottom 10px
-    font-family "Book Antiqua",Georgia,"MS Sans Serif", Geneva, sans-serif;
+    font-family description-font
     padding 5px
-    background-color #fff
-    border 2px dashed #A3181E
+    background-color main-bg-color
+    border 2px dashed link-color
     border-top-style none
     background-color #DDD
 .error
   color #a33
 .for
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   float left
   width 47%
@@ -275,9 +293,7 @@ a img
 .titles
   margin-top 20px
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   .choose-title
     margin-top 10px
@@ -289,7 +305,7 @@ a img
       font-size 1.15em
       letter-spacing -1px
       font-weight bold
-      color #A3181E
+      color link-color
     .vote-link
       float left
       margin-left 0px
@@ -299,17 +315,14 @@ a img
 .subdebates
   margin-top 20px
   border 1px solid
-  -moz-box-shadow 10px 10px 5px #888
-  -webkit-box-shadow 10px 10px 5px #888
-  box-shadow 10px 10px 5px #888
+  with-shadow()
   padding 1%
   z-index 5
 .tags
   margin 5px 0px 5px 30px
   span.tag
     margin 2px 5px 2px 2px
-    -moz-border-radius 5px
-    border-radius 5px
+    rounded-corners()
     border 1px solid
     background-color  #ff9
   span.spacer
@@ -327,20 +340,20 @@ a img
   a.delete-tag:hover, a.delete-tag.hover
     text-decoration none
     font-size .75em
-    color #A3181E
+    color link-color
   span.space-holder
     font-size .75em
     color  #fff
-    background-color #fff
+    background-color main-bg-color
   span.show-add-tag-form a
     text-decoration none
-    color #A3181E
-    background-color #fff
+    color link-color
+    background-color main-bg-color
     font-weight bold
   span.add-tag-form a
     text-decoration none
-    color #A3181E
-    background-color #fff
+    color link-color
+    background-color main-bg-color
     font-weight bold
     margin-right 5px
   span.add-tag-form input[type="text"]
@@ -368,12 +381,12 @@ div.clear
 .tagline
   color #343434
   text-decoration none
-  font-family 'Special Elite', 'Kranky',"Lucida Grande", "Lucida Sans Unicode", Verdana
+  font-family header-font
 .disclaimer
   margin-top 20px
   font-style italic
   font-size .8em
-  color #A3181E
+  color link-color
 .twtr-widget
   margin-top 20px
 .twitter-share-button
@@ -397,13 +410,12 @@ ul.navigation
 .over, h4.title.over, h4.title.over a
   background-color #DDD
 h4.title.over
-  border 2px dashed #A3181E
+  border 2px dashed link-color
   padding 0px
 .new-debate-link, .simple-new-debate-link, .new-comment-link, .new-reference-link
   padding 3px
   background-color #DDD
-  -moz-border-radius 5px
-  border-radius 5px
+  rounded-corners()
   border 1px solid
 .debate-list-item
   z-index 10
@@ -415,15 +427,11 @@ h4.title.over
     position absolute
     z-index 10
     padding 1%
-    background-color white
+    background-color main-bg-color
     border 1px solid
-    -moz-box-shadow 10px 10px 5px #888
-    -webkit-box-shadow 10px 10px 5px #888
-    box-shadow 10px 10px 5px #888
+    with-shadow()
   .for, .against, .answers
-    -moz-box-shadow none
-    -webkit-box-shadow none
-    box-shadow none
+    no-shadow()
     border none
 .modal-bg
   position absolute
@@ -451,7 +459,7 @@ h4.title.over
   padding 4px 0
 h4.title a.zoom-link, h4.title a.delete-link, .canvas-title a.zoom-link
   list-style none
-  color blue
+  color reference-link-color
   font-size .75em
 .ui-icon-zoomin
   background-image url(/images/modal-bg.png) !important
@@ -462,14 +470,12 @@ h4.title a.zoom-link, h4.title a.delete-link, .canvas-title a.zoom-link
 .comment-list-item
   background-color #ffa
   padding 2px
-  -moz-border-radius 5px
-  border-radius 5px
+  rounded-corners()
   border 1px solid
   margin 10px 0 10px 0
   .info
     background-color #aaf
-    -moz-border-radius 5px
-    border-radius 5px
+    rounded-corners()
     .user
       padding 2px
       display inline
@@ -480,8 +486,7 @@ h4.title a.zoom-link, h4.title a.delete-link, .canvas-title a.zoom-link
   .comment
     padding 2px
     background-color #ffa
-    -moz-border-radius 5px
-    border-radius 5px
+    rounded-corners()
 .reference-list-item
   h4
     font-size 1em
@@ -498,27 +503,26 @@ h4.title a.zoom-link, h4.title a.delete-link, .canvas-title a.zoom-link
   width 100%
   .tab
     padding 2px
-    -moz-border-radius 5px 5px 0px 0px
-    border-radius 5px 5px 0px 0px
+    tabbed-corners()
     border 1px solid
     background-color  #dd7
     a
       text-decoration none
-      font-family 'Special Elite', 'Kranky',"Lucida Grande", "Lucida Sans Unicode", Verdana
+      font-family header-font
       font-variant small-caps
-      color blue
+      color reference-link-color
     a:hover
       text-decoration underline
-      color #A3181E
+      color link-color
   .tab.active
     background-color #ff9
     a
       font-weight bold
-      color #A3181E
+      color link-color
     a:hover
       font-weight bold
       text-decoration none
-      color #A3181E
+      color link-color
   #tab-debate
     float right
   #tab-comments

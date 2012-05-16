@@ -1,6 +1,7 @@
 var everyauth = require('everyauth')
 , userProvider = new UserProvider('localhost', 27017)
 , validator = require('validator')
+, querystring = require('querystring')
 , restler = require('restler')
 , User = require('./common/models/user').User
 ;
@@ -119,37 +120,43 @@ everyauth.facebook
   .findOrCreateUser( function(session, accessToken, accessTokExtra, fbUserMetadata) {
       console.log("Facebook findOrCreateUser(session="+session+", accessToken="+accessToken+", accessTokExtra="+accessTokExtra+", fbUserMetaData="+JSON.stringify(fbUserMetadata));
       var promise = this.Promise();
-      var login = fbUserMetadata.user_id || fbUserMetadata.id;
-      console.log("Calling findbylogin");
-      userProvider.findByLogin(User.prototype.AuthTypes.FACEBOOK, login, function (err, foundUser) {
-        if (err) {
+      if (accessToken == "access_token") {
+	  accessToken = fbUserMetadata.oauth_token;
+      }
+      var request = restler.get("https://graph.facebook.com/me", { query: { access_token: accessToken } });
+
+      request.on('fail', function(data) {
+        var result = JSON.parse(data);
+        console.log("couldn't retrieve FB user: " + result.error.message);
+        return promise.fulfill([err]);
+      });
+
+      request.on('success', function(data) {
+        var userData = JSON.parse(data);
+        console.log("user data: "+JSON.stringify(userData));
+        var login = userData.username;
+
+        console.log("Calling findbylogin");
+        userProvider.findByLogin(User.prototype.AuthTypes.FACEBOOK, login, function (err, foundUser) {
+          if (err) {
       console.log("Findbylogin returned error");
-          promise.fulfill(err);
-        }
-        else {
-      console.log(" findbylogin ok");
-          if (foundUser) {
-      console.log("found user");
-            foundUser.id = foundUser._id;
-            promise.fulfill(foundUser);
+            promise.fulfill(err);
           }
           else {
+      console.log(" findbylogin ok");
+            if (foundUser) {
+      console.log("found user");
+              foundUser.id = foundUser._id;
+              promise.fulfill(foundUser);
+            }
+            else {
 	      console.log("user not found");
-            var request = restler.get("https://graph.facebook.com/me", { query: { access_token: accessToken } });
-
-            request.on('fail', function(data) {
-              var result = JSON.parse(data);
-              console.log("couldn't retrieve FB user: " + result.error.message);
-              return promise.fulfill([err]);
-            });
-
-            request.on('success', function(data) {
-              var userData = querystring.parse(data);
               var newUser = {
                 login: userData.username,
-         	      authenticator: User.prototype.AuthTypes.FACEBOOK,
+       	        authenticator: User.prototype.AuthTypes.FACEBOOK,
                 data: userData
               };
+	      console.log("new user: "+JSON.stringify(newUser));
   	    console.log("saving new user");
               userProvider.save(newUser, function(err, users) {
                 if (err) {
@@ -161,10 +168,10 @@ everyauth.facebook
                 user.id = user._id;
                 return promise.fulfill(user);
               });
-            });
 
+            }
           }
-        }
+        });
       });
       return promise;
   })

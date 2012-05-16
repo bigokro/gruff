@@ -1,5 +1,16 @@
 include ../mixins/debates
 
+if everyauth
+  p Everyauth
+  if everyauth.facebook
+    p Facebook
+  if everyauth.facebookCanvas
+    p Canvas
+    if everyauth.facebookCanvas.usingCanvas
+      p Yes!
+else
+  p Not using canvas
+
 mixin list_debates("Debates Created by You", created)
 mixin list_debates("Debates with Contributions from You", contributed)
 mixin list_debates("Debates on which You Have Voted", voted)
