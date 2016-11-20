@@ -113,7 +113,7 @@ everyauth.facebook
   .entryPath('/auth/facebook')
   .callbackPath('/auth/facebook/callback')
   .scope('email,user_status') // Defaults to undefined
-  .fields('id,name,email,picture')
+  //.fields('id,name,email,picture')
   .handleAuthCallbackError( function(req, res) {
 	  console.log("Facebook handleAuthCallbackError()");
   })
@@ -177,11 +177,11 @@ everyauth.facebook
   })
   .redirectPath('/my/debates');
 
-
+/*
 everyauth.facebookCanvas
   .canvasPath('/auth/facebook/canvas')
   .canvasPage('http://apps.facebook.com/gruff-it');
-
+*/
 
 exports.everyauth = everyauth;
 

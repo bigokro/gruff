@@ -1,0 +1,23 @@
+extends layout
+
+include mixins/arguments
+include mixins/subdebates
+include mixins/answers
+include mixins/comments
+include mixins/tags
+include mixins/search_form
+
+block main
+  div.debate
+    a(href="/canvas/" + debate.linkableId()) Canvas it!
+    div.date= debate.date
+    div.vote-link
+      a(href="/debates/" + debate.linkableId() + "/descriptions", title="Improve this description") 
+        img(src="/images/checked.png")
+    div.description= debate.bestDescriptionText()
+    - var mixinArgs = { objecttype: "debates", objectid: debate.linkableId()}
+    tags(debate, mixinArgs)
+    arguments(debate)
+    answers(debate)
+    subdebates(debate)
+    comments("debates", debate)

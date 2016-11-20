@@ -24,7 +24,7 @@ mixin tags(obj, args)
       span.add-tag-form(id="add-tag-form-"+attributeid, style="display: none;")
         a(title="Hide tag form", href="#", onclick="$('#show-add-tag-form-"+attributeid+"').show(); $('#add-tag-form-"+attributeid+"').hide(); return false;") -
         input(type="text", id="add-tag-form-field-"+attributeid)
-        script(type="text/javascript")
+        script(type="text/javascript").
           $('#add-tag-form-field-!{attributeid}').keypress(function(e){
             if(e.which == 13) {
               window.location.href = "!{baseurl}" + $('#add-tag-form-field-!{attributeid}').val();

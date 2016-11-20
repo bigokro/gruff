@@ -2,31 +2,30 @@ var referenceProvider = new ReferenceProvider('localhost', 27017);
 var describableProvider = new DescribableProvider('localhost', 27017);
 var debateProvider = new DebateProvider('localhost', 27017, describableProvider, referenceProvider);
 var tagProvider = new TagProvider('localhost', 27017, debateProvider, referenceProvider);
+var userProvider = new UserProvider('localhost', 27017, userProvider, referenceProvider);
 var debate = new Debate();
 
 //GET
 
 exports.about = function(req, res) {
-  res.render('about.jade', { locals: {
+  res.render('about.pug', {
       title: 'About Gruff'
-  }});
+  });
 };
 
 exports.canvas = function(req, res) {
   var id = req.params.id;
-  res.render('canvas.jade', {
-    layout: 'layout_canvas'
-    , locals: {
-      title: 'Make Your Gruff'
-      , id: id
-  }});
+  res.render('canvas.pug', {
+    title: 'Make Your Gruff'
+    , id: id
+  });
 };
 
 exports.contact = function(req, res) {
-  res.render('contact.jade', { locals: {
+  res.render('contact.pug', {
       title: 'Contact Us'
       , showTwitter: true
-  }});
+  });
 };
 
 exports.feed = function(req, res){
@@ -35,7 +34,7 @@ exports.feed = function(req, res){
       return;
     }
     var date = new Date;
-    res.render('feed.jade', { 
+    res.render('feed.pug', { 
       layout: 'layout_xml'
       , locals: {
         title: 'Recent Debates Feed'
@@ -51,10 +50,10 @@ exports.getSearch = function(req, res){
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.render('search_results.jade', { locals: {
+    res.render('search_results.pug', {
       title: 'Search Results',
       results: results
-    }});
+    });
   });
 };
 
@@ -62,10 +61,10 @@ exports.getNewDebate = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  res.render('debate_new.jade', { locals: {
+  res.render('debate_new.pug', {
     title: 'New Debate',
     debate: new Debate()
-  }});
+  });
 };
 
 exports.getDebate = function(req, res) {
@@ -73,7 +72,7 @@ exports.getDebate = function(req, res) {
     if (handleError(req, res, error, debate)) {
       return;
     }
-    res.render('debate_show.jade', { locals: {
+    res.render('debate_show.pug', {
       title: debate.parent ? debate.parent.bestTitleText() + " - " + debate.bestTitleText() : debate.bestTitleText()
       , parent: debate.parent
       , debate: debate
@@ -82,17 +81,17 @@ exports.getDebate = function(req, res) {
       , linkToMe: false
       , showReferences: true
       , showAddThis: true
-    }});
+    });
   });
 };
 
 exports.getCurrentUser = function(req, res) {
   if (req.loggedIn) {
     res.json({
-      _id: req.user._id
-      , login: req.user.login
-      , authenticator: req.user.authenticator
-      , email: req.user.email
+      _id: req.session.user._id
+      , login: req.session.user.login
+      , authenticator: req.session.user.authenticator
+      , email: req.session.user.email
     });
   } else {
     res.json({});
@@ -108,18 +107,30 @@ exports.getReferences = function(req, res) {
   });
 };
 
+exports.getReference = function(req, res) {
+  /*
+  referenceProvider.findById(req.params.id, function(error, references) {
+    if (handleError(req, res, error, references)) {
+      return;
+    }
+    res.json(references);
+  });
+  */
+  "For some reason not implemented yet"
+};
+
 exports.getDebateTitle = function(req, res) {
   debateProvider.findById(req.params.id, function(error, debate) {
     if (handleError(req, res, error, debate)) {
       return;
     }
-    res.render('titles_show.jade', { locals: {
+    res.render('titles_show.pug', {
       title: debate.bestTitleText()
       , parent: debate.parent
       , type: 'debate'
       , describable: debate
       , linkToMe: true
-    }});
+    });
   });
 };
 
@@ -128,13 +139,13 @@ exports.getDebateDescription = function(req, res) {
     if (handleError(req, res, error, debate)) {
       return;
     }
-    res.render('descriptions_show.jade', { locals: {
+    res.render('descriptions_show.pug', {
       title: debate.bestTitleText()
       , parent: debate.parent
       , type: 'debate'
       , describable: debate
       , linkToMe: true
-    }});
+    });
   });
 };
 
@@ -144,13 +155,13 @@ exports.getReferenceTitle = function(req, res) {
       return;
     }
     else {
-      res.render('titles_show.jade', { locals: {
+      res.render('titles_show.pug', {
         title: reference.bestTitleText()
         , parent: reference.debate
         , type: 'reference'
         , describable: reference
         , linkToMe: true
-      }});
+      });
     }
   });
 };
@@ -160,13 +171,13 @@ exports.getReferenceDescription = function(req, res) {
     if (handleError(req, res, error, reference)) {
       return;
     }
-    res.render('descriptions_show.jade', { locals: {
+    res.render('descriptions_show.pug', {
       title: reference.bestTitleText()
       , parent: reference.debate
       , type: 'reference'
       , describable: reference
       , linkToMe: true
-    }});
+    });
   });
 };
 
@@ -175,7 +186,7 @@ exports.getTaggedItems = function(req, res) {
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.render('tags.jade', { locals: {
+    res.render('tags.pug', {
       title: "Stuff Tagged " + req.params.tag
       , tag: req.params.tag
       , debates: items.debates
@@ -183,7 +194,7 @@ exports.getTaggedItems = function(req, res) {
       , titles: items.titles
       , descriptions: items.descriptions
       , showTagCloud: true
-    }});
+    });
   });
 };
 
@@ -193,7 +204,7 @@ exports.moveDebate = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  debateProvider.moveTo(req.user.login, req.params.debateId, req.params.parentId, req.params.destination, function(error, debate) {
+  debateProvider.moveTo(req.session.user.login, req.params.debateId, req.params.parentId, req.params.destination, function(error, debate) {
     if (handleError(req, res, error, debate)) {
       return;
     }
@@ -207,15 +218,15 @@ exports.getMyDebates = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
-  debateProvider.findDebatesForUser(req.user.login, function(error, debates) {
+  debateProvider.findDebatesForUser(req.session.user.login, function(error, debates) {
     if (handleError(req, res, error, debates)) {
       return;
     }
-    referenceProvider.findReferencesForUser(req.user.login, function(error, references) {
+    referenceProvider.findReferencesForUser(req.session.user.login, function(error, references) {
       if (handleError(req, res, error, references)) {
         return;
       }
-      res.render('my/debates.jade', { locals: {
+      res.render('my/debates.pug', {
         title: "My Debates"
         , created: debates.created
         , contributed: debates.contributed
@@ -224,7 +235,7 @@ exports.getMyDebates = function(req, res) {
         , references_contributed: references.contributed
         , references_voted: references.voted
         , showMyReferences: true
-      }});
+      });
     });
   });
 };
@@ -234,12 +245,12 @@ exports.index = function(req, res){
     if (handleError(req, res, error, true)) {
       return;
     }
-    res.render('index.jade', { locals: {
+    res.render('index.pug', {
       title: 'Recent Debates'
       , debates: docs
       , showTwitter: true
       , showTagCloud: true
-    }});
+    });
   });
 };
 
@@ -283,6 +294,10 @@ exports.getJSONDebates = function(req, res) {
 
 // POST
 
+exports.postJSONLogin = function(req, res){
+    res.json({error: "For some reason not implemented"});
+};
+
 exports.postDebate = function(req, res){
   if (bounceAnonymous(req, res)) {
     return;
@@ -314,8 +329,9 @@ exports.postComment = function(req, res) {
   if (bounceAnonymous(req, res)) {
     return;
   }
+  console.log("using session user "+req.session.user);
   if (req.xhr) {
-    var comment = new Comment(req.user.login, req.body.comment, false);
+    var comment = new Comment(req.session.user.login, req.body.comment, false);
     var parentId = req.params.objectid;
     var commentId = req.params.commentid;
     var txtIdx = req.params.textidx;
@@ -324,7 +340,7 @@ exports.postComment = function(req, res) {
     console.log("Text index: " + txtIdx);
     console.log(JSON.stringify(comment));
   } else {
-    var comment = new Comment(req.user.login, req.param('comment'), false);
+    var comment = new Comment(req.session.user.login, req.param('comment'), false);
     var parentId = req.param('_id');
     var commentId = req.param('commentId');
     var txtIdx = req.param('textIndex');
@@ -350,7 +366,7 @@ exports.voteComment = function(req, res) {
   var parentId = req.params.objectid;
   var commentId = req.params.commentid;
   var vote = req.params.vote;
-  describableProvider.voteComment(objectType, parentId, commentId, req.user, vote,
+  describableProvider.voteComment(objectType, parentId, commentId, req.session.user, vote,
     function( error, comment) {
       if (handleError(req, res, error, comment)) {
         return;
@@ -366,9 +382,9 @@ exports.postDebateTitle = function(req, res) {
   describableProvider.addDescriptor("debates"
                                     , "titles"
                                     , req.param('_id')
-                                    , req.user.login
+                                    , req.session.user.login
                                     , {
-                                        user: req.user.login,
+                                        user: req.session.user.login,
                                         title: req.param('title'),
                                         date: new Date()
                                     } 
@@ -391,9 +407,9 @@ exports.postDebateDescription = function(req, res) {
   describableProvider.addDescriptor("debates"
                                     , "descriptions"
                                     , req.param('_id')
-                                    , req.user.login
+                                    , req.session.user.login
                                     , {
-                                        user: req.user.login,
+                                        user: req.session.user.login,
                                         text: req.param('desc'),
                                         date: new Date()
                                     } 
@@ -416,12 +432,12 @@ exports.postAnswer = function(req, res) {
   var debate = new Debate();
   var parentId = req.params.id ? req.params.id : req.param('_id');
   debateProvider.addAnswerToDebate(parentId, {
-    user: req.user.login,
+    user: req.session.user.login,
     type: debate.DebateTypes.DIALECTIC,
     attributeType: Debate.prototype.AttributeTypes.ANSWER,
     desc: req.param('desc'),
     titles: [{
-      user: req.user.login,
+      user: req.session.user.login,
       title: req.param('title'),
       date: new Date()
     }],
@@ -445,12 +461,12 @@ exports.postSubdebate = function(req, res) {
   var debate = new Debate();
   var parentId = req.params.id ? req.params.id : req.param('_id');
   debateProvider.addSubdebateToDebate(parentId, {
-    user: req.user.login,
+    user: req.session.user.login,
     type: req.param('type'),
     desc: req.param('desc'),
     attributeType: Debate.prototype.AttributeTypes.SUBDEBATE,
     titles: [{
-      user: req.user.login,
+      user: req.session.user.login,
       title: req.param('title'),
       date: new Date()
     }],
@@ -473,12 +489,12 @@ exports.postArgument = function(req, res) {
   }
   var parentId = req.params.id ? req.params.id : req.param('_id');
   debateProvider.addArgumentToDebate(parentId, {
-    user: req.user.login,
+    user: req.session.user.login,
     type: debate.DebateTypes.DIALECTIC,
     attributeType: req.params.attributetype,
     desc: req.param('desc'),
     titles: [{
-      user: req.user.login,
+      user: req.session.user.login,
       title: req.param('title'),
       date: new Date()
     }],
@@ -517,9 +533,9 @@ exports.postReference = function(req, res) {
   }
   if (req.xhr) {
     var reference = req.body;
-    reference.user = req.user.login;
+    reference.user = req.session.user.login;
     reference.titles = [{
-      user: req.user.login,
+      user: req.session.user.login,
       title: reference.title,
       date: new Date()
     }],
@@ -527,11 +543,11 @@ exports.postReference = function(req, res) {
     var parentId = req.params.id;
   } else {
     var reference = {
-      user: req.user.login,
+      user: req.session.user.login,
       url: req.param('url'),
       desc: req.param('desc'),
       titles: [{
-        user: req.user.login,
+        user: req.session.user.login,
         title: req.param('title'),
         date: new Date()
       }],
@@ -559,9 +575,9 @@ exports.postReferenceTitle = function(req, res) {
   describableProvider.addDescriptor("references"
                                     , "titles"
                                     , req.param('_id')
-                                    , req.user.login
+                                    , req.session.user.login
                                     , {
-                                      user: req.user.login,
+                                      user: req.session.user.login,
                                       title: req.param('title'),
                                       date: new Date()
                                     } 
@@ -580,9 +596,9 @@ exports.postReferenceDescription = function(req, res) {
   describableProvider.addDescriptor("references"
                                     , "descriptions"
                                     , req.param('_id')
-                                    , req.user.login
+                                    , req.session.user.login
                                     , {
-                                        user: req.user.login,
+                                        user: req.session.user.login,
                                         text: req.param('desc'),
                                         date: new Date()
                                     } 
@@ -602,7 +618,7 @@ exports.postDescriptorVote = function(req, res) {
                                          , req.params.objectid
                                          , req.params.attributetype
                                          , req.params.attributeid
-                                         , req.user.login
+                                         , req.session.user.login
                                          , function( error, docs) {
     if (handleError(req, res, error, true)) {
       return;
@@ -625,7 +641,7 @@ exports.postTag = function(req, res) {
                                          , req.params.objectid
                                          , req.params.attributetype
                                          , req.params.attributeid
-                                         , req.user.login
+                                         , req.session.user.login
                                          , req.params.tag
                                          , function( error, docs) {
     if (handleError(req, res, error, true)) {
@@ -662,7 +678,7 @@ exports.removeTag = function(req, res) {
     , req.params.objectid
     , req.params.attributetype
     , req.params.attributeid
-    , req.user.login
+    , req.session.user.login
     , req.params.tag
     , function( error, docs) {
     if (handleError(req, res, error, true)) {
@@ -754,10 +770,10 @@ exports.handle404 = function(req, res) {
   if (req.xhr) {
     res.json([{ "message": "404 Not Found" }]);
   } else {
-    res.render('404.jade', { locals: {
+    res.render('404.pug', {
       title: '404 Not Found'
       , showTwitter: true
-    }});
+    });
   }
 };
 
@@ -766,28 +782,43 @@ exports.handle500 = function(req, res, error) {
   if (req.xhr) {
     res.json([{ "message": "500 Error: " + error }]);
   } else {
-    res.render('500.jade', { locals: {
+    res.render('500.pug', {
       title: '500 Horrendous Error'
-    }});
+    });
   }
 };
 
 // Helpers
 
 bounceAnonymous = function (req, res) {
-  if (! req.loggedIn) {
-    console.log('bouncing anonymous user');
-    if (req.xhr) {
-      res.statusCode = 401;
-      res.json([{ "message": "You must be logged in to perform this action." }]);
-    } else {
-      res.redirect('/login');
+    if (! req.session.user) {
+	console.log('bouncing anonymous user');
+	userProvider.findByLogin('manual', 'gruff', function(error, user) {
+	    if (user == null) {
+		if (error) {
+		    console.log(error);
+		}
+		console.log('creating a new user');
+		user = {login: 'gruff', authenticator: 'manual', email: 'timothy.high@gmail.com'}
+		userProvider.save(user, function(error, user) { console.log("Error? " + error) });
+	    }
+	    console.log('setting user on session');
+	    req.session.user = user
+	});
+	/*
+	if (req.xhr) {
+	    res.statusCode = 401;
+	    res.json([{ "message": "You must be logged in to perform this action." }]);
+	} else {
+	    res.redirect('/login');
+	}
+	return true;
+	*/
+	return false;
     }
-    return true;
-  }
-  else {
-    return false;
-  }
+    else {
+	return false;
+    }
 };
 
 handleError = function(req, res, error, value) {

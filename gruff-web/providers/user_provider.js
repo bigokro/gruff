@@ -40,7 +40,7 @@ UserProvider.prototype.findAll = function(callback) {
 };
 
 UserProvider.prototype.findById = function(id, callback) {
-    this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
+    this.findByObjID(ObjectID.createFromHexString(id), callback);
 };
 
 UserProvider.prototype.findByObjID = function(objId, callback) {
@@ -66,7 +66,7 @@ UserProvider.prototype.findByObjID = function(objId, callback) {
 UserProvider.prototype.findAllById = function(ids, callback) {
   var objIds = [];
   for (var id in ids) {
-    objIds[objIds.length] = user_collection.db.bson_serializer.ObjectID.createFromHexString(id);
+    objIds[objIds.length] = ObjectID.createFromHexString(id);
   }
   this.findAllByObjID(objIds, callback);
 }

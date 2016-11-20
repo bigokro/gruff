@@ -6,22 +6,22 @@ mixin arguments(debate)
         div.for
           h3 Arguments in Favor
           if debate.argumentsFor
-            - each argument in debate.argumentsFor
+            each argument in debate.argumentsFor
               div.argument.argumentFor(id=argument.linkableId())
                 h4.title!= argument.titleLink()
                 div.body= argument.body
-          mixin argument_form(debate, true)
+          argument_form(debate, true)
         div.against
           h3 Arguments Against
           if debate.argumentsAgainst
-            - each argument in debate.argumentsAgainst
+            each argument in debate.argumentsAgainst
               div.argument.argumentAgainst(id=argument.linkableId())
                 h4.title!= argument.titleLink()
                 div.body= argument.body
-          mixin argument_form(debate, false)
+          argument_form(debate, false)
         div.clear
         if everyauth.loggedIn
-          script(type="text/javascript")
+          script(type="text/javascript").
             $(function() {
               $( ".argument" ).draggable({ revert: true });
               $( ".argument" ).width(function(index, width) {

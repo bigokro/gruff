@@ -156,6 +156,7 @@ function buildSearchQueryExpression(tokens) {
 }
 
 DebateProvider.prototype.findById = function(id, callback) {
+  console.log("Getting object with ID "+id);
   try {
     var objId = this.idToObjId(id);
   }
@@ -173,11 +174,13 @@ DebateProvider.prototype.findById = function(id, callback) {
 
 DebateProvider.prototype.findByObjID = function(objId, callback) {
   var provider = this;
+  console.log("Getting object with ID "+objId);
   this.getCollection(function(error, debate_collection) {
     if (error) {
       callback(error);
     }
     else {
+        console.log("Finding one");
         debate_collection.findOne({_id: objId}, function(error, result) {
           if (error) {
             callback(error)
@@ -187,6 +190,7 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
           }
           else {
             // Pre-load the parent debate
+            console.log("Preloading parent");
             provider.findByObjID(result.parentId, function(error, parent) {
               if (error) {
                 callback(error)
@@ -249,7 +253,7 @@ DebateProvider.prototype.findByObjID = function(objId, callback) {
 DebateProvider.prototype.findAllById = function(ids, callback) {
     var objIds = [];
     for (var id in ids) {
-        objIds[objIds.length] = debate_collection.db.bson_serializer.ObjectID.createFromHexString(id);
+        objIds[objIds.length] = ObjectID.createFromHexString(id);
     }
     this.findAllByObjID(objIds, callback);
 }
@@ -476,7 +480,7 @@ DebateProvider.prototype.addAnswerToDebate = function(debateId, answer, callback
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback( error );
 	      else {
-            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            var parentId = ObjectID.createFromHexString(debateId);
             answer.parentId = parentId;
             provider.save(answer, function(error, answers) {
                 // Add the answer as a new debate
@@ -499,7 +503,7 @@ DebateProvider.prototype.addSubdebateToDebate = function(debateId, subdebate, ca
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback( error );
 	      else {
-            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            var parentId = ObjectID.createFromHexString(debateId);
             subdebate.parentId = parentId;
             provider.save(subdebate, function(error, subdebates) {
                 // Add the subdebate as a new debate
@@ -522,7 +526,7 @@ DebateProvider.prototype.addArgumentToDebate = function(debateId, argument, isFo
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback( error );
 	      else {
-            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            var parentId = ObjectID.createFromHexString(debateId);
             argument.parentId = parentId;
             provider.save(argument, function(error, arguments) {
                 var doc = arguments[0];
@@ -547,7 +551,7 @@ DebateProvider.prototype.addReferenceToDebate = function(debateId, reference, ca
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback( error );
 	      else {
-            var parentId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+            var parentId = ObjectID.createFromHexString(debateId);
             reference.debateId = parentId;
             provider.reference_provider.save(reference, function(error, references) {
                 var referenceId = references[0]._id;
@@ -674,9 +678,9 @@ DebateProvider.prototype.removeLink = function(parentId, childId, callback) {
 
 DebateProvider.prototype.mergeDebates = function(userId, redundantId, survivorId, callback) {
     var provider = this;
-    var userObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(userId);
-    var redundantObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(redundantId);
-    var survivorObjId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(survivorId);
+    var userObjId = ObjectID.createFromHexString(userId);
+    var redundantObjId = ObjectID.createFromHexString(redundantId);
+    var survivorObjId = ObjectID.createFromHexString(survivorId);
     this.getCollection(function(error, debate_collection) {
 	      if( error ) callback( error );
 	      else {
@@ -912,7 +916,8 @@ DebateProvider.prototype.prepareForSave= function(debate) {
 DebateProvider.prototype.idToObjId= function(id) {
   if (id == null || typeof(id) === 'undefined') return null;
   if (typeof(id) === 'string') {
-    return this.db.bson_serializer.ObjectID.createFromHexString(id);
+    console.log("Converting ID "+id);
+    return ObjectID.createFromHexString(id);
   }
   return id;
 }

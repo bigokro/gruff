@@ -2,7 +2,7 @@
 #tagcloud
   h3 Tags
 
-script(type="text/javascript")
+script(type='text/javascript').
   $.get('/rest/tags/counts?tags=!{tags}', function(data) {
     var tags = "";
     var total = 0;

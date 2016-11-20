@@ -29,37 +29,41 @@ var express = require('express')
   , port = process.env.NODE_ENV == 'production' ? 80 : 7080
   , routes = require('./routes')
   , stylus = require('stylus')
+, logger = require('morgan')
+, bodyParser = require('body-parser')
+, cookieParser = require('cookie-parser')
+, session = require('express-session')
+, methodOverride = require('method-override')
+, favicon = require('serve-favicon')
+, errorHandler = require('errorHandler')
   ;
 
 require('./lib/utils');
 
 // Configuration
 
-var app = module.exports = express.createServer();
+var app = express();
 
-app.configure(function(){
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.access.log', { flags: 'a' })}));
-  app.use(express.bodyParser());
-  app.use(express.cookieParser());
-  app.use(express.session({secret: ':DP:DP:DP:DP'}));
-  app.use(express.methodOverride());
-  app.use(stylus.middleware({ src: __dirname + '/public' }));
-  app.use(everyauth.middleware());
-  app.use(express.static(__dirname + '/public'));
-  app.use(express.static(__dirname + '/common'));
-  app.use(app.router);
-  app.use(express.favicon());
-});
-
-app.configure('development', function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function() {
-  app.use(express.errorHandler());
-});
+app.set('views', __dirname + '/views');
+app.set('view engine', 'pug');
+//app.use(express.logger({stream: fs.createWriteStream(logHome + '/gruff.access.log', { flags: 'a' })}));
+app.use(logger("combined"));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+//app.use(cookieParser);
+app.use(session({
+    secret: ':DP:DP:DP:DP',
+    name: 'gruff',
+    //store: sessionStore, // connect-mongo session store
+    proxy: true,
+    resave: false,
+    saveUninitialized: true
+}));
+//app.use(methodOverride); -------------------- TODO: Figure out how to make this work
+app.use(stylus.middleware({ src: __dirname + '/public' }));
+//app.use(everyauth.middleware());
+app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/common'));
 
 // Routes
 
@@ -77,6 +81,7 @@ app.get('/references/:id/titles', routes.getReferenceTitle);
 app.get('/references/:id/descriptions', routes.getReferenceDescription);
 app.get('/search', routes.getSearch);
 app.get('/tags/:tag', routes.getTaggedItems);
+
 
 // backbone
 app.get('/canvas/:id', routes.canvas);
@@ -143,8 +148,21 @@ app.post('/rest/login', routes.postJSONLogin);
 // default
 app.get('*', routes.handle404);
 
+
+
+
+app.use(favicon);
+
+// Dev only
+app.use(errorHandler)
+
+// Prod only - how to configure this in new express?
+//app.use(express.errorHandler());
+
+
 // Main
 
-everyauth.helpExpress(app);
+//everyauth.helpExpress(app);
 app.listen(port);
-console.log('Gruff listening on port ' + app.address().port + ' in ' + app.settings.env + ' mode');
+//console.log('Gruff listening on port ' + app.address().port + ' in ' + app.settings.env + ' mode');
+console.log('Gruff listening on port ' + port);

@@ -1,9 +1,0 @@
-div.debates
-  - each debate in debates
-    div.debate
-      div.date= debate.date
-      div.type= debate.type
-      div(class="title checked")!= debate.titleLink()
-      div.description= debate.bestDescriptionText()
-      div.canvasLink
-        a(href="/canvas/"+debate.linkableId()) Canvas it!

@@ -2,15 +2,15 @@ include ../mixins/search_form
 include ../mixins/references
 
 #right
-  mixin search_form
+  search_form
   if typeof showReferences !== 'undefined' && showReferences == true
-    mixin references(debate)
+    references(debate)
   if typeof showMyReferences !== 'undefined' && showMyReferences == true
-    mixin list_references("References Created by You", references_created)
-    mixin list_references("References with Contributions from You", references_contributed)
-    mixin list_references("References on which You Have Voted", references_voted)
+    list_references("References Created by You", references_created)
+    list_references("References with Contributions from You", references_contributed)
+    list_references("References on which You Have Voted", references_voted)
   if typeof showTwitter !== 'undefined' && showTwitter == true
-    include twitter
+   include twitter
   if typeof showAddThis !== 'undefined' && showAddThis == true
     include addthis
   if typeof showTagCloud !== 'undefined' && showTagCloud == true

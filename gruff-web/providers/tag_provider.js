@@ -235,7 +235,7 @@ TagProvider.prototype.addTag = function(objectType, objectId, attributeType, att
   this.getCollection(objectType, function(error, object_collection) {
 	  if( error ) callback( error );
 	  else {
-      var oid = object_collection.db.bson_serializer.ObjectID.createFromHexString(objectId);
+      var oid = ObjectID.createFromHexString(objectId);
       provider.getCollection("users", function(error, user_collection) {
 	      if( error ) callback( error );
 	      else {
@@ -311,7 +311,7 @@ TagProvider.prototype.removeTag = function(objectType, objectId, attributeType, 
   this.getCollection(objectType, function(error, object_collection) {
 	  if( error ) callback( error );
 	  else {
-      var oid = object_collection.db.bson_serializer.ObjectID.createFromHexString(objectId);
+      var oid = ObjectID.createFromHexString(objectId);
       provider.getCollection("users", function(error, user_collection) {
 	      if( error ) callback( error );
 	      else {

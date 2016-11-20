@@ -35,7 +35,7 @@ DescribableProvider.prototype.addComment = function(type, describableId, comment
   this.getCollection(type, function(error, describable_collection) {
 	  if( error ) callback( error );
 	  else {
-      var objId = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      var objId = ObjectID.createFromHexString(describableId);
       if (!commentId || commentId === null) {
         console.log("no comment id - adding to list of debate comments");
   	    describable_collection.update(
@@ -86,7 +86,7 @@ DescribableProvider.prototype.voteComment = function(describableType, describabl
   this.getCollection(describableType, function(error, describable_collection) {
 	  if( error ) callback( error );
 	  else {
-      var objId = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      var objId = ObjectID.createFromHexString(describableId);
       var userObjId = user["_id"];
       provider.getCollection("users", function(error, user_collection) {
 	      if( error ) callback( error );
@@ -159,7 +159,7 @@ DescribableProvider.prototype.addDescriptor = function(describableType, descript
   this.getCollection(describableType, function(error, describable_collection) {
 	  if( error ) callback( error );
 	  else {
-      var id = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      var id = ObjectID.createFromHexString(describableId);
       provider.getCollection("users", function(error, user_collection) {
 	      if( error ) callback( error );
 	      else {
@@ -209,7 +209,7 @@ DescribableProvider.prototype.voteForDescriptor = function(describableType, desc
   this.getCollection(describableType, function(error, describable_collection) {
 	  if( error ) callback( error );
 	  else {
-      var id = describable_collection.db.bson_serializer.ObjectID.createFromHexString(describableId);
+      var id = ObjectID.createFromHexString(describableId);
       provider.getCollection("users", function(error, user_collection) {
 	      if( error ) callback( error );
 	      else {

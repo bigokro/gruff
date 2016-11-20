@@ -40,7 +40,7 @@ ReferenceProvider.prototype.getUserCollection= function(callback) {
 // Finders
 
 ReferenceProvider.prototype.findById = function(id, callback) {
-    this.findByObjID(this.db.bson_serializer.ObjectID.createFromHexString(id), callback);
+    this.findByObjID(ObjectID.createFromHexString(id), callback);
 };
 
 ReferenceProvider.prototype.findByObjID = function(objId, callback) {
@@ -85,7 +85,7 @@ ReferenceProvider.prototype.findByObjID = function(objId, callback) {
 ReferenceProvider.prototype.findAllById = function(debate, ids, callback) {
     var objIds = [];
     for (var id in ids) {
-        objIds[objIds.length] = reference_collection.db.bson_serializer.ObjectID.createFromHexString(id);
+        objIds[objIds.length] = ObjectID.createFromHexString(id);
     }
     this.findAllByObjID(debate, objIds, callback);
 };
@@ -117,7 +117,7 @@ ReferenceProvider.prototype.findAllByDebateId = function(debateId, callback) {
     if (error) {
       callback(error);
     } else {
-      var objId = debate_collection.db.bson_serializer.ObjectID.createFromHexString(debateId);
+      var objId = ObjectID.createFromHexString(debateId);
       debate_collection.findOne({_id: objId}, function(error, debate) {
         if (error) {
           callback(error);

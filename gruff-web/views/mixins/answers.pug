@@ -5,9 +5,9 @@ mixin answers(debate)
     div.answers
       h3 Proposed Answers
       if debate.answers
-        - each answer in debate.answers
+        each answer in debate.answers
           div.answer
             h4.title!= answer.titleLink()
       else
         div.none There are currently no proposed answers.
-      mixin answer_form(debate)
+      answer_form(debate)
